@@ -13,7 +13,7 @@ export const MILESTONES_DATA = [
     keyText: "5 ĐẶC TRƯNG · Ý THỨC TỰ GIÁC",
     caption: "Dân tộc theo nghĩa rộng là Quốc gia có chung lãnh thổ, kinh tế, ngôn ngữ, văn hóa và nhà nước. Dân tộc theo nghĩa hẹp là Tộc người, trong đó ý thức tự giác tộc người là tiêu chí quan trọng nhất.",
     image: "/images/exhibits/exhibit_1_2.jpg",
-    contain: false,
+    contain: true,
     background: "#090A0C"
   },
   {
@@ -46,7 +46,7 @@ export const MILESTONES_DATA = [
     keyText: "3 NGUỒN GỐC · 3 TÍNH CHẤT",
     caption: "Tôn giáo là hình thái ý thức xã hội phản ánh hư ảo hiện thực khách quan. Sinh ra từ tự nhiên - kinh tế - xã hội, nhận thức và tâm lý; mang tính lịch sử, tính quần chúng và tính chính trị.",
     image: "/images/exhibits/exhibit_4_1.jpg",
-    contain: false,
+    contain: true,
     background: "#080B0A"
   },
   {
@@ -68,7 +68,7 @@ export const MILESTONES_DATA = [
     keyText: "KÍNH CHÚA — YÊU NƯỚC",
     caption: "Kiệt tác kiến trúc Công giáo phương Tây dung hợp mái cong đình chùa Á Đông và chạm khắc hoa sen, biểu trưng cho sự hòa nhập văn hóa và tinh thần phụng sự Tổ quốc.",
     image: "/images/exhibits/exhibit_6_1.jpg",
-    contain: false,
+    contain: true,
     background: "#0B0C0E"
   },
   {
@@ -90,7 +90,7 @@ export const MILESTONES_DATA = [
     keyText: "BẢO VỆ VỮNG CHẮC BẢN LÀNG",
     caption: "Kiên quyết vạch trần và đập tan âm mưu của các thế lực thù địch lợi dụng vấn đề dân tộc, tôn giáo kích động ly khai (ở Tây Bắc, Tây Nguyên, Tây Nam Bộ); củng cố thế trận lòng dân.",
     image: "/images/exhibits/exhibit_10_2.jpg",
-    contain: false,
+    contain: true,
     background: "#140908"
   },
   {
@@ -112,7 +112,7 @@ export const MILESTONES_DATA = [
     keyText: "NON SÔNG MỘT DẢI TOÀN VẸN",
     caption: "Lá cờ đỏ sao vàng 54 mét vuông tung bay tại điểm cực Bắc địa đầu Tổ quốc, tượng trưng cho ý chí kiên cường và sức mạnh đại đoàn kết của 54 dân tộc anh em.",
     image: "/images/exhibits/exhibit_10_1.jpg",
-    contain: false,
+    contain: true,
     background: "#150807"
   }
 ];
