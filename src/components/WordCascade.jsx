@@ -7,7 +7,7 @@ export default function WordCascade({
   accentWords = [],
   id,
   eyebrow,
-  perWordVh = 100,
+  perWordVh = 70,
   className = '',
 }) {
   const root = useRef(null);
@@ -23,28 +23,30 @@ export default function WordCascade({
           trigger: root.current,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: true, // Immediate 1:1 scroll tracking with Lenis
+          scrub: 1, // Smooth scrub matching reference repo
         },
       });
 
+      // Cumulative reveal: Each word illuminates in sequence and STAYS VISIBLE!
+      // Forms a complete, magnificent manifesto that never vanishes in 0.5s!
       items.forEach((el, i) => {
-        const at = i * 1.0;
-        // Word materialises swiftly into view and stays crisp
+        const at = (i / totalWords) * 0.75; // Stagger across first 75% of scroll
         tl.fromTo(
           el,
-          { opacity: 0, scale: 0.85, filter: 'blur(6px)' },
-          { opacity: 1, scale: 1, filter: 'blur(0px)', ease: 'power2.out', duration: 0.4 },
+          { opacity: 0.15, y: 30, scale: 0.95 },
+          { 
+            opacity: 1, 
+            y: 0, 
+            scale: 1, 
+            duration: 0.2, 
+            ease: 'power2.out' 
+          },
           at
         );
-        // Fade out previous words (except the last word, which remains until the end)
-        if (i < totalWords - 1) {
-          tl.to(
-            el,
-            { opacity: 0, scale: 1.25, filter: 'blur(4px)', ease: 'power2.in', duration: 0.35 },
-            at + 0.65
-          );
-        }
       });
+
+      // Anchor timeline duration to 1.0 so scroll percentages map 1:1
+      tl.to({}, { duration: 1.0 }, 0);
     },
     { scope: root }
   );
@@ -54,24 +56,24 @@ export default function WordCascade({
       id={id}
       ref={root}
       className={`relative ${className}`}
-      style={{ height: `${words.length * perWordVh + 40}vh`, background }}
+      style={{ height: `${words.length * perWordVh + 60}vh`, background }}
     >
-      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden px-6">
+      <div className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden px-6">
         
         {eyebrow && (
-          <p className="eyebrow absolute left-1/2 top-[12%] -translate-x-1/2 whitespace-nowrap text-vn-gold tracking-cinematic text-xs font-semibold uppercase">
+          <p className="eyebrow mb-8 text-vn-gold tracking-cinematic text-xs font-semibold uppercase text-center">
             {eyebrow}
           </p>
         )}
 
-        <div className="relative w-full flex items-center justify-center">
+        <div className="relative flex flex-col items-center justify-center gap-3 sm:gap-5 text-center max-w-5xl">
           {words.map((w, i) => {
             const isAccent = accentWords.includes(w) || i === words.length - 1;
             return (
               <h2
                 key={`${w}-${i}`}
-                className={`cascade-word will-transform headline-mega absolute select-none text-center font-display font-black text-4xl sm:text-6xl md:text-8xl lg:text-9xl tracking-tight uppercase ${
-                  isAccent ? 'gold-gradient-text text-glow-gold' : 'text-white drop-shadow-2xl'
+                className={`cascade-word will-transform select-none text-center font-display font-black text-3xl sm:text-5xl md:text-7xl lg:text-8xl tracking-tight uppercase transition-colors duration-300 ${
+                  isAccent ? 'gold-gradient-text text-glow-gold' : 'text-white/90 drop-shadow-xl'
                 }`}
               >
                 {w}
