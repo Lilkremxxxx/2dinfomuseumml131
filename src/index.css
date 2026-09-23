@@ -26,7 +26,6 @@
 html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
 }
 
 body {
@@ -35,6 +34,18 @@ body {
   color: var(--vn-ivory);
   font-family: 'Be Vietnam Pro', system-ui, sans-serif;
   overflow-x: hidden;
+}
+
+/* Lenis smooth-scroll base */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
 /* Custom Scrollbar */
@@ -53,9 +64,42 @@ body {
   background: #DA251D;
 }
 
+/* Typography Helpers from reference project */
+.font-display {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.font-heading {
+  font-family: 'Playfair Display', serif;
+}
+
+.headline-mega {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  font-size: clamp(52px, 8vw, 150px);
+}
+
+.headline-year {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  line-height: 0.85;
+  font-size: clamp(64px, 14vw, 240px);
+  letter-spacing: -0.02em;
+}
+
+.eyebrow {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: clamp(10px, 0.85vw, 12px);
+}
+
 /* Glow & Atmospheric helpers */
 .text-glow-gold {
-  text-shadow: 0 0 30px rgba(255, 205, 0, 0.45), 0 0 10px rgba(212, 167, 44, 0.3);
+  text-shadow: 0 0 35px rgba(255, 205, 0, 0.5), 0 0 12px rgba(212, 167, 44, 0.35);
 }
 
 .text-glow-red {
@@ -113,6 +157,22 @@ body {
   z-index: 998;
   pointer-events: none;
   background: radial-gradient(ellipse at center, transparent 65%, rgba(0, 0, 0, 0.65) 100%);
+}
+
+/* Scroll hint indicator animation */
+.scroll-hint-line {
+  display: block;
+  width: 1px;
+  height: 38px;
+  background: linear-gradient(180deg, #FFCD00 0%, transparent 100%);
+  animation: scroll-pulse 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes scroll-pulse {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 0; }
+  50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  51% { transform: scaleY(1); transform-origin: bottom; opacity: 1; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
 }
 
 /* Pulse animation */

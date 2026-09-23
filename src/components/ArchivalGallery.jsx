@@ -53,9 +53,22 @@ export default function ArchivalGallery() {
           <div
             key={item.id}
             onClick={() => setSelectedItem(item)}
-            className="group p-6 rounded-2xl bg-vn-charcoal/70 border border-vn-gold-antique/25 hover:border-vn-gold hover:shadow-2xl hover:shadow-vn-red/20 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+            className="group p-5 rounded-2xl bg-vn-charcoal/70 border border-vn-gold-antique/25 hover:border-vn-gold hover:shadow-2xl hover:shadow-vn-red/20 transition-all duration-300 cursor-pointer flex flex-col justify-between"
           >
             <div>
+              {/* Image Preview Thumbnail */}
+              {item.image && (
+                <div className="relative aspect-[16/10] mb-4 overflow-hidden rounded-xl border border-vn-gold/25 bg-vn-black">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+                </div>
+              )}
+
               {/* Header tags */}
               <div className="flex items-center justify-between gap-2 mb-3">
                 <span className="text-[11px] font-semibold text-vn-gold px-2.5 py-0.5 rounded-full bg-vn-black/60 border border-vn-gold/30">
@@ -72,7 +85,7 @@ export default function ArchivalGallery() {
               </h3>
 
               {/* Description */}
-              <p className="text-xs sm:text-sm text-vn-ivory/70 line-clamp-3 leading-relaxed mb-4">
+              <p className="text-xs sm:text-sm text-vn-ivory/70 line-clamp-2 leading-relaxed mb-4">
                 {item.description}
               </p>
             </div>
@@ -89,15 +102,26 @@ export default function ArchivalGallery() {
       {/* Detail Modal */}
       {selectedItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="relative w-full max-w-2xl p-6 sm:p-8 rounded-3xl bg-vn-charcoal border border-vn-gold shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 rounded-3xl bg-vn-charcoal border border-vn-gold shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             
             {/* Close button */}
             <button
               onClick={() => setSelectedItem(null)}
-              className="absolute top-5 right-5 p-2 rounded-full bg-vn-black/60 text-vn-ivory/70 hover:text-white hover:bg-vn-red transition-all"
+              className="absolute top-5 right-5 z-10 p-2 rounded-full bg-vn-black/60 text-vn-ivory/70 hover:text-white hover:bg-vn-red transition-all"
             >
               <X className="w-5 h-5" />
             </button>
+
+            {/* Image banner inside modal */}
+            {selectedItem.image && (
+              <div className="relative aspect-[16/9] mb-6 overflow-hidden rounded-2xl border border-vn-gold/30 bg-vn-black shadow-lg">
+                <img
+                  src={selectedItem.image}
+                  alt={selectedItem.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
 
             {/* Modal Header */}
             <div className="flex items-center gap-2 mb-2">

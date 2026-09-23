@@ -57,20 +57,18 @@ export default function Hero() {
           style={{ backgroundImage: 'url(/images/stars.webp)' }}
         />
 
-        {/* Spinning Dong Son drum motif */}
-        <div className="hero-drum will-transform pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] sm:w-[950px] h-[700px] sm:h-[950px] opacity-25">
-          <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-vn-gold">
-            <circle cx="50" cy="50" r="48" strokeWidth="0.5" strokeDasharray="1 1.5"/>
-            <circle cx="50" cy="50" r="41" strokeWidth="0.8"/>
-            <circle cx="50" cy="50" r="34" strokeWidth="0.4" strokeDasharray="2 1"/>
-            <circle cx="50" cy="50" r="26" strokeWidth="0.8"/>
-            <circle cx="50" cy="50" r="16" strokeWidth="0.5"/>
-          </svg>
+        {/* Spinning Dong Son drum motif (Authentic high-res asset & SVG) */}
+        <div className="hero-drum will-transform pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] sm:w-[920px] h-[700px] sm:h-[920px] opacity-30 flex items-center justify-center">
+          <img 
+            src="/images/thiet-ke-3d-trong-dong.png" 
+            alt="Trống đồng Đông Sơn" 
+            className="w-full h-full object-contain filter drop-shadow-[0_0_50px_rgba(255,205,0,0.3)]"
+          />
         </div>
 
         {/* Central Dong Son Golden Sun Star (Animated Zoom Target) */}
-        <div className="hero-star will-transform pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-64 sm:h-64 z-10 flex items-center justify-center opacity-60">
-          <svg viewBox="0 0 100 100" className="w-full h-full fill-vn-gold drop-shadow-[0_0_40px_rgba(255,205,0,0.6)]">
+        <div className="hero-star will-transform pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-64 sm:h-64 z-10 flex items-center justify-center opacity-70">
+          <svg viewBox="0 0 100 100" className="w-full h-full fill-vn-gold drop-shadow-[0_0_50px_rgba(255,205,0,0.7)]">
             <polygon points="50,15 53,42 68,26 59,48 85,50 59,52 68,74 53,58 50,85 47,58 32,74 41,52 15,50 41,48 32,26 47,42" />
             <circle cx="50" cy="50" r="7" fill="#8F1713" />
           </svg>
@@ -81,7 +79,7 @@ export default function Hero() {
 
         {/* Title Block anchored at bottom */}
         <div className="hero-title will-transform pointer-events-none absolute inset-x-0 bottom-[14vh] z-30 flex flex-col items-center text-center px-4">
-          <div className="inline-block px-3 py-1 rounded-full bg-vn-red-deep/40 border border-vn-gold/40 text-[11px] uppercase tracking-cinematic text-vn-gold mb-3">
+          <div className="inline-block px-3.5 py-1 rounded-full bg-vn-red-deep/40 border border-vn-gold/40 text-[11px] uppercase tracking-cinematic text-vn-gold mb-3 shadow-lg">
             Học phần MLN131 · Giáo trình CNXHKH
           </div>
 
