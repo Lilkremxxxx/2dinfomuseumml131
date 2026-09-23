@@ -1,37 +1,84 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { gsap, useGSAP } from '../lib/gsap';
 
-export default function WordCascade({ eyebrow, words = [], accentWords = [] }) {
-  return (
-    <section className="relative py-28 sm:py-36 px-4 flex flex-col items-center justify-center text-center overflow-hidden bg-gradient-to-b from-vn-black via-vn-charcoal/60 to-vn-black border-y border-vn-gold-antique/15">
-      
-      {/* Background subtle light beam */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-32 bg-vn-red-deep/15 blur-3xl rounded-full -z-10" />
+export default function WordCascade({
+  words = [],
+  background = '#080808',
+  accentWords = [],
+  id,
+  eyebrow,
+  perWordVh = 85,
+  className = '',
+}) {
+  const root = useRef(null);
 
-      {eyebrow && (
-        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-cinematic text-vn-gold mb-6 sm:mb-8 border-b border-vn-gold/30 pb-2">
-          {eyebrow}
-        </p>
-      )}
+  useGSAP(
+    () => {
+      const q = gsap.utils.selector(root);
+      const items = q('.cascade-word');
 
-      <div className="flex flex-col items-center gap-2 sm:gap-4 max-w-5xl mx-auto">
-        {words.map((word, index) => {
-          const isAccent = accentWords.includes(word) || index === words.length - 1;
-          return (
-            <div
-              key={index}
-              className={`font-display font-bold text-3xl sm:text-5xl md:text-7xl lg:text-8xl tracking-tight leading-none uppercase transition-all duration-700 ${
-                isAccent 
-                  ? 'gold-gradient-text text-glow-gold scale-105' 
-                  : 'text-vn-ivory/80 hover:text-white'
-              }`}
-            >
-              {word}
-            </div>
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: root.current,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1,
+        },
+      });
+
+      items.forEach((el, i) => {
+        const at = i * 1;
+        tl.fromTo(
+          el,
+          { opacity: 0, scale: 0.8, filter: 'blur(8px)' },
+          { opacity: 1, scale: 1, filter: 'blur(0px)', ease: 'power2.out', duration: 0.6 },
+          at
+        );
+        // Fade and scale previous word out (except last word which lingers)
+        if (i < items.length - 1) {
+          tl.to(
+            el,
+            { opacity: 0, scale: 1.3, filter: 'blur(6px)', ease: 'power2.in', duration: 0.5 },
+            at + 0.6
           );
-        })}
-      </div>
+        }
+      });
+    },
+    { scope: root }
+  );
 
-      <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-vn-gold to-transparent mt-8 sm:mt-12" />
+  return (
+    <section
+      id={id}
+      ref={root}
+      className={`relative ${className}`}
+      style={{ height: `${words.length * perWordVh + 40}vh`, background }}
+    >
+      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden px-6">
+        
+        {eyebrow && (
+          <p className="eyebrow absolute left-1/2 top-[12%] -translate-x-1/2 whitespace-nowrap text-vn-gold tracking-cinematic text-xs font-semibold uppercase">
+            {eyebrow}
+          </p>
+        )}
+
+        <div className="relative w-full flex items-center justify-center">
+          {words.map((w, i) => {
+            const isAccent = accentWords.includes(w) || i === words.length - 1;
+            return (
+              <h2
+                key={`${w}-${i}`}
+                className={`cascade-word will-transform headline-mega absolute select-none text-center font-display font-black text-4xl sm:text-6xl md:text-8xl lg:text-9xl tracking-tight uppercase ${
+                  isAccent ? 'gold-gradient-text text-glow-gold' : 'text-white drop-shadow-2xl'
+                }`}
+              >
+                {w}
+              </h2>
+            );
+          })}
+        </div>
+
+      </div>
     </section>
   );
 }

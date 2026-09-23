@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Play, Pause, Compass, BookOpen, MapPin, Award, Layers } from 'lucide-react';
+import { Volume2, VolumeX, Play, Pause, Compass } from 'lucide-react';
 import { soundSynth } from '../utils/soundSynth';
 
 export default function Navbar({ autoScrollActive, onToggleAutoScroll }) {
@@ -28,12 +28,14 @@ export default function Navbar({ autoScrollActive, onToggleAutoScroll }) {
   };
 
   const navItems = [
-    { label: "Bản thể", href: "#chuong-1" },
-    { label: "Cương lĩnh", href: "#chuong-2" },
-    { label: "54 Dân tộc", href: "#chuong-3" },
-    { label: "Tôn giáo", href: "#chuong-4" },
+    { label: "Bản thể", href: "#m-nation" },
+    { label: "Cương lĩnh", href: "#m-lenin" },
+    { label: "54 Dân tộc", href: "#m-unity" },
+    { label: "Tôn giáo", href: "#m-religion-nature" },
+    { label: "Hòa hợp", href: "#m-religion-harmony" },
     { label: "Bản đồ", href: "#ban-do-tuong-tac" },
-    { label: "Chính sách", href: "#chuong-6" },
+    { label: "An ninh", href: "#m-security" },
+    { label: "Pháp chế", href: "#m-constitution" },
     { label: "Tư liệu", href: "#thu-vien-tu-lieu" },
     { label: "Trắc nghiệm", href: "#trac-nghiem-on-tap" },
   ];
@@ -49,7 +51,6 @@ export default function Navbar({ autoScrollActive, onToggleAutoScroll }) {
         {/* Logo & Subject Info */}
         <a href="#" className="flex items-center gap-3 group">
           <div className="w-9 h-9 rounded-full bg-vn-red-deep border border-vn-gold flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-            {/* Dong Son mini star */}
             <svg viewBox="0 0 32 32" className="w-5 h-5 fill-vn-gold">
               <circle cx="16" cy="16" r="14" fill="none" stroke="#FFCD00" strokeWidth="1" strokeDasharray="1 2"/>
               <polygon points="16,2 17,11 25,7 19,13 28,16 19,19 25,25 17,21 16,30 15,21 7,25 13,19 4,16 13,13 7,7 15,11"/>
@@ -71,7 +72,7 @@ export default function Navbar({ autoScrollActive, onToggleAutoScroll }) {
         </a>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-xs font-medium">
+        <nav className="hidden xl:flex items-center gap-1 text-xs font-medium">
           {navItems.map((item) => (
             <a
               key={item.href}
@@ -90,7 +91,7 @@ export default function Navbar({ autoScrollActive, onToggleAutoScroll }) {
           <div className="flex items-center gap-1.5 bg-vn-charcoal/80 border border-vn-gold-antique/30 px-2.5 py-1 rounded-full shadow-inner">
             <button
               onClick={handleToggleAudio}
-              title={isAudioPlaying ? "Tắt âm hưởng truyền thống" : "Bật âm hưởng cồng chiêng ngũ cung"}
+              title={isAudioPlaying ? "Tắt âm hưởng cồng chiêng" : "Bật âm hưởng cồng chiêng ngũ cung"}
               className={`p-1 rounded-full transition-colors ${
                 isAudioPlaying ? 'text-vn-gold hover:text-white' : 'text-vn-ivory/50 hover:text-vn-gold'
               }`}
@@ -119,16 +120,16 @@ export default function Navbar({ autoScrollActive, onToggleAutoScroll }) {
                 ? 'bg-vn-red text-white border-vn-gold shadow-lg shadow-vn-red/40 animate-pulse'
                 : 'bg-vn-charcoal/80 text-vn-ivory/80 border-vn-gold-antique/30 hover:border-vn-gold hover:text-vn-gold'
             }`}
-            title={autoScrollActive ? "Dừng cuộn tự động" : "Bắt đầu chế độ thưởng lãm điện ảnh tự động"}
+            title={autoScrollActive ? "Dừng cuộn tự động" : "Bắt đầu tự cuộn điện ảnh"}
           >
             {autoScrollActive ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{autoScrollActive ? "Dừng cuộn" : "Tự cuộn"}</span>
+            <span className="hidden sm:inline">{autoScrollActive ? "Dừng" : "Tự cuộn"}</span>
           </button>
 
           {/* Mobile menu trigger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-1.5 text-vn-ivory hover:text-vn-gold"
+            className="xl:hidden p-1.5 text-vn-ivory hover:text-vn-gold"
           >
             <Compass className="w-5 h-5" />
           </button>
@@ -137,8 +138,8 @@ export default function Navbar({ autoScrollActive, onToggleAutoScroll }) {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-vn-charcoal/95 border-b border-vn-gold/30 px-4 py-3 mt-2 space-y-2 backdrop-blur-xl">
-          <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="xl:hidden bg-vn-charcoal/95 border-b border-vn-gold/30 px-4 py-3 mt-2 space-y-2 backdrop-blur-xl">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
             {navItems.map((item) => (
               <a
                 key={item.href}
