@@ -61,9 +61,6 @@ export default function Navbar({ autoScrollActive, onToggleAutoScroll }) {
               <span className="font-display font-bold text-base sm:text-lg tracking-wide text-vn-gold">
                 MLN131
               </span>
-              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-vn-red/40 border border-vn-gold/40 text-vn-ivory tracking-widest">
-                Nhánh 2D
-              </span>
             </div>
             <p className="text-[11px] text-vn-ivory/70 hidden sm:block">
               Chương 6: Vấn đề Dân tộc & Tôn giáo

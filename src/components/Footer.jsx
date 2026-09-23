@@ -12,7 +12,7 @@ export default function Footer() {
       {/* Decorative top red-gold line */}
       <div className="red-gold-line max-w-6xl mx-auto mb-12 opacity-50" />
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
         
         {/* Column 1: Project & Academic Info */}
         <div>
@@ -20,13 +20,10 @@ export default function Footer() {
             <span className="font-display font-bold text-xl text-vn-gold">
               MLN131 · TRIỂN LÃM SỐ 2D
             </span>
-            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-vn-red/40 border border-vn-gold/40 text-vn-ivory">
-              Nhánh 2D
-            </span>
           </div>
-          <p className="text-xs text-vn-ivory/70 leading-relaxed mb-4">
+          <p className="text-xs sm:text-sm text-vn-ivory/70 leading-relaxed mb-4">
             Đề tài: <strong className="text-white">Chương 6: Vấn đề Dân tộc và Tôn giáo trong Thời kỳ Quá độ lên Chủ nghĩa Xã hội</strong>.
-            Dự án nghiên cứu & ứng dụng công nghệ trực quan hóa bài giảng học phần Lý luận Chính trị.
+            Dự án nghiên cứu & ứng dụng công nghệ trực quan hóa bài giảng học phần Lý luận Chính trị — Giáo trình Chủ nghĩa Xã hội Khoa học.
           </p>
           <div className="text-[11px] text-vn-ivory/50 flex items-center gap-1.5 font-mono">
             <BookOpen className="w-3.5 h-3.5 text-vn-gold" />
@@ -39,33 +36,12 @@ export default function Footer() {
           <h4 className="font-display font-bold text-base text-vn-gold uppercase tracking-wider mb-3">
             Nguồn Tư Liệu Chính Thống
           </h4>
-          <p className="text-xs text-vn-ivory/70 leading-relaxed mb-2">
+          <p className="text-xs sm:text-sm text-vn-ivory/70 leading-relaxed mb-2.5">
             📖 <strong>Giáo trình Chủ nghĩa Xã hội Khoa học</strong> (Dành cho bậc đại học hệ không chuyên lý luận chính trị), Bộ Giáo dục và Đào tạo, NXB Chính trị quốc gia Sự thật.
           </p>
-          <p className="text-xs text-vn-ivory/70 leading-relaxed">
+          <p className="text-xs sm:text-sm text-vn-ivory/70 leading-relaxed">
             📜 <strong>Hiến pháp nước CHXHCN Việt Nam (2013)</strong>, Luật Tín ngưỡng, tôn giáo (2016) và Văn kiện Đại hội đại biểu toàn quốc lần thứ XIII của Đảng.
           </p>
-        </div>
-
-        {/* Column 3: Dual Deployment & Vercel Info */}
-        <div>
-          <h4 className="font-display font-bold text-base text-vn-gold uppercase tracking-wider mb-3">
-            Đa Nền Tảng Trực Tuyến
-          </h4>
-          <ul className="space-y-2 text-xs text-vn-ivory/70">
-            <li className="flex items-center gap-2">
-              <GitBranch className="w-3.5 h-3.5 text-vn-gold shrink-0" />
-              <span><strong>Nhánh 'main':</strong> Bảo tàng 3D Three.js Không gian Ảo</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <GitBranch className="w-3.5 h-3.5 text-vn-red shrink-0" />
-              <span><strong>Nhánh '2d':</strong> Triển lãm Cuộn Điện ảnh Số 2D (Hiện tại)</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <Globe className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span>Được cấu hình để host song song trên nền tảng Vercel</span>
-            </li>
-          </ul>
         </div>
 
       </div>
