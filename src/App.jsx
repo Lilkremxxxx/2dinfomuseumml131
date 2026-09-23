@@ -15,16 +15,14 @@ import { MILESTONES_DATA } from './data/milestonesData';
 
 export default function App() {
   const [autoScrollActive, setAutoScrollActive] = useState(false);
-  const scrollIntervalRef = useRef(null);
 
   // 1. Lenis Smooth Scroll synchronised with GSAP ScrollTrigger ticker
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.25,
+      duration: 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      wheelMultiplier: 0.95,
-      touchMultiplier: 1.5,
+      touchMultiplier: 1.4,
     });
 
     lenis.on('scroll', ScrollTrigger.update);
@@ -36,36 +34,56 @@ export default function App() {
     gsap.ticker.add(updateLenis);
     gsap.ticker.lagSmoothing(0);
 
+    // Refresh ScrollTrigger calculations when images and fonts settle
+    const refresh = () => {
+      lenis.resize();
+      ScrollTrigger.refresh();
+    };
+
+    window.addEventListener('load', refresh);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(refresh);
+    }
+    const settleTimer = setTimeout(refresh, 500);
+
+    let lastW = window.innerWidth;
+    const onResize = () => {
+      if (window.innerWidth !== lastW) {
+        lastW = window.innerWidth;
+        refresh();
+      }
+    };
+    window.addEventListener('resize', onResize);
+
     return () => {
       gsap.ticker.remove(updateLenis);
       lenis.destroy();
+      window.removeEventListener('load', refresh);
+      window.removeEventListener('resize', onResize);
+      clearTimeout(settleTimer);
     };
   }, []);
 
-  // 2. Auto-scroll logic (documentary slow playback)
+  // 2. Smooth Auto-scroll logic (documentary continuous playback)
   const toggleAutoScroll = () => {
     setAutoScrollActive(prev => !prev);
   };
 
   useEffect(() => {
+    let animId;
     if (autoScrollActive) {
-      scrollIntervalRef.current = setInterval(() => {
-        window.scrollBy({ top: 2, behavior: 'auto' });
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 15) {
+      const scrollStep = () => {
+        window.scrollBy(0, 1.5);
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 20) {
           setAutoScrollActive(false);
+          return;
         }
-      }, 25);
-    } else {
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
-        scrollIntervalRef.current = null;
-      }
+        animId = requestAnimationFrame(scrollStep);
+      };
+      animId = requestAnimationFrame(scrollStep);
     }
-
     return () => {
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
-      }
+      if (animId) cancelAnimationFrame(animId);
     };
   }, [autoScrollActive]);
 
@@ -99,7 +117,7 @@ export default function App() {
 
       {/* Main Cinematic Scrollytelling Sequence */}
       <main>
-        {/* 00. Hero Entrance (Pinned 320vh stage) */}
+        {/* 00. Hero Entrance (Pinned 340vh stage) */}
         <Hero />
 
         {/* 01. Mốc 1: Bản thể Dân tộc (Quốc gia vs Tộc người) */}
@@ -110,7 +128,7 @@ export default function App() {
           eyebrow="Cương Lĩnh Dân Tộc Của V.I. Lênin (1913 — 1914)"
           words={['BÌNH ĐẲNG', 'TỰ QUYẾT', 'LIÊN HIỆP', 'CÔNG NHÂN']}
           accentWords={['BÌNH ĐẲNG', 'LIÊN HIỆP']}
-          perWordVh={80}
+          perWordVh={100}
         />
 
         {/* 03. Mốc 2: Cương lĩnh Dân tộc V.I. Lênin */}
@@ -127,7 +145,7 @@ export default function App() {
           eyebrow="Phương Châm Tôn Giáo Tại Việt Nam"
           words={['TỰ DO TÍN NGƯỠNG', 'TỐT ĐỜI ĐẸP ĐẠO', 'ĐỒNG HÀNH', 'CÙNG DÂN TỘC']}
           accentWords={['TỐT ĐỜI ĐẸP ĐẠO', 'CÙNG DÂN TỘC']}
-          perWordVh={80}
+          perWordVh={100}
         />
 
         {/* 07. Mốc 4: Bản chất & 3 Nguồn gốc Tôn giáo */}

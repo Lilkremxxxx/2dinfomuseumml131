@@ -12,29 +12,26 @@ export default function MilestoneChapter({ milestone: m }) {
           trigger: root.current,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 1,
+          scrub: true, // Immediate 1:1 scroll tracking with Lenis, no artificial lag
         },
       });
 
-      // 1. Ken Burns background photo zoom (continuous across entire scroll)
+      // 1. Ken Burns background photo zoom (continuous across scroll)
       if (!m.contain) {
-        tl.fromTo(q('.m-bgphoto'), { scale: 1.15 }, { scale: 1.0, ease: 'none' }, 0);
+        tl.fromTo(q('.m-bgphoto'), { scale: 1.08 }, { scale: 1.0, ease: 'none' }, 0);
       } else {
-        tl.fromTo(q('.m-frame'), { opacity: 0, y: 45, scale: 0.94 }, { opacity: 1, y: 0, scale: 1.0, ease: 'power2.out', duration: 0.22 }, 0.05);
+        tl.fromTo(q('.m-frame'), { opacity: 0, y: 35 }, { opacity: 1, y: 0, duration: 0.05, ease: 'none' }, 0.01);
       }
 
-      // 2. Sequential scrubbed text entrance
-      tl.fromTo(q('.m-eyebrow'), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.15, ease: 'power2.out' }, 0.06)
-        .fromTo(q('.m-year'), { opacity: 0, y: 40, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.2, ease: 'power2.out' }, 0.12)
-        .fromTo(q('.m-head'), { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.18, ease: 'power2.out' }, 0.20)
-        .fromTo(q('.m-key'), { opacity: 0, y: 20, scale: 1.08 }, { opacity: 1, y: 0, scale: 1, duration: 0.18, ease: 'power2.out' }, 0.30)
-        .fromTo(q('.m-cap'), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' }, 0.40);
+      // 2. Early, tight text entrance (all text is 100% visible by progress 0.22)
+      tl.fromTo(q('.m-eyebrow'), { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.04, ease: 'none' }, 0.01)
+        .fromTo(q('.m-year'), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.05, ease: 'none' }, 0.04)
+        .fromTo(q('.m-head'), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.05, ease: 'none' }, 0.09)
+        .fromTo(q('.m-key'), { opacity: 0, scale: 1.1 }, { opacity: 1, scale: 1, duration: 0.05, ease: 'none' }, 0.14)
+        .fromTo(q('.m-cap'), { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.05, ease: 'none' }, 0.18);
 
-      // 3. Graceful text exit near end of scroll (handoff to next section)
-      tl.to(q('.m-text-group'), { opacity: 0, y: -30, duration: 0.14, ease: 'power2.in' }, 0.85);
-      if (m.contain) {
-        tl.to(q('.m-frame'), { opacity: 0, y: -30, scale: 0.96, duration: 0.14, ease: 'power2.in' }, 0.85);
-      }
+      // Notice: NO exit fade-out! Text remains 100% visible and readable
+      // for the entire remaining ~80% of the section so the user never misses it.
     },
     { scope: root }
   );
@@ -42,7 +39,7 @@ export default function MilestoneChapter({ milestone: m }) {
   // Layout 1: Framed / Contained (Side-by-side with antique museum frame)
   if (m.contain) {
     return (
-      <section id={m.id} ref={root} className="relative h-[220vh]" style={{ background: m.background || '#090A0C' }}>
+      <section id={m.id} ref={root} className="relative h-[240vh]" style={{ background: m.background || '#090A0C' }}>
         <div className="sticky top-0 flex h-screen items-center overflow-hidden">
           <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-8 px-6 md:flex-row md:gap-14 md:px-12">
             
@@ -85,7 +82,7 @@ export default function MilestoneChapter({ milestone: m }) {
 
   // Layout 2: Full-bleed background cinematic photo with Ken Burns scale
   return (
-    <section id={m.id} ref={root} className="relative h-[220vh]" style={{ background: m.background || '#090A0C' }}>
+    <section id={m.id} ref={root} className="relative h-[240vh]" style={{ background: m.background || '#090A0C' }}>
       <div className="sticky top-0 h-screen overflow-hidden">
         
         {/* Full-bleed archival photo with Ken Burns scale */}

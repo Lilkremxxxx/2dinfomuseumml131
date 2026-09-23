@@ -7,7 +7,7 @@ export default function WordCascade({
   accentWords = [],
   id,
   eyebrow,
-  perWordVh = 85,
+  perWordVh = 100,
   className = '',
 }) {
   const root = useRef(null);
@@ -16,30 +16,32 @@ export default function WordCascade({
     () => {
       const q = gsap.utils.selector(root);
       const items = q('.cascade-word');
+      const totalWords = items.length;
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: root.current,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 1,
+          scrub: true, // Immediate 1:1 scroll tracking with Lenis
         },
       });
 
       items.forEach((el, i) => {
-        const at = i * 1;
+        const at = i * 1.0;
+        // Word materialises swiftly into view and stays crisp
         tl.fromTo(
           el,
-          { opacity: 0, scale: 0.8, filter: 'blur(8px)' },
-          { opacity: 1, scale: 1, filter: 'blur(0px)', ease: 'power2.out', duration: 0.6 },
+          { opacity: 0, scale: 0.85, filter: 'blur(6px)' },
+          { opacity: 1, scale: 1, filter: 'blur(0px)', ease: 'power2.out', duration: 0.4 },
           at
         );
-        // Fade and scale previous word out (except last word which lingers)
-        if (i < items.length - 1) {
+        // Fade out previous words (except the last word, which remains until the end)
+        if (i < totalWords - 1) {
           tl.to(
             el,
-            { opacity: 0, scale: 1.3, filter: 'blur(6px)', ease: 'power2.in', duration: 0.5 },
-            at + 0.6
+            { opacity: 0, scale: 1.25, filter: 'blur(4px)', ease: 'power2.in', duration: 0.35 },
+            at + 0.65
           );
         }
       });

@@ -12,35 +12,35 @@ export default function Hero() {
           trigger: root.current,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 1,
+          scrub: true, // Immediate 1:1 scroll tracking with Lenis, no lag delay
         },
       });
 
-      // Phase 1: depth & light
+      // Phase 1: depth & rotation
       tl.to(q('.hero-drum'), { scale: 1.15, rotation: 35, ease: 'none' }, 0)
         .to(q('.hero-star'), { scale: 1.25, ease: 'none' }, 0)
-        .to(q('.hero-scrollhint'), { opacity: 0, ease: 'none' }, 0.1);
+        .to(q('.hero-scrollhint'), { opacity: 0, ease: 'none' }, 0.12);
 
-      // Phase 2: title recedes quickly
-      tl.to(q('.hero-title'), { scale: 1.06, opacity: 0, y: -40, ease: 'none', duration: 0.2 }, 0.28);
+      // Phase 2: title stays comfortably visible, then recedes gracefully
+      tl.to(q('.hero-title'), { scale: 1.05, opacity: 0, y: -35, ease: 'none', duration: 0.18 }, 0.32);
 
       // Phase 3: dive through the star into crimson red
-      tl.to(q('.hero-star'), { scale: 12, ease: 'power1.in' }, 0.5)
+      tl.to(q('.hero-star'), { scale: 12, ease: 'power1.in', duration: 0.32 }, 0.54)
         .to(
           q('.hero-bg'),
           {
             background: 'radial-gradient(ellipse at center, #DA251D 0%, #8F1713 55%, #080808 100%)',
             ease: 'none',
           },
-          0.55
+          0.58
         )
-        .to(q('.hero-redwash'), { opacity: 1, ease: 'power2.in' }, 0.82);
+        .to(q('.hero-redwash'), { opacity: 1, ease: 'power2.in', duration: 0.16 }, 0.84);
     },
     { scope: root }
   );
 
   return (
-    <section id="hero" ref={root} className="relative h-[320vh]">
+    <section id="hero" ref={root} className="relative h-[340vh]">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
         
         {/* Dynamic Background */}
