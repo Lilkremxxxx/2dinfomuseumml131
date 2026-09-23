@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================================================
+   TRIỂN LÃM SỐ 2D — CHƯƠNG 6 MLN131
+   VẤN ĐỀ DÂN TỘC & TÔN GIÁO TRONG THỜI KỲ QUÁ ĐỘ LÊN CHỦ NGHĨA XÃ HỘI
+   ======================================================================== */
+
+:root {
+  --vn-red: #DA251D;
+  --vn-red-deep: #8F1713;
+  --vn-gold: #FFCD00;
+  --vn-gold-antique: #D4A72C;
+  --vn-bronze: #A47537;
+  --vn-ivory: #F5EFE6;
+  --vn-parchment: #E8DFCE;
+  --vn-charcoal: #121214;
+  --vn-black: #090A0C;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--vn-black);
+  color: var(--vn-ivory);
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #090a0c;
+}
+::-webkit-scrollbar-thumb {
+  background: #8F1713;
+  border-radius: 4px;
+  border: 1px solid rgba(212, 167, 44, 0.3);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #DA251D;
+}
+
+/* Glow & Atmospheric helpers */
+.text-glow-gold {
+  text-shadow: 0 0 30px rgba(255, 205, 0, 0.45), 0 0 10px rgba(212, 167, 44, 0.3);
+}
+
+.text-glow-red {
+  text-shadow: 0 0 35px rgba(218, 37, 29, 0.5), 0 0 12px rgba(143, 23, 19, 0.4);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #FFF0B3 0%, #FFCD00 45%, #D4A72C 80%, #997316 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bronze-gradient-text {
+  background: linear-gradient(135deg, #F5EFE6 0%, #D4A72C 50%, #A47537 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 167, 44, 0.8), transparent);
+}
+
+.red-gold-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #DA251D, #FFCD00, #DA251D, transparent);
+}
+
+/* Historical archival card styling */
+.archival-border {
+  border: 1px solid rgba(212, 167, 44, 0.25);
+  background: radial-gradient(circle at 50% 0%, rgba(143, 23, 19, 0.15) 0%, rgba(18, 18, 20, 0.85) 100%);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+}
+
+.archival-border:hover {
+  border-color: rgba(255, 205, 0, 0.45);
+  box-shadow: 0 15px 40px -10px rgba(143, 23, 19, 0.35);
+}
+
+/* Film Grain Overlay */
+.film-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.038;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.film-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 65%, rgba(0, 0, 0, 0.65) 100%);
+}
+
+/* Pulse animation */
+@keyframes gold-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.98); }
+  50% { opacity: 0.9; transform: scale(1.02); }
+}
+
+.animate-gold-pulse {
+  animation: gold-pulse 3.5s ease-in-out infinite;
+}
