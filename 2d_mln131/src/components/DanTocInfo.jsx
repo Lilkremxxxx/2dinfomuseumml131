@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   ArrowRight, 
@@ -181,28 +181,116 @@ export default function DanTocInfo() {
     return () => window.removeEventListener('scroll', handleScrollGiantMap);
   }, [isAllAbsorbed]);
 
-  // --- PHẦN CON THUYỀN LÊNIN (SCROLL-DRIVEN STICKY PINNING) ---
-  // Lăn chuột xuống dưới điều khiển con thuyền rẽ sóng qua 3 mốc:
-  // 1. Bình đẳng -> 2. Tự quyết -> 3. Liên hiệp
+  // --- PHẦN CON THUYỀN LÊNIN (WHEEL-INTERCEPT SCROLL LOCK) ---
+  // Khi section thuyền vào viewport:
+  //   - Bắt event wheel/touch, NGĂN không cho trang cuộn (e.preventDefault())
+  //   - Thay vào đó tăng/giảm boatProgress (0.0 -> 1.0)
+  //   - Chỉ nhả khóa trang khi progress >= 1 (đã qua mốc 3 "Liên hiệp")
   const boatSectionRef = useRef(null);
   const [boatProgress, setBoatProgress] = useState(0); // 0.0 -> 1.0
+  const boatProgressRef = useRef(0); // ref để đọc trong closure không stale
+  const boatLockedRef = useRef(false); // ref để biết đang khóa hay không
+  const touchStartYRef = useRef(0);
 
   useEffect(() => {
-    const handleScrollBoat = () => {
-      if (!boatSectionRef.current) return;
-      const rect = boatSectionRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      const totalScrollable = rect.height - windowHeight;
-      if (totalScrollable <= 0) return;
+    const SCROLL_SENSITIVITY = 0.0015; // mỗi px deltaY tăng bao nhiêu progress
 
-      const currentScroll = -rect.top;
-      const progress = Math.max(0, Math.min(1, currentScroll / totalScrollable));
-      setBoatProgress(progress);
+    const isBoatSectionInViewport = () => {
+      if (!boatSectionRef.current) return false;
+      const rect = boatSectionRef.current.getBoundingClientRect();
+      // Section nằm trong viewport: top <= 0 và bottom >= innerHeight
+      return rect.top <= 10 && rect.bottom >= window.innerHeight - 10;
     };
 
-    window.addEventListener('scroll', handleScrollBoat, { passive: true });
-    handleScrollBoat();
-    return () => window.removeEventListener('scroll', handleScrollBoat);
+    const handleWheel = (e) => {
+      if (!boatSectionRef.current) return;
+      const rect = boatSectionRef.current.getBoundingClientRect();
+
+      // Khi section chưa đến vị trí dính (chưa sticky hoàn toàn), cho cuộn bình thường
+      if (rect.top > 10) return;
+      // Khi đã xong hết 3 mốc và người dùng cuộn xuống -> mở khóa
+      if (boatProgressRef.current >= 1 && e.deltaY > 0) return;
+      // Khi người dùng cuộn lên trong khi progress = 0 -> mở khóa (cho cuộn lên)
+      if (boatProgressRef.current <= 0 && e.deltaY < 0) return;
+
+      // Ngăn trang cuộn
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Cập nhật progress
+      const delta = e.deltaY * SCROLL_SENSITIVITY;
+      const next = Math.max(0, Math.min(1, boatProgressRef.current + delta));
+      boatProgressRef.current = next;
+      setBoatProgress(next);
+    };
+
+    // Touch support
+    const handleTouchStart = (e) => {
+      touchStartYRef.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e) => {
+      if (!boatSectionRef.current) return;
+      const rect = boatSectionRef.current.getBoundingClientRect();
+      if (rect.top > 10) return;
+      if (boatProgressRef.current >= 1 && e.touches[0].clientY < touchStartYRef.current) return;
+      if (boatProgressRef.current <= 0 && e.touches[0].clientY > touchStartYRef.current) return;
+
+      e.preventDefault();
+      const dy = touchStartYRef.current - e.touches[0].clientY;
+      touchStartYRef.current = e.touches[0].clientY;
+      const next = Math.max(0, Math.min(1, boatProgressRef.current + dy * 0.003));
+      boatProgressRef.current = next;
+      setBoatProgress(next);
+    };
+
+    // Dùng { passive: false } để có thể gọi preventDefault()
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, []);
+
+  // Khóa/mở position trang dựa trên trạng thái section thuyền
+  useEffect(() => {
+    if (!boatSectionRef.current) return;
+    const rect = boatSectionRef.current.getBoundingClientRect();
+    // Chỉ khóa nếu section đang active (sticky)
+    if (rect.top <= 10 && boatProgress < 1) {
+      // đảm bảo trang không bị cuộn xuống quá section này
+      // Không dùng overflow hidden vì sẽ làm mất sticky, chỉ dùng wheel intercept
+    }
+  }, [boatProgress]);
+
+  // Scroll page xuống đúng vị trí sticky khi cần
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!boatSectionRef.current) return;
+      const rect = boatSectionRef.current.getBoundingClientRect();
+      // Nếu section đang partially visible ở top, và progress chưa xong -> ngăn cuộn ra ngoài
+      // (wheel handler đã lo, đây chỉ sync progress khi cuộn thường bằng scrollbar)
+      if (rect.top > 10) return;
+      const windowHeight = window.innerHeight;
+      const totalScrollable = boatSectionRef.current.offsetHeight - windowHeight;
+      if (totalScrollable <= 0) return;
+      const currentScroll = -rect.top;
+      // Nếu user dùng scrollbar thay vì wheel, sync progress
+      if (boatProgressRef.current < 1) {
+        const syncedProgress = Math.max(0, Math.min(1, currentScroll / totalScrollable));
+        // Chỉ sync nếu khác nhiều (wheel handler chủ động, scroll handler passive backup)
+        if (Math.abs(syncedProgress - boatProgressRef.current) > 0.05) {
+          boatProgressRef.current = syncedProgress;
+          setBoatProgress(syncedProgress);
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Xác định mốc hiện tại theo tiến trình cuộn (0 -> 1)
@@ -554,7 +642,7 @@ export default function DanTocInfo() {
           ------------------------------------------------------------- */}
       {/* -------------------------------------------------------------
           PHẦN CƯƠNG LĨNH DÂN TỘC CỦA V.I. LÊNIN (CHỈ DÙNG CON THUYỀN)
-          - Lăn chuột xuống dưới và tạm khóa trang qua container h-[320vh]
+          - Lăn chuột xuống dưới và tạm khóa trang qua container h-screen
             đến khi nào lăn hết đến nguyên tắc 3 là "Liên hiệp" mới cuộn tiếp xuống
           - Thuyền bé lại thanh thoát
           - Các mốc trên timeline bé lại thành chấm tròn gọn gàng
@@ -565,9 +653,13 @@ export default function DanTocInfo() {
       <section 
         ref={boatSectionRef}
         id="con-thuyen-lenin" 
-        className="relative h-[320vh] bg-gradient-to-b from-[#060709] via-[#0E131E] to-[#060709] border-t-2 border-vn-gold/40"
+        className="relative h-screen bg-gradient-to-b from-[#060709] via-[#0E131E] to-[#060709] border-t-2 border-vn-gold/40"
       >
         <div className="sticky top-0 flex h-screen flex-col items-center justify-between overflow-hidden px-4 sm:px-8 py-10">
+          {/* Thanh progress hanh trinh */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-white/10 z-50 pointer-events-none">
+            <div className="h-full bg-gradient-to-r from-vn-gold via-vn-red to-vn-gold transition-all duration-75" style={{width: boatProgress * 100 + '%'}} />
+          </div>
           
           {/* Nền sóng biển & hào quang */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(27,42,74,0.45)_0%,transparent_80%)]" />

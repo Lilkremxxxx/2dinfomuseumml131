@@ -1,13 +1,32 @@
-import React, { useState, useRef } from 'react';
-import { MapPin, ShieldAlert, Compass, Check, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  MapPin,
+  Compass,
+  Check,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Users,
+  ChevronRight,
+  X,
+  BookOpen,
+  Languages,
+  Home,
+  UtensilsCrossed,
+  Music,
+  Landmark,
+  Video,
+  Play,
+  ExternalLink,
+} from 'lucide-react';
 import { MAP_REGIONS } from '../data/mapRegionsData';
-import { findEthnicGroupSlug } from '../data/ethnic-groups';
+import { getEthnicDetails } from '../data/ethnicDetailsData';
 import vietnamPaths from '../data/vietnamPaths.json';
 
 export default function InteractiveVietnamMap() {
   const [activeRegion, setActiveRegion] = useState(MAP_REGIONS[0]);
   const [hoveredProvince, setHoveredProvince] = useState(null);
+  const [selectedEthnic, setSelectedEthnic] = useState(null);
 
   // Zoom and Pan states
   const [zoom, setZoom] = useState(1);
@@ -15,6 +34,44 @@ export default function InteractiveVietnamMap() {
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const hasDragged = useRef(false);
+
+  // Close drawer on Escape key and lock body scroll
+useEffect(() => {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      setSelectedEthnic(null);
+    }
+  };
+  const lockScroll = () => {
+    const scrollY = window.scrollY;
+    document.body.dataset.scrollY = scrollY.toString();
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.overflow = 'hidden';
+  };
+  const unlockScroll = () => {
+    const scrollY = document.body.dataset.scrollY ? parseInt(document.body.dataset.scrollY, 10) : 0;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.overflow = '';
+    window.scrollTo(0, scrollY);
+    delete document.body.dataset.scrollY;
+  };
+  if (selectedEthnic) {
+    window.addEventListener('keydown', handleKeyDown);
+    lockScroll();
+  } else {
+    unlockScroll();
+  }
+  return () => {
+    window.removeEventListener('keydown', handleKeyDown);
+    unlockScroll();
+  };
+}, [selectedEthnic]);
 
   // Helper to find which region a province belongs to
   const getRegionForProvince = (provId) => {
@@ -71,6 +128,62 @@ export default function InteractiveVietnamMap() {
     setIsDragging(false);
   };
 
+  // Handle opening ethnic detail
+  const handleOpenEthnic = (ethnicName) => {
+    const details = getEthnicDetails(ethnicName);
+    if (details) {
+      setSelectedEthnic(details);
+    } else {
+      setSelectedEthnic({
+        slug: ethnicName.toLowerCase(),
+        name: ethnicName,
+        population: 'Theo số liệu Tổng điều tra Dân số',
+        tagline: `Cộng đồng dân tộc ${ethnicName} trong đại gia đình các dân tộc Việt Nam`,
+        regionNames: [activeRegion.name],
+        sections: {
+          overview: {
+            title: '1. Khái quát',
+            paragraphs: [`Cộng đồng dân tộc ${ethnicName} cư trú tại ${activeRegion.fullName}.`],
+            highlights: [`Địa bàn cư trú: ${activeRegion.name}`]
+          },
+          language: {
+            title: '2. Ngôn ngữ',
+            paragraphs: [`Tiếng nói dân tộc ${ethnicName} được gìn giữ và lưu truyền qua nhiều thế hệ.`],
+            highlights: []
+          },
+          customs: {
+            title: '3. Phong tục - tập quán',
+            paragraphs: [`Phong tục tập quán và lễ hội dân gian phong phú của dân tộc ${ethnicName}.`],
+            highlights: []
+          },
+          cuisine: {
+            title: '4. Ẩm thực',
+            paragraphs: [`Ẩm thực truyền thống dân dã mang đậm hương vị địa phương.`],
+            highlights: []
+          },
+          art: {
+            title: '5. Nghệ thuật',
+            paragraphs: [`Các làn điệu dân ca, nhạc cụ truyền thống và trang phục đặc sắc.`],
+            highlights: []
+          },
+          history: {
+            title: '6. Lịch sử',
+            paragraphs: [`Lịch sử định cư lâu đời gắn bó cùng khối đại đoàn kết toàn dân tộc.`],
+            highlights: []
+          },
+          video: {
+            title: '7. Video',
+            videoTitle: `Văn hóa và đời sống dân tộc ${ethnicName}`,
+            source: 'VTV',
+            url: `https://www.youtube.com/results?search_query=dan+toc+${encodeURIComponent(ethnicName)}+vtv`,
+            embedUrl: '',
+            description: `Khám phá nét đẹp văn hóa và phong tục truyền thống dân tộc ${ethnicName}.`
+          }
+        }
+      });
+    }
+  };
+
   return (
     <section id="ban-do-tuong-tac" className="relative py-24 sm:py-32 px-4 sm:px-6 bg-gradient-to-b from-vn-black via-vn-charcoal/40 to-vn-black border-y border-vn-gold-antique/20 scroll-mt-20">
       
@@ -87,7 +200,7 @@ export default function InteractiveVietnamMap() {
           </h2>
           <p className="text-base sm:text-lg text-vn-ivory/85 font-light leading-relaxed">
             Bản đồ chuẩn xác đầy đủ 63 tỉnh thành và hai quần đảo thiêng liêng Hoàng Sa — Trường Sa. 
-            Nhấp vào từng vùng hoặc tỉnh thành để khám phá đặc thù văn hóa và thế trận quốc phòng toàn dân.
+            Nhấp vào từng vùng hoặc tỉnh thành để khám phá các dân tộc anh em trên dải đất hình chữ S.
           </p>
         </div>
 
@@ -130,7 +243,7 @@ export default function InteractiveVietnamMap() {
               {/* Subtle background nautical grid watermark */}
               <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#D4A72C_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
-              {/* Floating Active/Hover Province Badge (Larger Text) */}
+              {/* Floating Active/Hover Province Badge */}
               <div className="absolute top-4 left-4 z-30 pointer-events-none">
                 <div className="px-4 py-2 rounded-2xl bg-vn-black/95 border-2 border-vn-gold/50 text-xs sm:text-sm text-vn-ivory shadow-2xl flex items-center gap-2 font-bold backdrop-blur-md">
                   <span className="w-2.5 h-2.5 rounded-full shrink-0 animate-pulse" style={{ backgroundColor: activeRegion.color }} />
@@ -186,7 +299,7 @@ export default function InteractiveVietnamMap() {
                   className="w-full h-full select-none"
                   style={{ filter: 'drop-shadow(0 0 25px rgba(218,37,29,0.15))' }}
                 >
-                  {/* 1. All 63 Provinces & Islands rendered authentically */}
+                  {/* 1. All 63 Provinces & Islands */}
                   <g id="vietnam-provinces">
                     {vietnamPaths.map((prov) => {
                       const isRegionActive = activeRegion.provinceIds.includes(prov.id);
@@ -210,7 +323,7 @@ export default function InteractiveVietnamMap() {
                     })}
                   </g>
 
-                  {/* 2. Sacred Archipelagos Typography (Larger & Bolder) */}
+                  {/* 2. Sacred Archipelagos Typography */}
                   <g className="pointer-events-none select-none">
                     {/* Hoang Sa Label */}
                     <text
@@ -278,7 +391,7 @@ export default function InteractiveVietnamMap() {
                     </text>
                   </g>
 
-                  {/* 3. Strictly Fixed Region Centroid Pins (Zero Movement, Locked Position) */}
+                  {/* 3. Fixed Region Centroid Pins */}
                   {MAP_REGIONS.map((r) => {
                     const isSelected = activeRegion.id === r.id;
                     return (
@@ -290,7 +403,6 @@ export default function InteractiveVietnamMap() {
                         }}
                         className="cursor-pointer select-none"
                       >
-                        {/* Static Locked Outer Halos (NO CSS transform) */}
                         {isSelected && (
                           <>
                             <circle
@@ -315,7 +427,6 @@ export default function InteractiveVietnamMap() {
                           </>
                         )}
 
-                        {/* Main Fixed Dot (Anchored rigidly at cx, cy) */}
                         <circle
                           cx={r.pin.x}
                           cy={r.pin.y}
@@ -331,7 +442,6 @@ export default function InteractiveVietnamMap() {
                           fill="#FFFFFF"
                         />
 
-                        {/* Region Tag Pill - Large, Bold and Centered */}
                         <rect
                           x={r.pin.x + 12}
                           y={r.pin.y - 13}
@@ -372,7 +482,7 @@ export default function InteractiveVietnamMap() {
 
           </div>
 
-          {/* Right Column: Detailed Region Information Card (Large Typography, Zero Jump) */}
+          {/* Right Column: Clean Ethnic Groups Cards Panel */}
           <div className="lg:col-span-6">
             <div className="min-h-[600px] p-6 sm:p-8 rounded-3xl bg-vn-charcoal/95 border-2 border-vn-gold/30 shadow-2xl backdrop-blur-md flex flex-col justify-between">
               
@@ -399,80 +509,47 @@ export default function InteractiveVietnamMap() {
                   />
                 </div>
 
-                {/* Details Sections with Bigger Text */}
-                <div className="space-y-4">
-                  
-                  {/* 1. Ethnic Groups */}
-                  <div className="p-4 rounded-2xl bg-vn-black/75 border border-vn-ivory/10 shadow-sm">
-                    <span className="text-xs sm:text-sm font-bold text-vn-gold uppercase tracking-wider block mb-2">
-                      👥 Các Dân Tộc Cư Trú Chủ Yếu:
-                    </span>
-                    <div className="flex flex-wrap gap-2">
-                      {activeRegion.ethnicGroups.map((eth, i) => {
-                        const ethnicSlug = findEthnicGroupSlug(eth);
-                        return ethnicSlug ? (
-                          <Link
-                            key={i}
-                            to={`/dan-toc/${ethnicSlug}`}
-                            className="px-3 py-1 rounded-full text-xs sm:text-sm bg-vn-charcoal text-vn-ivory border border-vn-gold/40 font-semibold shadow-inner transition hover:border-vn-gold hover:bg-vn-red-deep/30 hover:text-vn-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-vn-gold"
-                            aria-label={`Tìm hiểu về dân tộc ${eth}`}
-                          >
-                            {eth}
-                          </Link>
-                        ) : (
-                          <span key={i} className="px-3 py-1 rounded-full text-xs sm:text-sm bg-vn-charcoal text-vn-ivory border border-vn-gold/30 font-semibold shadow-inner">
+                {/* Section Title & Instruction */}
+                <div className="flex items-center justify-between mb-4 pb-2 border-b border-vn-gold/20">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-vn-gold uppercase tracking-wider">
+                    <Users className="w-4 h-4 text-vn-gold" />
+                    <span>Các Dân Tộc Cư Trú Tại Vùng ({activeRegion.ethnicGroups.length})</span>
+                  </div>
+                  <span className="text-[11px] sm:text-xs text-vn-ivory/60 italic hidden sm:inline">
+                    Bấm vào dân tộc để xem chi tiết
+                  </span>
+                </div>
+
+                {/* Clean Grid of Ethnic Boxes - Only Name as Title */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[440px] overflow-y-auto pr-1.5 custom-scrollbar">
+                  {activeRegion.ethnicGroups.map((eth, i) => {
+                    const details = getEthnicDetails(eth);
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => handleOpenEthnic(eth)}
+                        className="group relative flex flex-col justify-between p-3.5 rounded-2xl bg-vn-black/75 hover:bg-vn-red-deep/30 border border-vn-gold/30 hover:border-vn-gold transition-all duration-200 text-left shadow-md hover:shadow-lg hover:shadow-vn-gold/10 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-vn-gold cursor-pointer"
+                        title={`Xem chi tiết dân tộc ${eth}`}
+                      >
+                        <div className="flex items-center justify-between gap-1 w-full mb-1">
+                          <span className="font-display font-bold text-sm sm:text-base text-white group-hover:text-vn-gold transition-colors line-clamp-1">
                             {eth}
                           </span>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* 2. Religions & Beliefs */}
-                  <div className="p-4 rounded-2xl bg-vn-black/75 border border-vn-ivory/10 shadow-sm">
-                    <span className="text-xs sm:text-sm font-bold text-emerald-400 uppercase tracking-wider block mb-2">
-                      🛕 Tôn Giáo & Tín Ngưỡng Đặc Trưng:
-                    </span>
-                    <div className="flex flex-wrap gap-2">
-                      {activeRegion.dominantReligions.map((rel, i) => (
-                        <span key={i} className="px-3 py-1 rounded-full text-xs sm:text-sm bg-emerald-950/50 text-emerald-200 border border-emerald-500/40 font-semibold shadow-inner">
-                          {rel}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* 3. Strategic Role */}
-                  <div className="p-4 rounded-2xl bg-vn-black/75 border border-vn-ivory/10 shadow-sm">
-                    <span className="text-xs sm:text-sm font-bold text-amber-300 uppercase tracking-wider block mb-1.5">
-                      🛡️ Vị Trí Chiến Lược & Quốc Phòng:
-                    </span>
-                    <p className="text-sm sm:text-base text-vn-ivory/90 leading-relaxed font-normal">
-                      {activeRegion.strategicRole}
-                    </p>
-                  </div>
-
-                  {/* 4. Security Notice */}
-                  <div className="p-4 rounded-2xl bg-vn-red-deep/25 border border-vn-red/50 shadow-sm">
-                    <div className="flex items-center gap-2 text-vn-gold text-xs sm:text-sm font-bold uppercase tracking-wider mb-1.5">
-                      <ShieldAlert className="w-4 h-4 text-vn-red" />
-                      <span>Cảnh Giác Đấu Tranh Tư Tưởng (Chương 6):</span>
-                    </div>
-                    <p className="text-sm sm:text-base text-vn-ivory/95 leading-relaxed font-normal">
-                      {activeRegion.securityNotice}
-                    </p>
-                  </div>
-
-                  {/* 5. Cultural Highlights */}
-                  <div className="p-4 rounded-2xl bg-vn-black/75 border border-vn-ivory/10 shadow-sm">
-                    <span className="text-xs sm:text-sm font-bold text-cyan-300 uppercase tracking-wider block mb-1.5">
-                      🎭 Tinh Hoa Văn Hóa & Di Sản:
-                    </span>
-                    <p className="text-sm sm:text-base text-vn-ivory/90 leading-relaxed font-serif italic">
-                      {activeRegion.culturalHighlight}
-                    </p>
-                  </div>
-
+                          <ChevronRight className="w-4 h-4 text-vn-gold/40 group-hover:text-vn-gold group-hover:translate-x-0.5 transition-all shrink-0" />
+                        </div>
+                        {details?.population ? (
+                          <span className="text-[11px] text-vn-ivory/60 font-mono line-clamp-1">
+                            {details.population.replace(/\s*\(.*?\)/, '')}
+                          </span>
+                        ) : (
+                          <span className="text-[11px] text-vn-gold/60 font-sans italic">
+                            Xem hồ sơ →
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -488,6 +565,234 @@ export default function InteractiveVietnamMap() {
         </div>
 
       </div>
+
+      {/* Blurred & Dimmed Backdrop Overlay (Focal Effect) */}
+      {selectedEthnic && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] transition-opacity duration-300"
+          onClick={() => setSelectedEthnic(null)}
+          aria-label="Đóng chi tiết dân tộc"
+        />
+      )}
+
+      {/* Slide-in Right Side Drawer Modal */}
+      <aside
+        className={`fixed top-0 right-0 h-full w-full max-w-2xl bg-[#0d1017] border-l-2 border-vn-gold/60 shadow-[0_0_80px_rgba(0,0,0,0.95)] z-[101] flex flex-col transition-transform duration-300 ease-out transform ${
+          selectedEthnic ? 'translate-x-0' : 'translate-x-full pointer-events-none'
+        }`}
+        aria-modal="true"
+        role="dialog"
+      >
+        {selectedEthnic && (
+          <>
+            {/* Sticky Drawer Header */}
+            <div className="sticky top-0 z-20 bg-[#0d1017]/95 backdrop-blur-md border-b border-vn-gold/30 p-5 sm:p-6 pb-4">
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-vn-red/80 text-white border border-vn-gold/40 shadow-sm">
+                      54 Dân tộc Việt Nam
+                    </span>
+                    {selectedEthnic.regionNames && selectedEthnic.regionNames.length > 0 && (
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-vn-charcoal text-vn-gold border border-vn-gold/30">
+                        {selectedEthnic.regionNames.join(' · ')}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight flex flex-wrap items-baseline gap-2">
+                    <span>Dân tộc {selectedEthnic.name}</span>
+                    {selectedEthnic.alternateName && (
+                      <span className="text-sm font-normal text-vn-ivory/60 italic">
+                        ({selectedEthnic.alternateName})
+                      </span>
+                    )}
+                  </h3>
+                  {selectedEthnic.tagline && (
+                    <p className="text-xs sm:text-sm text-vn-ivory/80 mt-1 font-light italic">
+                      {selectedEthnic.tagline}
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => setSelectedEthnic(null)}
+                  className="p-2 sm:px-3 sm:py-2 rounded-xl bg-vn-charcoal text-vn-ivory hover:text-white hover:bg-vn-red-deep/50 border border-vn-gold/30 hover:border-vn-gold transition-all flex items-center gap-1.5 shrink-0 shadow-md group cursor-pointer"
+                  title="Đóng (Phím ESC)"
+                >
+                  <X className="w-5 h-5 text-vn-gold group-hover:rotate-90 transition-transform duration-200" />
+                  <span className="text-xs font-bold hidden sm:inline">Đóng</span>
+                </button>
+              </div>
+
+              {/* Quick Nav Anchors for the 7 sections */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-2 custom-scrollbar">
+                {[
+                  { id: 'overview', label: '1. Khái quát' },
+                  { id: 'language', label: '2. Ngôn ngữ' },
+                  { id: 'customs', label: '3. Phong tục' },
+                  { id: 'cuisine', label: '4. Ẩm thực' },
+                  { id: 'art', label: '5. Nghệ thuật' },
+                  { id: 'history', label: '6. Lịch sử' },
+                  { id: 'video', label: '7. Video' }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      const el = document.getElementById(`drawer-sec-${tab.id}`);
+                      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                    className="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap bg-vn-black/70 text-vn-ivory/80 hover:text-vn-gold hover:border-vn-gold border border-vn-ivory/15 transition-all cursor-pointer"
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Scrollable Drawer Body with all 7 Sections */}
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6 custom-scrollbar">
+              {/* Section 1: Khái quát */}
+              <div id="drawer-sec-overview" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                  <BookOpen className="w-5 h-5 text-vn-gold shrink-0" />
+                  <h4>1. Khái quát</h4>
+                </div>
+                {selectedEthnic.sections?.overview?.highlights?.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                    {selectedEthnic.sections.overview.highlights.map((hl, idx) => (
+                      <div key={idx} className="p-2.5 rounded-xl bg-vn-black/60 border border-vn-gold/15 text-xs text-vn-ivory/90 leading-relaxed font-medium">
+                        {hl}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {selectedEthnic.sections?.overview?.paragraphs?.map((p, idx) => (
+                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
+                    {p}
+                  </p>
+                ))}
+              </div>
+
+              {/* Section 2: Ngôn ngữ */}
+              <div id="drawer-sec-language" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                  <Languages className="w-5 h-5 text-cyan-400 shrink-0" />
+                  <h4>2. Ngôn ngữ</h4>
+                </div>
+                {selectedEthnic.sections?.language?.paragraphs?.map((p, idx) => (
+                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
+                    {p}
+                  </p>
+                ))}
+              </div>
+
+              {/* Section 3: Phong tục - tập quán */}
+              <div id="drawer-sec-customs" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                  <Home className="w-5 h-5 text-amber-400 shrink-0" />
+                  <h4>3. Phong tục - tập quán</h4>
+                </div>
+                {selectedEthnic.sections?.customs?.paragraphs?.map((p, idx) => (
+                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2.5 last:mb-0">
+                    {p}
+                  </p>
+                ))}
+              </div>
+
+              {/* Section 4: Ẩm thực */}
+              <div id="drawer-sec-cuisine" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                  <UtensilsCrossed className="w-5 h-5 text-emerald-400 shrink-0" />
+                  <h4>4. Ẩm thực</h4>
+                </div>
+                {selectedEthnic.sections?.cuisine?.paragraphs?.map((p, idx) => (
+                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
+                    {p}
+                  </p>
+                ))}
+              </div>
+
+              {/* Section 5: Nghệ thuật */}
+              <div id="drawer-sec-art" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                  <Music className="w-5 h-5 text-rose-400 shrink-0" />
+                  <h4>5. Nghệ thuật</h4>
+                </div>
+                {selectedEthnic.sections?.art?.paragraphs?.map((p, idx) => (
+                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2.5 last:mb-0">
+                    {p}
+                  </p>
+                ))}
+              </div>
+
+              {/* Section 6: Lịch sử */}
+              <div id="drawer-sec-history" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                  <Landmark className="w-5 h-5 text-indigo-400 shrink-0" />
+                  <h4>6. Lịch sử</h4>
+                </div>
+                {selectedEthnic.sections?.history?.paragraphs?.map((p, idx) => (
+                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
+                    {p}
+                  </p>
+                ))}
+              </div>
+
+              {/* Section 7: Video */}
+              <div id="drawer-sec-video" className="p-5 rounded-2xl bg-gradient-to-br from-vn-charcoal to-vn-black border-2 border-vn-gold/40 shadow-xl scroll-mt-36">
+                <div className="flex items-center justify-between gap-2 mb-3 border-b border-vn-gold/20 pb-2">
+                  <div className="flex items-center gap-2 text-vn-gold font-bold text-base">
+                    <Video className="w-5 h-5 text-red-500 shrink-0" />
+                    <h4>7. Video Tư Liệu & Phóng Sự</h4>
+                  </div>
+                  {selectedEthnic.sections?.video?.source && (
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-600/80 text-white border border-red-400/30">
+                      {selectedEthnic.sections.video.source}
+                    </span>
+                  )}
+                </div>
+
+                <h5 className="font-display font-bold text-base text-white mb-2">
+                  {selectedEthnic.sections?.video?.videoTitle || `Văn hóa dân tộc ${selectedEthnic.name}`}
+                </h5>
+
+                {selectedEthnic.sections?.video?.description && (
+                  <p className="text-xs sm:text-sm text-vn-ivory/80 leading-relaxed mb-4">
+                    {selectedEthnic.sections.video.description}
+                  </p>
+                )}
+
+                {/* Embedded YouTube video player */}
+                {selectedEthnic.sections?.video?.embedUrl ? (
+                  <div className="relative aspect-video w-full rounded-xl overflow-hidden border border-vn-gold/30 shadow-lg mb-3 bg-black">
+                    <iframe
+                      src={selectedEthnic.sections.video.embedUrl}
+                      title={selectedEthnic.sections.video.videoTitle}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : null}
+
+                {/* Direct Link to YouTube */}
+                {selectedEthnic.sections?.video?.url && (
+                  <a
+                    href={selectedEthnic.sections.video.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-vn-red hover:bg-vn-red-deep text-white text-xs sm:text-sm font-bold border border-vn-gold/40 shadow-md transition-all hover:scale-105"
+                  >
+                    <Play className="w-4 h-4 fill-white" />
+                    <span>Xem tư liệu trên YouTube</span>
+                    <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                  </a>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+      </aside>
 
     </section>
   );
