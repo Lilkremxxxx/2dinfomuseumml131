@@ -6,12 +6,7 @@ import {
   Maximize2, 
   Sparkles, 
   BookOpen, 
-  RotateCcw,
-  CheckCircle2,
-  ChevronRight,
-  ChevronLeft,
-  Lock,
-  Unlock
+  RotateCcw
 } from 'lucide-react';
 import mapTerritoryImg from '../../Image/1. Ban do viet nam.jpg';
 import iconPng from '../../Image/icon.png';
@@ -105,34 +100,25 @@ const PENTAGON_ELEMENTS = [
   }
 ];
 
-// 3 NGUYÊN TẮC CƯƠNG LĨNH LÊNIN
+// 3 NGUYÊN TẮC CƯƠNG LĨNH LÊNIN (Viết hoa chữ đầu: "Bình đẳng", "Tự quyết", "Liên hiệp")
 const LENIN_MILESTONES = [
   {
     index: 0,
-    title: "BÌNH ĐẲNG",
-    badge: "Nguyên tắc 01 · Tự do & Bình quyền",
+    title: "Bình đẳng",
     quote: "Không phân biệt dân tộc lớn hay nhỏ, trình độ phát triển cao hay thấp; các dân tộc có quyền lợi và nghĩa vụ ngang nhau.",
-    boatPos: "8%",
-    color: "#FFCD00",
-    roman: "I"
+    timelinePos: "8%",
   },
   {
     index: 1,
-    title: "TỰ QUYẾT",
-    badge: "Nguyên tắc 02 · Độc lập & Tự chủ",
+    title: "Tự quyết",
     quote: "Quyền tự quyết là quyền của các dân tộc tự quyết định vận mệnh, lựa chọn chế độ chính trị và con đường phát triển của mình.",
-    boatPos: "50%",
-    color: "#DA251D",
-    roman: "II"
+    timelinePos: "50%",
   },
   {
     index: 2,
-    title: "LIÊN HIỆP",
-    badge: "Nguyên tắc 03 · Sức mạnh Đại đoàn kết",
+    title: "Liên hiệp",
     quote: "Đoàn kết, liên hiệp công nhân các dân tộc là cơ sở để đoàn kết các tầng lớp nhân dân lao động trong cuộc đấu tranh vì độc lập dân tộc và tiến bộ xã hội.",
-    boatPos: "92%",
-    color: "#FFCD00",
-    roman: "III"
+    timelinePos: "92%",
   }
 ];
 
@@ -195,81 +181,39 @@ export default function DanTocInfo() {
     return () => window.removeEventListener('scroll', handleScrollGiantMap);
   }, [isAllAbsorbed]);
 
-  // --- PHẦN CON THUYỀN LÊNIN & KHÓA TRANG (WHEEL LOCKING) ---
-  const [currentMilestone, setCurrentMilestone] = useState(0); // 0: Bình Đẳng, 1: Tự Quyết, 2: Liên Hiệp
-  const [boatUnlocked, setBoatUnlocked] = useState(false); // Chỉ mở khóa cuộn xuống khi đã qua hết mốc 3
-  const boatContainerRef = useRef(null);
-  const isWheelingRef = useRef(false);
+  // --- PHẦN CON THUYỀN LÊNIN (SCROLL-DRIVEN STICKY PINNING) ---
+  // Lăn chuột xuống dưới điều khiển con thuyền rẽ sóng qua 3 mốc:
+  // 1. Bình đẳng -> 2. Tự quyết -> 3. Liên hiệp
+  const boatSectionRef = useRef(null);
+  const [boatProgress, setBoatProgress] = useState(0); // 0.0 -> 1.0
 
-  // Xử lý sự kiện lăn chuột điều khiển con thuyền rẽ sóng qua 3 mốc
   useEffect(() => {
-    const el = boatContainerRef.current;
-    if (!el) return;
+    const handleScrollBoat = () => {
+      if (!boatSectionRef.current) return;
+      const rect = boatSectionRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const totalScrollable = rect.height - windowHeight;
+      if (totalScrollable <= 0) return;
 
-    const handleWheel = (e) => {
-      const rect = el.getBoundingClientRect();
-      // Kiểm tra khi container đang ở tầm mắt người dùng
-      const inView = rect.top <= 80 && rect.bottom >= window.innerHeight * 0.4;
-      if (!inView) return;
-
-      if (!boatUnlocked) {
-        // Nếu chưa hoàn thành 3 mốc thì khóa cuộn xuống
-        if (e.deltaY > 20) {
-          e.preventDefault();
-          if (isWheelingRef.current) return;
-          isWheelingRef.current = true;
-
-          setCurrentMilestone((prev) => {
-            if (prev < 2) {
-              return prev + 1;
-            } else {
-              setBoatUnlocked(true);
-              return 2;
-            }
-          });
-
-          setTimeout(() => {
-            isWheelingRef.current = false;
-          }, 600);
-        } else if (e.deltaY < -20) {
-          // Lăn ngược lên
-          if (currentMilestone > 0) {
-            e.preventDefault();
-            if (isWheelingRef.current) return;
-            isWheelingRef.current = true;
-            setCurrentMilestone((prev) => Math.max(0, prev - 1));
-            setTimeout(() => {
-              isWheelingRef.current = false;
-            }, 600);
-          }
-        }
-      }
+      const currentScroll = -rect.top;
+      const progress = Math.max(0, Math.min(1, currentScroll / totalScrollable));
+      setBoatProgress(progress);
     };
 
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
-  }, [boatUnlocked, currentMilestone]);
+    window.addEventListener('scroll', handleScrollBoat, { passive: true });
+    handleScrollBoat();
+    return () => window.removeEventListener('scroll', handleScrollBoat);
+  }, []);
 
-  // Khi bấm nút chuyển mốc thủ công
-  const handleNextMilestone = () => {
-    if (currentMilestone < 2) {
-      setCurrentMilestone((prev) => prev + 1);
-      if (currentMilestone === 1) {
-        setBoatUnlocked(true);
-      }
-    } else {
-      setBoatUnlocked(true);
-      document.getElementById('ban-sac-dan-toc')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const handlePrevMilestone = () => {
-    if (currentMilestone > 0) {
-      setCurrentMilestone((prev) => prev - 1);
-    }
-  };
-
-  const activeData = LENIN_MILESTONES[currentMilestone];
+  // Xác định mốc hiện tại theo tiến trình cuộn (0 -> 1)
+  let activeMilestoneIndex = 0;
+  if (boatProgress >= 0.66) {
+    activeMilestoneIndex = 2; // Liên hiệp
+  } else if (boatProgress >= 0.33) {
+    activeMilestoneIndex = 1; // Tự quyết
+  }
+  const activeData = LENIN_MILESTONES[activeMilestoneIndex];
+  const boatLeft = 8 + boatProgress * 84; // 8% -> 92%
 
   return (
     <div className="relative min-h-screen w-full bg-[#07080A] text-[#F5EFE6] selection:bg-vn-red selection:text-vn-gold overflow-x-hidden">
@@ -608,53 +552,43 @@ export default function DanTocInfo() {
           - 3 Cột mốc nguyên tắc to ra, đẹp & nổi bật.
           - Con thuyền to lên rẽ sóng đi qua từng mốc.
           ------------------------------------------------------------- */}
+      {/* -------------------------------------------------------------
+          PHẦN CƯƠNG LĨNH DÂN TỘC CỦA V.I. LÊNIN (CHỈ DÙNG CON THUYỀN)
+          - Lăn chuột xuống dưới và tạm khóa trang qua container h-[320vh]
+            đến khi nào lăn hết đến nguyên tắc 3 là "Liên hiệp" mới cuộn tiếp xuống
+          - Thuyền bé lại thanh thoát
+          - Các mốc trên timeline bé lại thành chấm tròn gọn gàng
+          - Chữ của các mốc to lên nổi bật ("Bình đẳng", "Tự quyết", "Liên hiệp")
+          - Chữ đại diện to trên màn hình viết hoa chữ đầu
+          - Bỏ hết chữ thừa như "văn kiện...", "Đã hoàn thành...", "Nguyên tắc 01..."
+          ------------------------------------------------------------- */}
       <section 
-        ref={boatContainerRef}
+        ref={boatSectionRef}
         id="con-thuyen-lenin" 
-        className="relative min-h-screen py-16 bg-gradient-to-b from-[#060709] via-[#0E131E] to-[#060709] border-t-2 border-vn-gold/40 overflow-hidden"
+        className="relative h-[320vh] bg-gradient-to-b from-[#060709] via-[#0E131E] to-[#060709] border-t-2 border-vn-gold/40"
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-8 flex flex-col items-center justify-between min-h-[85vh]">
+        <div className="sticky top-0 flex h-screen flex-col items-center justify-between overflow-hidden px-4 sm:px-8 py-10">
           
           {/* Nền sóng biển & hào quang */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(27,42,74,0.45)_0%,transparent_80%)]" />
 
           {/* TIÊU ĐỀ: CƯƠNG LĨNH DÂN TỘC CỦA V.I. LÊNIN */}
-          <div className="relative z-20 text-center mb-8">
-            <span className="inline-block px-4 py-1 rounded-full bg-vn-gold/15 border border-vn-gold/40 text-xs uppercase tracking-[0.3em] text-vn-gold font-bold mb-3">
-              Văn kiện lý luận bất hủ của chủ nghĩa Mác - Lênin
-            </span>
-            <h2 className="font-display font-black text-3xl sm:text-5xl md:text-6xl text-white tracking-wide leading-none">
-              “CƯƠNG LĨNH DÂN TỘC CỦA V.I. LÊNIN”
+          <div className="relative z-20 text-center">
+            <h2 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-wide">
+              “Cương lĩnh dân tộc của V.I. Lênin”
             </h2>
-            
-            {/* Thanh trạng thái khóa trang */}
-            <div className="mt-3 flex items-center justify-center gap-2">
-              {!boatUnlocked ? (
-                <span className="inline-flex items-center gap-1.5 text-xs text-vn-gold/80 bg-vn-black/80 border border-vn-gold/30 px-3.5 py-1 rounded-full font-mono">
-                  <Lock className="w-3.5 h-3.5 text-vn-red" />
-                  Lăn chuột hoặc bấm chuyển mốc để tàu chạy qua 3 nguyên tắc (Đang ở mốc {currentMilestone + 1}/3)
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 text-xs text-green-400 bg-green-950/40 border border-green-500/40 px-3.5 py-1 rounded-full font-mono animate-pulse">
-                  <Unlock className="w-3.5 h-3.5" />
-                  Đã hoàn thành 3 nguyên tắc — Đã mở khóa cuộn tiếp xuống dưới
-                </span>
-              )}
-            </div>
+            <p className="text-xs text-vn-ivory/60 mt-1 font-mono">
+              [ Lăn chuột xuống dưới để con thuyền tiếp tục hành trình qua 3 nguyên tắc ]
+            </p>
           </div>
 
-          {/* NỘI DUNG NGUYÊN TẮC HIỆN RA Ở CHÍNH GIỮA MÀN HÌNH (TO, ĐẸP, NỔI BẬT) */}
+          {/* NỘI DUNG NGUYÊN TẮC Ở CHÍNH GIỮA MÀN HÌNH (VIẾT HOA CHỮ ĐẦU, TO VÀ NỔI BẬT) */}
           <div className="relative z-30 max-w-4xl w-full mx-auto text-center px-4 my-auto">
             
-            {/* Huy hiệu mốc */}
-            <div className="inline-block px-4 py-1.5 rounded-full bg-vn-black/90 border border-vn-gold/60 text-xs sm:text-sm uppercase tracking-widest text-vn-gold font-bold mb-4 shadow-xl backdrop-blur-md">
-              {activeData.badge}
-            </div>
-
-            {/* Chữ Nguyên tắc khổng lồ: BÌNH ĐẲNG / TỰ QUYẾT / LIÊN HIỆP */}
+            {/* Chữ đại diện to trên màn hình (viết hoa chữ đầu: "Bình đẳng", "Tự quyết", "Liên hiệp") */}
             <h3 
               key={activeData.title}
-              className="font-display font-black text-6xl sm:text-8xl md:text-9xl tracking-tight text-white drop-shadow-[0_0_60px_rgba(255,205,0,0.7)] leading-none mb-6 animate-fadeIn"
+              className="font-display font-bold text-6xl sm:text-8xl md:text-9xl tracking-tight text-white drop-shadow-[0_0_60px_rgba(255,205,0,0.7)] leading-none mb-6 animate-fadeIn"
             >
               {activeData.title}
             </h3>
@@ -666,155 +600,107 @@ export default function DanTocInfo() {
               </blockquote>
             </div>
 
-            {/* Các nút điều hướng nhanh giữa các mốc */}
-            <div className="flex items-center justify-center gap-4 mt-6">
-              <button
-                onClick={handlePrevMilestone}
-                disabled={currentMilestone === 0}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-vn-gold/40 bg-black/60 text-xs uppercase font-bold text-vn-ivory disabled:opacity-30 disabled:cursor-not-allowed hover:bg-vn-gold/20 hover:text-vn-gold transition-colors cursor-pointer"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                <span>Mốc trước</span>
-              </button>
-
-              <div className="flex items-center gap-2">
-                {[0, 1, 2].map((idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setCurrentMilestone(idx);
-                      if (idx === 2) setBoatUnlocked(true);
-                    }}
-                    className={`w-3 h-3 rounded-full transition-all ${
-                      currentMilestone === idx
-                        ? 'bg-vn-gold scale-150 ring-4 ring-vn-gold/30'
-                        : 'bg-white/30 hover:bg-white/60'
-                    }`}
-                    title={`Chuyển tới mốc ${idx + 1}`}
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={handleNextMilestone}
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-full border-2 border-vn-gold bg-gradient-to-r from-vn-red-deep to-vn-red text-xs uppercase font-bold text-vn-gold hover:text-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(218,37,29,0.6)] cursor-pointer"
-              >
-                <span>{currentMilestone < 2 ? 'Mốc tiếp theo' : 'Đến Bản sắc Dân tộc'}</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-
           </div>
 
-          {/* DÒNG HẢI TRÌNH & CON THUYỀN TO ĐÙNG DI CHUYỂN QUA 3 CỘT MỐC TO NỔI BẬT */}
-          <div className="relative z-20 w-full max-w-4xl pt-16 pb-4">
+          {/* DÒNG HẢI TRÌNH: CON THUYỀN BÉ GỌN + CÁC MỐC BÉ LẠI + CHỮ CÁC MỐC TO NỔI BẬT */}
+          <div className="relative z-20 w-full max-w-4xl pb-6">
             
             {/* Đường timeline ngang */}
-            <div className="relative h-2 w-full bg-white/15 rounded-full">
+            <div className="relative h-2 w-full bg-white/20 rounded-full">
               
-              {/* Vạch tiến trình nối */}
+              {/* Vạch tiến trình đã đi qua */}
               <div 
-                className="absolute inset-y-0 left-0 bg-gradient-to-r from-vn-gold-antique via-vn-gold to-vn-red rounded-full transition-all duration-700 ease-out"
-                style={{ width: activeData.boatPos }}
+                className="absolute inset-y-0 left-0 bg-gradient-to-r from-vn-gold-antique via-vn-gold to-vn-red rounded-full"
+                style={{ width: `${boatLeft}%` }}
               />
 
-              {/* 3 CỘT MỐC NGUYÊN TẮC: TO RA, ĐẸP VÀ NỔI BẬT */}
+              {/* 3 CỘT MỐC: CHẤM TRÒN BÉ GỌN (CHO BÉ CÁC MỐC LẠI) */}
               {LENIN_MILESTONES.map((m) => {
-                const isActive = currentMilestone === m.index;
-                const isPassed = currentMilestone >= m.index;
+                const isActive = activeMilestoneIndex === m.index;
+                const isPassed = activeMilestoneIndex >= m.index;
                 return (
-                  <button
+                  <div
                     key={m.index}
-                    onClick={() => {
-                      setCurrentMilestone(m.index);
-                      if (m.index === 2) setBoatUnlocked(true);
-                    }}
-                    style={{ left: m.boatPos }}
-                    className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center font-display font-black text-sm sm:text-xl transition-all duration-500 cursor-pointer ${
+                    style={{ left: m.timelinePos }}
+                    className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-display font-bold text-[10px] transition-all duration-300 ${
                       isActive 
-                        ? 'bg-gradient-to-br from-vn-red to-vn-red-deep text-vn-gold border-3 sm:border-4 border-vn-gold scale-125 shadow-[0_0_35px_rgba(255,205,0,0.9)]'
+                        ? 'bg-vn-red text-vn-gold border-2 border-vn-gold scale-125 shadow-[0_0_15px_rgba(255,205,0,0.9)]'
                         : isPassed
-                        ? 'bg-vn-gold text-vn-black border-2 border-white shadow-lg'
-                        : 'bg-[#151922] text-vn-ivory/50 border-2 border-vn-gold/30 hover:border-vn-gold hover:text-white'
+                        ? 'bg-vn-gold text-vn-black border border-white'
+                        : 'bg-[#151922] text-vn-ivory/40 border border-vn-gold/30'
                     }`}
-                    title={`Mốc ${m.index + 1}: ${m.title}`}
                   >
-                    <span>{m.roman}</span>
-                  </button>
+                    <span>{m.index + 1}</span>
+                  </div>
                 );
               })}
 
-              {/* CON THUYỀN CŨNG CHO TO LÊN (SVG Vector cách mạng lướt trên sóng nước) */}
+              {/* CON THUYỀN BÉ LẠI (CHO BÉ THUYỀN LẠI) */}
               <div 
-                className="absolute bottom-6 sm:bottom-8 z-30 -translate-x-1/2 pointer-events-none transition-all duration-700 ease-out"
+                className="absolute bottom-4 sm:bottom-5 z-30 -translate-x-1/2 pointer-events-none transition-all duration-75 ease-out"
                 style={{ 
-                  left: activeData.boatPos,
-                  filter: 'drop-shadow(0 0 25px rgba(255,205,0,0.7))'
+                  left: `${boatLeft}%`,
+                  filter: 'drop-shadow(0 0 15px rgba(255,205,0,0.6))'
                 }}
               >
-                {/* Vector SVG Con thuyền kích thước phóng to */}
-                <svg viewBox="0 0 160 85" className="w-40 sm:w-56 md:w-64 h-auto">
+                <svg viewBox="0 0 160 85" className="w-24 sm:w-32 md:w-36 h-auto">
                   <defs>
-                    <linearGradient id="giantBoatHull" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient id="boatHullSleek" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#5D3A1A" />
                       <stop offset="100%" stopColor="#1B1209" />
                     </linearGradient>
-                    <linearGradient id="giantSmoke" x1="0" y1="1" x2="0" y2="0">
-                      <stop offset="0%" stopColor="#D4A72C" stopOpacity="0.9" />
+                    <linearGradient id="boatSmokeSleek" x1="0" y1="1" x2="0" y2="0">
+                      <stop offset="0%" stopColor="#D4A72C" stopOpacity="0.8" />
                       <stop offset="100%" stopColor="#FFCD00" stopOpacity="0" />
                     </linearGradient>
                   </defs>
 
-                  {/* Làn khói nhả ra từ ống khói tàu */}
-                  <path d="M72 24 C 66 10, 78 6, 72 0 C 86 4, 82 16, 90 22 Z" fill="url(#giantSmoke)" className="animate-pulse" />
-                  <path d="M88 24 C 84 12, 95 8, 91 1 C 103 6, 98 16, 105 23 Z" fill="url(#giantSmoke)" opacity="0.7" />
+                  {/* Làn khói */}
+                  <path d="M72 24 C 66 10, 78 6, 72 0 C 86 4, 82 16, 90 22 Z" fill="url(#boatSmokeSleek)" />
+                  <path d="M88 24 C 84 12, 95 8, 91 1 C 103 6, 98 16, 105 23 Z" fill="url(#boatSmokeSleek)" opacity="0.6" />
 
-                  {/* Cột buồm và cánh buồm đỏ thắm */}
-                  <polygon points="46,10 74,22 46,34" fill="#DA251D" stroke="#FFCD00" strokeWidth="0.8" />
-                  <line x1="46" y1="6" x2="46" y2="52" stroke="#FFCD00" strokeWidth="2" />
+                  {/* Cột buồm và cánh buồm đỏ */}
+                  <polygon points="46,12 72,22 46,32" fill="#DA251D" stroke="#FFCD00" strokeWidth="0.8" />
+                  <line x1="46" y1="8" x2="46" y2="52" stroke="#FFCD00" strokeWidth="1.5" />
 
                   {/* Ống khói */}
-                  <rect x="72" y="24" width="11" height="18" fill="#8F1713" stroke="#FFCD00" strokeWidth="1" />
-                  <rect x="88" y="24" width="11" height="18" fill="#8F1713" stroke="#FFCD00" strokeWidth="1" />
+                  <rect x="72" y="24" width="10" height="18" fill="#8F1713" stroke="#FFCD00" strokeWidth="0.8" />
+                  <rect x="88" y="24" width="10" height="18" fill="#8F1713" stroke="#FFCD00" strokeWidth="0.8" />
 
                   {/* Thân ca bin tàu */}
-                  <rect x="56" y="42" width="66" height="15" fill="#3B2616" stroke="#FFCD00" strokeWidth="1.2" rx="2" />
-                  <rect x="64" y="35" width="50" height="11" fill="#20150C" stroke="#D4A72C" strokeWidth="1" rx="1" />
+                  <rect x="56" y="42" width="66" height="15" fill="#3B2616" stroke="#FFCD00" strokeWidth="1" rx="2" />
+                  <rect x="64" y="35" width="50" height="11" fill="#20150C" stroke="#D4A72C" strokeWidth="0.8" rx="1" />
 
-                  {/* Thân tàu chính hình khối */}
-                  <path d="M12 55 L 148 55 L 132 78 L 32 78 Z" fill="url(#giantBoatHull)" stroke="#FFCD00" strokeWidth="1.5" />
+                  {/* Thân tàu chính */}
+                  <path d="M12 55 L 148 55 L 132 78 L 32 78 Z" fill="url(#boatHullSleek)" stroke="#FFCD00" strokeWidth="1.2" />
 
-                  {/* Cửa sổ mạn tàu phát sáng vàng kim rực rỡ */}
-                  <circle cx="48" cy="66" r="3" fill="#FFCD00" />
-                  <circle cx="68" cy="66" r="3" fill="#FFCD00" />
-                  <circle cx="88" cy="66" r="3" fill="#FFCD00" />
-                  <circle cx="108" cy="66" r="3" fill="#FFCD00" />
-                  <circle cx="126" cy="66" r="3" fill="#FFCD00" />
+                  {/* Cửa sổ mạn tàu sáng vàng */}
+                  <circle cx="48" cy="66" r="2.5" fill="#FFCD00" />
+                  <circle cx="68" cy="66" r="2.5" fill="#FFCD00" />
+                  <circle cx="88" cy="66" r="2.5" fill="#FFCD00" />
+                  <circle cx="108" cy="66" r="2.5" fill="#FFCD00" />
+                  <circle cx="126" cy="66" r="2.5" fill="#FFCD00" />
 
                   {/* Vệt sóng nước chân tàu */}
-                  <path d="M6 80 Q 30 76 60 80 T 120 80 T 154 80" stroke="#FFCD00" strokeWidth="1.5" fill="none" opacity="0.75" />
+                  <path d="M6 80 Q 30 76 60 80 T 120 80 T 154 80" stroke="#FFCD00" strokeWidth="1.2" fill="none" opacity="0.75" />
                 </svg>
               </div>
 
             </div>
 
-            {/* Nhãn 3 mốc to rõ ràng ở dưới */}
-            <div className="mt-8 flex w-full items-center justify-between text-xs sm:text-base font-display font-black uppercase tracking-wider">
+            {/* CHỮ TÊN CÁC MỐC ĐƯỢC TĂNG CỠ CHỮ TO LÊN VÀ VIẾT HOA CHỮ ĐẦU */}
+            <div className="mt-8 flex w-full items-center justify-between">
               {LENIN_MILESTONES.map((m) => (
-                <button
+                <div
                   key={m.index}
-                  onClick={() => {
-                    setCurrentMilestone(m.index);
-                    if (m.index === 2) setBoatUnlocked(true);
-                  }}
-                  className={`transition-all duration-300 cursor-pointer ${
-                    currentMilestone === m.index 
-                      ? 'text-vn-gold scale-110 drop-shadow-[0_0_12px_#FFCD00]' 
-                      : 'text-vn-ivory/60 hover:text-vn-ivory'
+                  className={`font-display font-bold text-xl sm:text-3xl md:text-4xl transition-all duration-300 ${
+                    activeMilestoneIndex === m.index 
+                      ? 'text-vn-gold scale-105 drop-shadow-[0_0_15px_rgba(255,205,0,0.85)]' 
+                      : 'text-vn-ivory/50'
                   }`}
                 >
                   {m.index + 1}. {m.title}
-                </button>
+                </div>
               ))}
             </div>
 
