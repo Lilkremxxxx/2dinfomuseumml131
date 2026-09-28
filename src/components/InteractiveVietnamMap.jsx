@@ -7,7 +7,6 @@ import {
   ZoomOut,
   RotateCcw,
   Users,
-  ChevronRight,
   X,
   BookOpen,
   Languages,
@@ -55,6 +54,7 @@ export default function InteractiveVietnamMap() {
   const [activeRegion, setActiveRegion] = useState(MAP_REGIONS[0]);
   const [hoveredProvince, setHoveredProvince] = useState(null);
   const [selectedEthnic, setSelectedEthnic] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const drawerScrollY = useRef(0);
 
   // Zoom and Pan states
@@ -91,6 +91,15 @@ export default function InteractiveVietnamMap() {
       window.scrollTo(0, drawerScrollY.current);
     };
   }, [selectedEthnic]);
+
+  useEffect(() => {
+    if (!previewImage) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setPreviewImage(null);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [previewImage]);
 
   // Helper to find which region a province belongs to
   const getRegionForProvince = (provId) => {
@@ -543,30 +552,17 @@ export default function InteractiveVietnamMap() {
                 {/* Clean Grid of Ethnic Boxes - Only Name as Title */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[330px] overflow-y-auto pr-1 custom-scrollbar">
                   {activeRegion.ethnicGroups.map((eth, i) => {
-                    const details = getEthnicDetails(eth);
                     return (
                       <button
                         key={i}
                         type="button"
                         onClick={() => handleOpenEthnic(eth)}
-                        className="group relative flex flex-col justify-between p-2.5 rounded-xl bg-vn-black/75 hover:bg-vn-red-deep/30 border border-vn-gold/25 hover:border-vn-gold transition-all duration-200 text-left hover:shadow-lg hover:shadow-vn-gold/10 focus:outline-none focus:ring-2 focus:ring-vn-gold cursor-pointer"
+                        className="group flex min-h-16 items-center justify-center rounded-xl border border-vn-gold/25 bg-vn-black/75 p-3 text-center transition-all duration-200 hover:border-vn-gold hover:bg-vn-red-deep/30 hover:shadow-lg hover:shadow-vn-gold/10 focus:outline-none focus:ring-2 focus:ring-vn-gold cursor-pointer"
                         title={`Xem chi tiết dân tộc ${eth}`}
                       >
-                        <div className="flex items-center justify-between gap-1 w-full mb-1">
-                            <span className="font-display font-bold text-xs sm:text-sm text-white group-hover:text-vn-gold transition-colors line-clamp-1">
-                            {eth}
-                          </span>
-                          <ChevronRight className="w-4 h-4 text-vn-gold/40 group-hover:text-vn-gold group-hover:translate-x-0.5 transition-all shrink-0" />
-                        </div>
-                        {details?.population ? (
-                          <span className="text-[11px] text-vn-ivory/60 font-mono line-clamp-1">
-                            {details.population.replace(/\s*\(.*?\)/, '')}
-                          </span>
-                        ) : (
-                          <span className="text-[11px] text-vn-gold/60 font-sans italic">
-                            Xem hồ sơ →
-                          </span>
-                        )}
+                        <span className="ethnic-name-glow font-display text-sm font-bold leading-tight transition-all group-hover:scale-105 sm:text-base">
+                          {eth}
+                        </span>
                       </button>
                     );
                   })}
@@ -769,7 +765,14 @@ export default function InteractiveVietnamMap() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {selectedGallery.map((image) => (
                       <figure key={image.src} className="overflow-hidden rounded-xl border border-vn-gold/25 bg-vn-black/60">
-                        <img src={image.src} alt={`${selectedEthnic.name} — ${image.title}`} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                        <button
+                          type="button"
+                          className="ethnic-gallery-image block w-full cursor-zoom-in overflow-hidden"
+                          onClick={() => setPreviewImage(image)}
+                          aria-label={`Phóng to ảnh ${image.title} của dân tộc ${selectedEthnic.name}`}
+                        >
+                          <img src={image.src} alt={`${selectedEthnic.name} — ${image.title}`} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                        </button>
                         <figcaption className="p-3 text-xs text-vn-ivory/75">{image.title}</figcaption>
                       </figure>
                     ))}
@@ -782,6 +785,30 @@ export default function InteractiveVietnamMap() {
           </>
         )}
       </aside>
+
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-[120] flex cursor-zoom-out flex-col items-center justify-center bg-black/95 p-5 backdrop-blur-xl"
+          onClick={() => setPreviewImage(null)}
+          role="presentation"
+        >
+          <button
+            type="button"
+            className="absolute right-5 top-5 rounded-full border border-vn-gold/50 bg-vn-charcoal/90 p-3 text-vn-gold transition hover:bg-vn-red-deep"
+            onClick={() => setPreviewImage(null)}
+            aria-label="Đóng ảnh phóng to"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <img
+            src={previewImage.src}
+            alt={`${selectedEthnic?.name} — ${previewImage.title}`}
+            className="max-h-[82vh] max-w-full rounded-xl border border-vn-gold/50 object-contain shadow-[0_0_70px_rgba(255,205,0,0.2)]"
+            onClick={(event) => event.stopPropagation()}
+          />
+          <p className="mt-4 text-center font-display text-lg text-vn-gold">{previewImage.title}</p>
+        </div>
+      )}
 
     </section>
   );

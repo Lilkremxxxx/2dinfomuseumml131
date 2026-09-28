@@ -2,6 +2,7 @@
 import { ArrowRight } from 'lucide-react';
 import InteractiveVietnamMap from './InteractiveVietnamMap';
 import EthnicStorySequence from './EthnicStorySequence';
+import FlagZoomTransition from './FlagZoomTransition';
 
 // 3 NGUYÊN TẮC CƯƠNG LĨNH LÊNIN (Viết hoa chữ đầu: "Bình đẳng", "Tự quyết", "Liên hiệp")
 const LENIN_MILESTONES = [
@@ -26,15 +27,17 @@ const LENIN_MILESTONES = [
 ];
 
 export default function DanTocInfo() {
+  const [isFlagZoomOpen, setIsFlagZoomOpen] = useState(false);
   const [isEthnicMapOpen, setIsEthnicMapOpen] = useState(false);
 
   useEffect(() => {
-    if (!isEthnicMapOpen) return undefined;
+    if (!isFlagZoomOpen && !isEthnicMapOpen) return undefined;
     const frame = requestAnimationFrame(() => {
-      document.getElementById('ban-do-tuong-tac')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const targetId = isEthnicMapOpen ? 'ban-do-tuong-tac' : 'flag-map-transition';
+      document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     return () => cancelAnimationFrame(frame);
-  }, [isEthnicMapOpen]);
+  }, [isFlagZoomOpen, isEthnicMapOpen]);
 
   // --- PHẦN CON THUYỀN LÊNIN (WHEEL-INTERCEPT SCROLL LOCK) ---
   // Khi section thuyền vào viewport:
@@ -366,10 +369,10 @@ export default function DanTocInfo() {
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-vn-ivory/70 sm:text-base">
             Khám phá các cộng đồng dân tộc trên bản đồ Việt Nam và mở hồ sơ văn hóa của từng dân tộc.
           </p>
-          {!isEthnicMapOpen && (
+          {!isFlagZoomOpen && !isEthnicMapOpen && (
             <button
               type="button"
-              onClick={() => setIsEthnicMapOpen(true)}
+              onClick={() => setIsFlagZoomOpen(true)}
               className="mt-8 inline-flex items-center gap-3 rounded-full border-2 border-vn-gold bg-gradient-to-r from-vn-red-deep via-vn-red to-vn-red-deep px-7 py-4 font-display text-base font-black text-vn-gold shadow-[0_0_40px_rgba(218,37,29,0.5)] transition hover:scale-105 sm:text-xl"
             >
               <span>Xem bản đồ 54 dân tộc tại đây</span>
@@ -379,6 +382,14 @@ export default function DanTocInfo() {
         </div>
       </section>
 
+      {isFlagZoomOpen && (
+        <FlagZoomTransition
+          onComplete={() => {
+            setIsFlagZoomOpen(false);
+            setIsEthnicMapOpen(true);
+          }}
+        />
+      )}
       {isEthnicMapOpen && <InteractiveVietnamMap />}
 
       {/* FOOTER */}

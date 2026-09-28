@@ -53,11 +53,6 @@ function SceneContent({ scene }) {
       <div className="story-element-scene">
         <span className="story-eyebrow">MẢNH GHÉP {scene.index + 1} / 6</span>
         <h2 key={scene.text}>{scene.text}</h2>
-        <div className="story-element-track" aria-label="Sáu yếu tố cấu thành dân tộc">
-          {elements.map((element, index) => (
-            <span className={index === scene.index ? 'active' : ''} key={element}>{element}</span>
-          ))}
-        </div>
       </div>
     );
   }
@@ -81,17 +76,29 @@ export default function EthnicStorySequence() {
       frame = requestAnimationFrame(() => {
         if (!sequenceRef.current) return;
         const distance = Math.max(0, window.scrollY - sequenceRef.current.offsetTop);
-        const nextScene = Math.min(scenes.length - 1, Math.floor(distance / window.innerHeight));
+        const nextScene = Math.min(scenes.length - 1, Math.floor(distance / (window.innerHeight * 1.12)));
         setActiveScene((current) => current === nextScene ? current : nextScene);
       });
     };
     updateScene();
     window.addEventListener('scroll', updateScene, { passive: true });
     window.addEventListener('resize', updateScene);
+
+    const slowFastWheel = (event) => {
+      const section = sequenceRef.current;
+      if (!section || Math.abs(event.deltaY) <= 240) return;
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= 1 && rect.bottom > window.innerHeight) {
+        event.preventDefault();
+        window.scrollBy(0, Math.sign(event.deltaY) * 240);
+      }
+    };
+    window.addEventListener('wheel', slowFastWheel, { passive: false });
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener('scroll', updateScene);
       window.removeEventListener('resize', updateScene);
+      window.removeEventListener('wheel', slowFastWheel);
     };
   }, []);
 
@@ -99,7 +106,7 @@ export default function EthnicStorySequence() {
     <section
       className="ethnic-story-sequence"
       ref={sequenceRef}
-      style={{ height: `${scenes.length * 100}vh` }}
+      style={{ height: `${scenes.length * 112}vh` }}
       aria-label="Hành trình khám phá khái niệm dân tộc"
     >
       <div className="ethnic-story-stage">
