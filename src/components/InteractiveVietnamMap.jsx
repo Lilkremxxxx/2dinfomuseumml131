@@ -674,15 +674,6 @@ export default function InteractiveVietnamMap() {
                   <BookOpen className="w-5 h-5 text-vn-gold shrink-0" />
                   <h4>1. Khái quát</h4>
                 </div>
-                {selectedEthnic.sections?.overview?.highlights?.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
-                    {selectedEthnic.sections.overview.highlights.map((hl, idx) => (
-                      <div key={idx} className="p-2.5 rounded-xl bg-vn-black/60 border border-vn-gold/15 text-xs text-vn-ivory/90 leading-relaxed font-medium">
-                        {hl}
-                      </div>
-                    ))}
-                  </div>
-                )}
                 {selectedEthnic.sections?.overview?.paragraphs?.map((p, idx) => (
                   <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
                     {p}

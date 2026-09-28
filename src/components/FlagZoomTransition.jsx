@@ -48,15 +48,16 @@ export default function FlagZoomTransition({ onComplete }) {
   return (
     <section ref={sectionRef} id="flag-map-transition" className="flag-zoom-sequence" aria-label="Chuyển cảnh lá cờ Việt Nam">
       <div className="flag-zoom-stage">
-        <div
-          className="flag-zoom-card"
-          style={{ '--star-scale': 1 + progress * 12, '--caption-opacity': Math.max(0, 1 - progress * 2.2) }}
-          aria-hidden="true"
-        >
-          <svg className="flag-zoom-star" viewBox="0 0 100 100">
-            <polygon points="50,3 61,37 97,37 68,58 79,94 50,72 21,94 32,58 3,37 39,37" />
+        <div className="flag-zoom-card" aria-hidden="true">
+          <svg className="flag-zoom-graphic" viewBox="0 0 1600 900" preserveAspectRatio="none">
+            <rect width="1600" height="900" fill="#da251d" />
+            <polygon
+              className="flag-zoom-star"
+              points="800,325 830,416 926,416 848,471 878,564 800,506 722,564 752,471 674,416 770,416"
+              style={{ '--star-scale': 1 + progress * 12 }}
+            />
           </svg>
-          <span className="flag-zoom-caption">VIỆT NAM · 54 DÂN TỘC</span>
+          <span className="flag-zoom-caption" style={{ opacity: Math.max(0, 1 - progress * 2.2) }}>VIỆT NAM · 54 DÂN TỘC</span>
         </div>
         <div className="flag-zoom-hint">Lăn chuột để mở bản đồ</div>
       </div>

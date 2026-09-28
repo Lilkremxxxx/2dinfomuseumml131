@@ -14,10 +14,10 @@ const scenes = [
   { type: 'title', text: 'Dân tộc là gì' },
   { type: 'title', text: 'Là cộng đồng về lãnh thổ', eyebrow: 'ĐẶC TRƯNG THỨ NHẤT' },
   { type: 'image', text: 'Một lãnh thổ thống nhất', src: territoryMap, alt: 'Bản đồ Việt Nam' },
-  { type: 'title', text: 'Cộng đồng về kinh tế', eyebrow: 'ĐẶC TRƯNG THỨ HAI' },
+  { type: 'title', text: 'Cộng đồng về kinh tế', eyebrow: 'ĐẶC TRƯNG THỨ HAI', layout: 'single-line' },
   { type: 'image', text: 'Cùng gắn bó trong đời sống kinh tế', src: economyOne, alt: 'Cộng đồng kinh tế' },
   { type: 'image', text: 'Cùng lao động và phát triển', src: economyTwo, alt: 'Đời sống kinh tế cộng đồng' },
-  { type: 'title', text: 'Cộng đồng về văn hóa và ngôn ngữ', eyebrow: 'ĐẶC TRƯNG THỨ BA' },
+  { type: 'title', lines: ['Là cộng đồng về văn hóa', 'và ngôn ngữ'], eyebrow: 'ĐẶC TRƯNG THỨ BA', layout: 'two-lines' },
   { type: 'image', text: 'Bản sắc văn hóa được gìn giữ', src: cultureOne, alt: 'Cộng đồng văn hóa' },
   { type: 'image', text: 'Ngôn ngữ kết nối cộng đồng', src: cultureTwo, alt: 'Cộng đồng văn hóa và ngôn ngữ' },
   { type: 'image', text: 'Đa dạng trong thống nhất', src: cultureThree, alt: 'Văn hóa và ngôn ngữ các dân tộc' },
@@ -58,9 +58,13 @@ function SceneContent({ scene }) {
   }
 
   return (
-    <div className="story-title-scene">
+    <div className={`story-title-scene ${scene.layout ? `story-title-scene--${scene.layout}` : ''}`}>
       {scene.eyebrow && <span className="story-eyebrow">{scene.eyebrow}</span>}
-      <h2 key={scene.text}>{scene.text}</h2>
+      <h2 key={scene.text || scene.lines?.join(' ')}>
+        {scene.lines
+          ? scene.lines.map((line) => <span key={line}>{line}</span>)
+          : scene.text}
+      </h2>
     </div>
   );
 }
