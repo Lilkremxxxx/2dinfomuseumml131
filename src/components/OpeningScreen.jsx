@@ -3,6 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight, RotateCcw, Compass, MapPin, FastForward, Sparkles } from 'lucide-react';
 import vietnamPaths from '../data/vietnamPaths.json';
 
+// Hàm tính toán độ rộng Autofit vừa khít từng tiêu đề không bao giờ bị thừa hộp hay tràn chữ
+const getAutofitWidth = (text) => {
+  let width = 0;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (' -.,()/—'.includes(c)) width += 4.5;
+    else if ('WM@'.includes(c)) width += 9.5;
+    else if ('Iil1rtjf'.includes(c)) width += 4.2;
+    else if (c === c.toUpperCase()) width += 8.0;
+    else width += 6.5;
+  }
+  return Math.round(width + 20); // 20px padding cho chấm đỏ và lề 2 bên
+};
+
 // Danh sách 14 điểm chuẩn xác, bố trí vị trí nhãn (labelPos) so le thông minh để 100% KHÔNG CHỒNG LÊN NHAU
 const BEACON_POINTS = [
   { 
@@ -499,42 +513,47 @@ export default function OpeningScreen() {
                       strokeWidth="2"
                     />
 
-                    {/* TITLE ĐỊA DANH: ĐÃ ĐƯỢC PHÂN TÁCH VỊ TRÍ SO LE, FONT 15PX, ĐẬM VÀ RÕ RÀNG */}
-                    <g className="pointer-events-none select-none">
-                      {/* Khung nhãn - Đảm bảo rộng rãi không bao giờ bị tràn chữ */}
-                      <rect
-                        x={beacon.labelX}
-                        y={beacon.labelY}
-                        width={Math.max(beacon.w, beacon.name.length * 11 + 32)}
-                        height="30"
-                        rx="6"
-                        fill="#08090C"
-                        fillOpacity="0.94"
-                        stroke={isCurrent ? '#FFCD00' : 'rgba(255,205,0,0.6)'}
-                        strokeWidth={isCurrent ? "1.8" : "1"}
-                        filter="drop-shadow(0 2px 8px rgba(0,0,0,0.85))"
-                      />
+                    {/* TITLE ĐỊA DANH: AUTOFIT VỪA KHÍT TỪNG CHỮ, KHÔNG CÒN HỘP TO THỪA */}
+                    {(() => {
+                      const fitWidth = getAutofitWidth(beacon.name);
+                      return (
+                        <g className="pointer-events-none select-none">
+                          {/* Khung nhãn bo tròn viền vừa vặn */}
+                          <rect
+                            x={beacon.labelX}
+                            y={beacon.labelY}
+                            width={fitWidth}
+                            height="22"
+                            rx="11"
+                            fill="#08090C"
+                            fillOpacity="0.94"
+                            stroke={isCurrent ? '#FFCD00' : 'rgba(255,205,0,0.65)'}
+                            strokeWidth={isCurrent ? "1.5" : "1"}
+                            filter="drop-shadow(0 2px 6px rgba(0,0,0,0.85))"
+                          />
 
-                      {/* Chấm chỉ điểm */}
-                      <circle
-                        cx={beacon.labelX + 10}
-                        cy={beacon.labelY + 14}
-                        r="3.5"
-                        fill="#DA251D"
-                      />
+                          {/* Chấm chỉ điểm */}
+                          <circle
+                            cx={beacon.labelX + 8}
+                            cy={beacon.labelY + 11}
+                            r="2.8"
+                            fill="#DA251D"
+                          />
 
-                      {/* Tên địa danh to rõ, không chạm nhau */}
-                      <text
-                        x={beacon.labelX + 18}
-                        y={beacon.labelY + 19}
-                        fill="#FFCD00"
-                        fontSize="14.5"
-                        fontWeight="700"
-                        letterSpacing="0.3"
-                      >
-                        {beacon.name}
-                      </text>
-                    </g>
+                          {/* Tên địa danh vừa vặn, chữ gọn gàng thanh thoát */}
+                          <text
+                            x={beacon.labelX + 15}
+                            y={beacon.labelY + 14.5}
+                            fill="#FFCD00"
+                            fontSize="11.5"
+                            fontWeight="700"
+                            letterSpacing="0.2"
+                          >
+                            {beacon.name}
+                          </text>
+                        </g>
+                      );
+                    })()}
                   </g>
                 );
               })}
