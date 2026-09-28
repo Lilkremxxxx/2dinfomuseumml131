@@ -302,7 +302,7 @@ export default function BackgroundMusic() {
       {/* Floating Background Music Controller Widget */}
       <aside
         aria-label="Điều khiển nhạc nền triển lãm"
-        className={`fixed top-4 left-4 z-50 transition-all duration-300 select-none ${
+        className={`fixed top-20 left-4 z-50 transition-all duration-300 select-none ${
           isExpanded ? 'w-80' : 'w-auto'
         }`}
       >
