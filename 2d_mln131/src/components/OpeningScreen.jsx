@@ -78,9 +78,9 @@ const BEACON_POINTS = [
     x: 520, 
     y: 415, 
     desc: 'Chủ quyền biển đảo thiêng liêng đời đời bất khả xâm phạm',
-    labelX: 350, 
-    labelY: 410,
-    w: 160
+    labelX: 460, 
+    labelY: 435,
+    w: 168
   },
   { 
     id: 'daklak', 
@@ -133,9 +133,9 @@ const BEACON_POINTS = [
     x: 535, 
     y: 700, 
     desc: 'Phên dậu tiền tiêu nghìn đời của Tổ quốc trên Biển Đông',
-    labelX: 365, 
-    labelY: 695,
-    w: 160
+    labelX: 470, 
+    labelY: 720,
+    w: 168
   },
   { 
     id: 'phu-quoc', 
@@ -422,24 +422,6 @@ export default function OpeningScreen() {
                 ))}
               </g>
 
-              {/* Quần đảo Hoàng Sa & Trường Sa thiêng liêng */}
-              <g className="pointer-events-none select-none">
-                <rect x="475" y="398" width="160" height="42" rx="6" fill="#090A0C" fillOpacity="0.85" stroke="#FFCD00" strokeWidth="1" />
-                <text x="490" y="420" fill="#FFCD00" fontSize="17" fontWeight="bold" letterSpacing="1.5">
-                  Q.Đ HOÀNG SA
-                </text>
-                <text x="490" y="434" fill="#E8DFCE" fontSize="11" opacity="0.85" fontStyle="italic">
-                  (Chủ quyền Việt Nam)
-                </text>
-
-                <rect x="490" y="682" width="165" height="42" rx="6" fill="#090A0C" fillOpacity="0.85" stroke="#FFCD00" strokeWidth="1" />
-                <text x="505" y="704" fill="#FFCD00" fontSize="17" fontWeight="bold" letterSpacing="1.5">
-                  Q.Đ TRƯỜNG SA
-                </text>
-                <text x="505" y="718" fill="#E8DFCE" fontSize="11" opacity="0.85" fontStyle="italic">
-                  (Chủ quyền Việt Nam)
-                </text>
-              </g>
 
               {/* ĐƯỜNG DẪN NỐI (Được cập nhật trực tiếp tại 60fps qua Ref, siêu mượt) */}
               <polyline
