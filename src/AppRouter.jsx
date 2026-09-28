@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from './App.jsx';
 import EthnicGroupPage from './components/EthnicGroupPage.jsx';
+import OpeningScreen from './components/OpeningScreen.jsx';
+import DanTocInfo from './components/DanTocInfo.jsx';
 
 function NotFoundPage() {
   return (
@@ -21,7 +23,9 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />} />
+        <Route path="/" element={<OpeningScreen />} />
+        <Route path="/home" element={<App />} />
+        <Route path="/dan-toc" element={<DanTocInfo />} />
         <Route path="/dan-toc/:slug" element={<EthnicGroupPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
