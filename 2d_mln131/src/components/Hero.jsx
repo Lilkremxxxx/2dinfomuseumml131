@@ -1,5 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { gsap, useGSAP } from '../lib/gsap';
+import mapImg from '../../Image/1. Ban do viet nam.jpg';
+import './Hero.css';
 
 export default function Hero() {
   const root = useRef(null);

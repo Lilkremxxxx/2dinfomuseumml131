@@ -184,3 +184,32 @@ html.lenis body {
 .animate-gold-pulse {
   animation: gold-pulse 3.5s ease-in-out infinite;
 }
+
+/* Ethnic group profile entrances */
+@keyframes ethnic-rise-in {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); filter: blur(4px); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+}
+
+.ethnic-reveal {
+  animation: ethnic-rise-in 850ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.ethnic-stagger > * {
+  animation: ethnic-rise-in 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.ethnic-stagger > *:nth-child(2) { animation-delay: 90ms; }
+.ethnic-stagger > *:nth-child(3) { animation-delay: 180ms; }
+.ethnic-stagger > *:nth-child(4) { animation-delay: 270ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ethnic-page *,
+  .ethnic-page *::before,
+  .ethnic-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

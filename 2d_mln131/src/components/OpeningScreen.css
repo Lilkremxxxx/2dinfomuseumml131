@@ -1,0 +1,88 @@
+/* OpeningScreen.css */
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.bg-black {
+  background-color: #000;
+}
+
+.map-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.map-image {
+  max-width: 90%;
+  max-height: 90%;
+  animation: fadeIn 2s forwards;
+}
+
+/* Simulated sequential bright dots */
+.dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--dot-x, 50%) var(--dot-y, 0%), #fff 2px, transparent 4px);
+  animation: dotsAppear 3s steps(10) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dotsAppear {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.overlay-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  padding: 2rem;
+}
+
+.intro {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #ffd700; /* gold */
+  margin: 0.5rem 0;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.start-button {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.75rem 1.5rem;
+  background: #8b0000; /* dark red */
+  color: #ffd700;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.start-button:hover {
+  background: #a00000;
+}
