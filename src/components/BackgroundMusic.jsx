@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Music, Volume2, Volume1, VolumeX, Play, Pause, RotateCcw } from 'lucide-react';
 
 const YT_VIDEO_ID = 'NSnkb1IAjbE';
-const DEFAULT_VOLUME = 50; // 50% volume as requested
+const DEFAULT_VOLUME = 100;
 
 export default function BackgroundMusic() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -302,7 +302,7 @@ export default function BackgroundMusic() {
       {/* Floating Background Music Controller Widget */}
       <aside
         aria-label="Điều khiển nhạc nền triển lãm"
-        className={`fixed bottom-4 left-4 z-50 transition-all duration-300 select-none ${
+        className={`fixed top-4 left-4 z-50 transition-all duration-300 select-none ${
           isExpanded ? 'w-80' : 'w-auto'
         }`}
       >
