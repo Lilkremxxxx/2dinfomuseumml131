@@ -34,12 +34,17 @@ export default function DanTocInfo() {
   useEffect(() => {
     if (!autoScrollActive) return undefined;
     let frameId;
+    let previousTime;
     const step = () => {
+      const now = performance.now();
+      const elapsed = previousTime === undefined ? 0 : Math.min(50, now - previousTime);
+      previousTime = now;
       if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
         setAutoScrollActive(false);
         return;
       }
-      window.scrollBy(0, 0.8);
+      // About one story scene (1.12 viewport heights) every 2–3 seconds.
+      window.scrollBy(0, elapsed * 0.36);
       frameId = requestAnimationFrame(step);
     };
     frameId = requestAnimationFrame(step);
