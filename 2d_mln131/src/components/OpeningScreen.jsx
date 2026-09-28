@@ -14,7 +14,7 @@ const BEACON_POINTS = [
     desc: 'Cột cờ Lũng Cú — Điểm cực Bắc thiêng liêng của Tổ quốc',
     labelX: 175, 
     labelY: 15,
-    w: 165
+    w: 185
   },
   { 
     id: 'ha-noi', 
@@ -23,9 +23,9 @@ const BEACON_POINTS = [
     x: 182, 
     y: 135, 
     desc: 'Trái tim ngàn năm văn hiến của non sông gấm vóc',
-    labelX: 40, 
+    labelX: 30, 
     labelY: 125,
-    w: 130
+    w: 155
   },
   { 
     id: 'ha-long', 
@@ -36,7 +36,7 @@ const BEACON_POINTS = [
     desc: 'Vịnh Hạ Long & Cửa ngõ biển Đông Bắc hào hùng',
     labelX: 286, 
     labelY: 112,
-    w: 195
+    w: 220
   },
   { 
     id: 'nghe-an', 
@@ -45,9 +45,9 @@ const BEACON_POINTS = [
     x: 140, 
     y: 229, 
     desc: 'Dải đất Lam Hồng địa linh nhân kiệt',
-    labelX: 15, 
+    labelX: 8, 
     labelY: 219,
-    w: 165
+    w: 205
   },
   { 
     id: 'hue', 
@@ -56,9 +56,9 @@ const BEACON_POINTS = [
     x: 275, 
     y: 375, 
     desc: 'Di sản Cố đô — Khúc ruột miền Trung gắn kết',
-    labelX: 160, 
+    labelX: 150, 
     labelY: 365,
-    w: 105
+    w: 125
   },
   { 
     id: 'da-nang', 
@@ -69,18 +69,18 @@ const BEACON_POINTS = [
     desc: 'Đầu sóng ngọn gió duyên hải miền Trung',
     labelX: 329, 
     labelY: 393,
-    w: 185
+    w: 205
   },
   { 
     id: 'hoang-sa', 
     name: 'Quần đảo Hoàng Sa', 
     region: 'Biển Đảo', 
-    x: 405, 
-    y: 385, 
+    x: 530, 
+    y: 445, 
     desc: 'Chủ quyền biển đảo thiêng liêng đời đời bất khả xâm phạm',
-    labelX: 420, 
-    labelY: 370,
-    w: 168
+    labelX: 375, 
+    labelY: 430,
+    w: 195
   },
   { 
     id: 'daklak', 
@@ -89,9 +89,9 @@ const BEACON_POINTS = [
     x: 317, 
     y: 578, 
     desc: 'Đại ngàn rừng thiêng — Không gian văn hóa cồng chiêng',
-    labelX: 35, 
+    labelX: 8, 
     labelY: 568,
-    w: 168
+    w: 225
   },
   { 
     id: 'khanh-hoa', 
@@ -102,7 +102,7 @@ const BEACON_POINTS = [
     desc: 'Duyên hải Nam Trung Bộ kiên cường, giàu đẹp',
     labelX: 380, 
     labelY: 592,
-    w: 195
+    w: 220
   },
   { 
     id: 'hcm', 
@@ -113,7 +113,7 @@ const BEACON_POINTS = [
     desc: 'Đô thị phương Nam rực rỡ mang tên Bác',
     labelX: 256, 
     labelY: 674,
-    w: 155
+    w: 175
   },
   { 
     id: 'can-tho', 
@@ -122,20 +122,20 @@ const BEACON_POINTS = [
     x: 176, 
     y: 718, 
     desc: 'Chín rồng sông nước phù sa trù phú, nghĩa tình',
-    labelX: 25, 
+    labelX: 18, 
     labelY: 708,
-    w: 142
+    w: 165
   },
   { 
     id: 'truong-sa', 
     name: 'Quần đảo Trường Sa', 
     region: 'Biển Đảo', 
-    x: 415, 
-    y: 650, 
+    x: 600, 
+    y: 685, 
     desc: 'Phên dậu tiền tiêu nghìn đời của Tổ quốc trên Biển Đông',
-    labelX: 430, 
-    labelY: 635,
-    w: 168
+    labelX: 440, 
+    labelY: 670,
+    w: 195
   },
   { 
     id: 'phu-quoc', 
@@ -144,9 +144,9 @@ const BEACON_POINTS = [
     x: 95, 
     y: 720, 
     desc: 'Đảo ngọc phương Nam giữa vùng biển Tây Nam',
-    labelX: 10, 
+    labelX: 8, 
     labelY: 740,
-    w: 175
+    w: 195
   },
   { 
     id: 'ca-mau', 
@@ -157,7 +157,7 @@ const BEACON_POINTS = [
     desc: 'Điểm cực Nam non sông liền một dải hình chữ S',
     labelX: 162, 
     labelY: 782,
-    w: 155
+    w: 175
   }
 ];
 
@@ -435,19 +435,19 @@ export default function OpeningScreen() {
                 ))}
               </g>
 
-              {/* Cụm đảo Hoàng Sa & Trường Sa gần bờ */}
-              <g id="sacred-islands-near-coast" className="pointer-events-none">
-                {/* Hoàng Sa */}
-                <circle cx="403" cy="383" r="3" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
-                <circle cx="408" cy="387" r="2.5" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
-                <circle cx="414" cy="382" r="2" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
-                <circle cx="399" cy="389" r="1.8" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+              {/* Cụm đảo Hoàng Sa & Trường Sa chuẩn xác ở phía đông */}
+              <g id="sacred-islands-cluster" className="pointer-events-none">
+                {/* Hoàng Sa (Cụm điểm phía đông) */}
+                <circle cx="525" cy="442" r="3.5" fill="#1E293B" stroke="#FFCD00" strokeWidth="1.2" />
+                <circle cx="532" cy="446" r="3" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                <circle cx="538" cy="440" r="2.5" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                <circle cx="520" cy="448" r="2" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
                 
-                {/* Trường Sa */}
-                <circle cx="413" cy="648" r="3.5" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
-                <circle cx="418" cy="653" r="2.8" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
-                <circle cx="423" cy="646" r="2" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
-                <circle cx="409" cy="655" r="2.2" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                {/* Trường Sa (Cụm điểm dịch về phía đông nam) */}
+                <circle cx="595" cy="682" r="4" fill="#1E293B" stroke="#FFCD00" strokeWidth="1.2" />
+                <circle cx="605" cy="687" r="3.2" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                <circle cx="612" cy="678" r="2.5" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                <circle cx="590" cy="692" r="2.2" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
               </g>
 
 
@@ -501,12 +501,12 @@ export default function OpeningScreen() {
 
                     {/* TITLE ĐỊA DANH: ĐÃ ĐƯỢC PHÂN TÁCH VỊ TRÍ SO LE, FONT 15PX, ĐẬM VÀ RÕ RÀNG */}
                     <g className="pointer-events-none select-none">
-                      {/* Khung nhãn */}
+                      {/* Khung nhãn - Đảm bảo rộng rãi không bao giờ bị tràn chữ */}
                       <rect
                         x={beacon.labelX}
                         y={beacon.labelY}
-                        width={beacon.w}
-                        height="28"
+                        width={Math.max(beacon.w, beacon.name.length * 11 + 32)}
+                        height="30"
                         rx="6"
                         fill="#08090C"
                         fillOpacity="0.94"
