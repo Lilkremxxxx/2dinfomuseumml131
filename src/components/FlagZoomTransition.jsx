@@ -16,7 +16,8 @@ export default function FlagZoomTransition({ onComplete }) {
         const distance = Math.max(0, -section.getBoundingClientRect().top);
         const nextProgress = Math.max(0, Math.min(1, distance / scrollableDistance));
         setProgress(nextProgress);
-        if (nextProgress >= 0.98 && !didComplete.current) {
+        // The star fills the viewport well before the end of the scroll range.
+        if (nextProgress >= 0.28 && !didComplete.current) {
           didComplete.current = true;
           onComplete();
         }

@@ -111,6 +111,7 @@ export default function EthnicStorySequence() {
       className="ethnic-story-sequence"
       ref={sequenceRef}
       style={{ height: `${scenes.length * 112}vh` }}
+      id="dan-toc-kham-pha"
       aria-label="Hành trình khám phá khái niệm dân tộc"
     >
       <div className="ethnic-story-stage">

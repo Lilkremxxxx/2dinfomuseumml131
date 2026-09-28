@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Pause, Play } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import InteractiveVietnamMap from './InteractiveVietnamMap';
 import EthnicStorySequence from './EthnicStorySequence';
+import EthnicPhotoArchive from './EthnicPhotoArchive';
 import FlagZoomTransition from './FlagZoomTransition';
 
 // 3 NGUYÊN TẮC CƯƠNG LĨNH LÊNIN (Viết hoa chữ đầu: "Bình đẳng", "Tự quyết", "Liên hiệp")
@@ -27,6 +29,7 @@ const LENIN_MILESTONES = [
 ];
 
 export default function DanTocInfo() {
+  const navigate = useNavigate();
   const [isFlagZoomOpen, setIsFlagZoomOpen] = useState(false);
   const [isEthnicMapOpen, setIsEthnicMapOpen] = useState(false);
   const [autoScrollActive, setAutoScrollActive] = useState(false);
@@ -416,12 +419,37 @@ export default function DanTocInfo() {
       {isFlagZoomOpen && (
         <FlagZoomTransition
           onComplete={() => {
+            setAutoScrollActive(false);
             setIsFlagZoomOpen(false);
             setIsEthnicMapOpen(true);
           }}
         />
       )}
       {isEthnicMapOpen && <InteractiveVietnamMap />}
+
+      {isEthnicMapOpen && (
+        <div className="flex justify-center px-4 py-10">
+          <button
+            type="button"
+            onClick={() => document.getElementById('dan-toc-kham-pha')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+            className="rounded-full border border-vn-gold/50 bg-vn-charcoal/90 px-6 py-3 text-sm font-semibold text-vn-gold shadow-lg transition hover:scale-105 hover:bg-vn-red-deep"
+          >
+            Trở về phần khám phá
+          </button>
+        </div>
+      )}
+
+      {isEthnicMapOpen && <EthnicPhotoArchive />}
+
+      <div className="flex justify-center px-4 py-12">
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="rounded-full border-2 border-vn-gold bg-gradient-to-r from-vn-red-deep via-vn-red to-vn-red-deep px-7 py-4 font-display text-lg font-bold text-vn-gold shadow-[0_0_32px_rgba(218,37,29,0.42)] transition hover:scale-105"
+        >
+          Trở về ban đầu
+        </button>
+      </div>
 
       {/* FOOTER */}
       <footer className="border-t border-vn-gold/15 py-8 text-center text-xs text-vn-ivory/50">
