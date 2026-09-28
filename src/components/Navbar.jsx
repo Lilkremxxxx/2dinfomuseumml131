@@ -13,18 +13,32 @@ export default function Navbar({ autoScrollActive, onToggleAutoScroll }) {
       setScrolled(window.scrollY > 40);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    // Sync with global background music state
+    const handleMusicState = (e) => {
+      if (typeof e.detail?.isPlaying === 'boolean') {
+        setIsAudioPlaying(e.detail.isPlaying);
+      }
+      if (typeof e.detail?.volume === 'number') {
+        setVolume(e.detail.volume / 100);
+      }
+    };
+    window.addEventListener('bg-music-state', handleMusicState);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('bg-music-state', handleMusicState);
+    };
   }, []);
 
   const handleToggleAudio = () => {
-    const playing = soundSynth.toggle();
-    setIsAudioPlaying(playing);
+    window.dispatchEvent(new CustomEvent('toggle-bg-music'));
   };
 
   const handleVolumeChange = (e) => {
     const val = parseFloat(e.target.value);
     setVolume(val);
-    soundSynth.setVolume(val);
+    window.dispatchEvent(new CustomEvent('set-bg-volume', { detail: { volume: Math.round(val * 100) } }));
   };
 
   const navItems = [
