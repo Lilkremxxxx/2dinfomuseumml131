@@ -75,11 +75,11 @@ const BEACON_POINTS = [
     id: 'hoang-sa', 
     name: 'Quần đảo Hoàng Sa', 
     region: 'Biển Đảo', 
-    x: 520, 
-    y: 415, 
+    x: 405, 
+    y: 385, 
     desc: 'Chủ quyền biển đảo thiêng liêng đời đời bất khả xâm phạm',
-    labelX: 460, 
-    labelY: 435,
+    labelX: 420, 
+    labelY: 370,
     w: 168
   },
   { 
@@ -89,7 +89,7 @@ const BEACON_POINTS = [
     x: 317, 
     y: 578, 
     desc: 'Đại ngàn rừng thiêng — Không gian văn hóa cồng chiêng',
-    labelX: 140, 
+    labelX: 35, 
     labelY: 568,
     w: 168
   },
@@ -130,11 +130,11 @@ const BEACON_POINTS = [
     id: 'truong-sa', 
     name: 'Quần đảo Trường Sa', 
     region: 'Biển Đảo', 
-    x: 535, 
-    y: 700, 
+    x: 415, 
+    y: 650, 
     desc: 'Phên dậu tiền tiêu nghìn đời của Tổ quốc trên Biển Đông',
-    labelX: 470, 
-    labelY: 720,
+    labelX: 430, 
+    labelY: 635,
     w: 168
   },
   { 
@@ -391,6 +391,19 @@ export default function OpeningScreen() {
 
           {/* SVG Map Container (Khổ lớn, sắc nét) */}
           <div className="relative w-[360px] sm:w-[500px] md:w-[620px] lg:w-[680px] aspect-[703/900] filter drop-shadow-[0_0_45px_rgba(218,37,29,0.35)]">
+            
+            {/* Nút Xem lại ở bên trên cùng bên phải ngay cạnh map theo yêu cầu */}
+            <div className="absolute -top-3 right-0 sm:-top-4 sm:-right-2 z-40 pointer-events-auto">
+              <button
+                onClick={handleReplay}
+                title="Xem lại hoạt cảnh từ đầu"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-vn-gold/60 bg-vn-black/90 text-vn-gold hover:bg-vn-red-deep/60 hover:text-white transition-all shadow-[0_4px_16px_rgba(0,0,0,0.8)] text-xs font-semibold cursor-pointer backdrop-blur-md hover:scale-105 active:scale-95"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-vn-gold" />
+                <span>Xem lại</span>
+              </button>
+            </div>
+
             <svg
               viewBox="0 0 703 900"
               className="w-full h-full select-none"
@@ -420,6 +433,21 @@ export default function OpeningScreen() {
                     className="transition-colors duration-300 hover:fill-[#251d18]"
                   />
                 ))}
+              </g>
+
+              {/* Cụm đảo Hoàng Sa & Trường Sa gần bờ */}
+              <g id="sacred-islands-near-coast" className="pointer-events-none">
+                {/* Hoàng Sa */}
+                <circle cx="403" cy="383" r="3" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                <circle cx="408" cy="387" r="2.5" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                <circle cx="414" cy="382" r="2" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                <circle cx="399" cy="389" r="1.8" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                
+                {/* Trường Sa */}
+                <circle cx="413" cy="648" r="3.5" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                <circle cx="418" cy="653" r="2.8" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                <circle cx="423" cy="646" r="2" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
+                <circle cx="409" cy="655" r="2.2" fill="#1E293B" stroke="#FFCD00" strokeWidth="1" />
               </g>
 
 
