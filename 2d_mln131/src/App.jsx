@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
 import { gsap, ScrollTrigger } from './lib/gsap';
 import Navbar from './components/Navbar';
@@ -15,6 +16,17 @@ import { MILESTONES_DATA } from './data/milestonesData';
 
 export default function App() {
   const [autoScrollActive, setAutoScrollActive] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) return undefined;
+
+    const timer = window.setTimeout(() => {
+      document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+
+    return () => window.clearTimeout(timer);
+  }, [location.hash]);
 
   // 1. Lenis Smooth Scroll synchronised with GSAP ScrollTrigger ticker
   useEffect(() => {
