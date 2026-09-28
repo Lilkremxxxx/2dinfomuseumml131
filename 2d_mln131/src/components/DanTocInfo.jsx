@@ -3,102 +3,289 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   ArrowRight, 
   ArrowLeft, 
-  MapPin, 
-  ShieldCheck, 
-  Compass, 
   Maximize2, 
   Sparkles, 
   BookOpen, 
-  Layers, 
-  CheckCircle2,
-  Globe2,
-  TrendingUp,
-  Languages,
-  Landmark,
-  Image as ImageIcon,
   RotateCcw,
-  Anchor,
-  Wind
+  CheckCircle2,
+  ChevronRight,
+  ChevronLeft,
+  Lock,
+  Unlock
 } from 'lucide-react';
 import mapTerritoryImg from '../../Image/1. Ban do viet nam.jpg';
 import iconPng from '../../Image/icon.png';
 import InteractiveVietnamMap from './InteractiveVietnamMap';
 
+// 5 YẾU TỐ CẤU THÀNH DÂN TỘC — HÌNH NGŨ GIÁC ĐỀU (REGULAR PENTAGON)
+// Các góc cách đều nhau đúng 72° (-90°, -18°, 54°, 126°, 198°)
+const PENTAGON_ELEMENTS = [
+  {
+    id: 'lanh-tho',
+    name: 'LÃNH THỔ',
+    angle: -90, // Đỉnh trên cùng (Top)
+    color: '#EAB308',
+    glow: 'rgba(234, 179, 8, 0.4)',
+    // Icon hình ảnh Lãnh thổ: Biên cương, bản đồ, núi non
+    renderIcon: () => (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 sm:w-12 sm:h-12 fill-none">
+        <circle cx="24" cy="24" r="22" fill="#1C212D" stroke="#FFCD00" strokeWidth="1.5" />
+        <path d="M14 34 L22 22 L28 28 L34 18 L38 34 Z" fill="url(#goldGrad)" opacity="0.8" />
+        <path d="M18 34 L24 26 L29 34 Z" fill="#DA251D" opacity="0.9" />
+        <circle cx="34" cy="18" r="2.5" fill="#FFCD00" />
+      </svg>
+    )
+  },
+  {
+    id: 'kinh-te',
+    name: 'KINH TẾ',
+    angle: -18, // Góc trên bên phải
+    color: '#F59E0B',
+    glow: 'rgba(245, 158, 11, 0.4)',
+    // Icon hình ảnh Kinh tế: Tiền tệ cổ, giao thương, mùa màng
+    renderIcon: () => (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 sm:w-12 sm:h-12 fill-none">
+        <circle cx="24" cy="24" r="22" fill="#1C212D" stroke="#F59E0B" strokeWidth="1.5" />
+        <circle cx="24" cy="24" r="13" stroke="#FFCD00" strokeWidth="1.8" />
+        <rect x="21" y="21" width="6" height="6" fill="#DA251D" stroke="#FFCD00" strokeWidth="1.2" />
+        <path d="M12 24 L16 24 M32 24 L36 24 M24 12 L24 16 M24 32 L24 36" stroke="#FFCD00" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    )
+  },
+  {
+    id: 'ngon-ngu',
+    name: 'NGÔN NGỮ',
+    angle: 54, // Góc dưới bên phải
+    color: '#38BDF8',
+    glow: 'rgba(56, 189, 248, 0.4)',
+    // Icon hình ảnh Ngôn ngữ: Cuốn thư, tiếng nói & chữ viết
+    renderIcon: () => (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 sm:w-12 sm:h-12 fill-none">
+        <circle cx="24" cy="24" r="22" fill="#1C212D" stroke="#38BDF8" strokeWidth="1.5" />
+        <path d="M14 16 C18 14, 22 17, 24 18 C26 17, 30 14, 34 16 L34 32 C30 30, 26 33, 24 34 C22 33, 18 30, 14 32 Z" fill="#0C1929" stroke="#38BDF8" strokeWidth="1.5" />
+        <line x1="24" y1="18" x2="24" y2="34" stroke="#FFCD00" strokeWidth="1.5" />
+        <path d="M18 22 L22 22 M18 26 L22 26 M26 22 L30 22 M26 26 L30 26" stroke="#FFCD00" strokeWidth="1.2" strokeLinecap="round" />
+      </svg>
+    )
+  },
+  {
+    id: 'van-hoa',
+    name: 'VĂN HÓA',
+    angle: 126, // Góc dưới bên trái
+    color: '#EF4444',
+    glow: 'rgba(239, 68, 68, 0.4)',
+    // Icon hình ảnh Văn hóa: Họa tiết Trống đồng Đông Sơn & Hoa sen
+    renderIcon: () => (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 sm:w-12 sm:h-12 fill-none">
+        <circle cx="24" cy="24" r="22" fill="#1C212D" stroke="#EF4444" strokeWidth="1.5" />
+        <circle cx="24" cy="24" r="14" stroke="#FFCD00" strokeWidth="1.2" strokeDasharray="2 3" />
+        <polygon points="24,14 26,22 34,24 26,26 24,34 22,26 14,24 22,22" fill="#DA251D" stroke="#FFCD00" strokeWidth="1" />
+        <circle cx="24" cy="24" r="3" fill="#FFCD00" />
+      </svg>
+    )
+  },
+  {
+    id: 'nha-nuoc',
+    name: 'NHÀ NƯỚC',
+    angle: 198, // Góc trên bên trái
+    color: '#A855F7',
+    glow: 'rgba(168, 85, 247, 0.4)',
+    // Icon hình ảnh Nhà nước: Tòa nhà thể chế pháp quyền, cột mốc chủ quyền
+    renderIcon: () => (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 sm:w-12 sm:h-12 fill-none">
+        <circle cx="24" cy="24" r="22" fill="#1C212D" stroke="#A855F7" strokeWidth="1.5" />
+        <path d="M14 22 L24 14 L34 22 Z" fill="#DA251D" stroke="#FFCD00" strokeWidth="1.2" />
+        <rect x="16" y="22" width="16" height="12" fill="#111827" stroke="#A855F7" strokeWidth="1.2" />
+        <line x1="19" y1="22" x2="19" y2="34" stroke="#FFCD00" strokeWidth="1.2" />
+        <line x1="24" y1="22" x2="24" y2="34" stroke="#FFCD00" strokeWidth="1.2" />
+        <line x1="29" y1="22" x2="29" y2="34" stroke="#FFCD00" strokeWidth="1.2" />
+        <rect x="13" y="34" width="22" height="3" fill="#FFCD00" />
+      </svg>
+    )
+  }
+];
+
+// 3 NGUYÊN TẮC CƯƠNG LĨNH LÊNIN
+const LENIN_MILESTONES = [
+  {
+    index: 0,
+    title: "BÌNH ĐẲNG",
+    badge: "Nguyên tắc 01 · Tự do & Bình quyền",
+    quote: "Không phân biệt dân tộc lớn hay nhỏ, trình độ phát triển cao hay thấp; các dân tộc có quyền lợi và nghĩa vụ ngang nhau.",
+    boatPos: "8%",
+    color: "#FFCD00",
+    roman: "I"
+  },
+  {
+    index: 1,
+    title: "TỰ QUYẾT",
+    badge: "Nguyên tắc 02 · Độc lập & Tự chủ",
+    quote: "Quyền tự quyết là quyền của các dân tộc tự quyết định vận mệnh, lựa chọn chế độ chính trị và con đường phát triển của mình.",
+    boatPos: "50%",
+    color: "#DA251D",
+    roman: "II"
+  },
+  {
+    index: 2,
+    title: "LIÊN HIỆP",
+    badge: "Nguyên tắc 03 · Sức mạnh Đại đoàn kết",
+    quote: "Đoàn kết, liên hiệp công nhân các dân tộc là cơ sở để đoàn kết các tầng lớp nhân dân lao động trong cuộc đấu tranh vì độc lập dân tộc và tiến bộ xã hội.",
+    boatPos: "92%",
+    color: "#FFCD00",
+    roman: "III"
+  }
+];
+
 export default function DanTocInfo() {
   const navigate = useNavigate();
   const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
 
-  // State cho hiệu ứng thu - mở của 5 mảnh ghép
-  // 'expanded' -> 'collapsed' (thu vào) -> 'revealed' (mở ra bản đồ Việt Nam)
-  const [puzzleState, setPuzzleState] = useState('expanded');
+  // --- PHẦN 5 MẢNH GHÉP (NGŨ GIÁC ĐỀU & QUY TỤ) ---
+  const [absorbedIds, setAbsorbedIds] = useState([]); // Mảng chứa id các yếu tố đã bị kéo vào tâm
+  const [animatingId, setAnimatingId] = useState(null);
+  const [giantMapOpacity, setGiantMapOpacity] = useState(1);
+  const giantMapSectionRef = useRef(null);
 
-  // State theo dõi cuộn chuột cho phần Chuyển động Con thuyền (Cương lĩnh Lênin)
-  const boatSectionRef = useRef(null);
-  const [boatProgress, setBoatProgress] = useState(0); // 0 -> 1
+  // Bán kính ngũ giác đều
+  const PENTAGON_RADIUS = 165; // px
 
+  // Hàm quy tụ 1 yếu tố vào tâm
+  const handleAbsorbElement = (id) => {
+    if (absorbedIds.includes(id) || animatingId) return;
+    setAnimatingId(id);
+    setTimeout(() => {
+      setAbsorbedIds((prev) => [...prev, id]);
+      setAnimatingId(null);
+    }, 450);
+  };
+
+  // Hàm quy tụ tất cả lần lượt
+  const handleAbsorbAll = () => {
+    PENTAGON_ELEMENTS.forEach((elem, idx) => {
+      setTimeout(() => {
+        setAbsorbedIds((prev) => (prev.includes(elem.id) ? prev : [...prev, elem.id]));
+      }, idx * 250);
+    });
+  };
+
+  // Hàm đặt lại 5 mảnh ghép
+  const handleResetElements = () => {
+    setAbsorbedIds([]);
+    setAnimatingId(null);
+  };
+
+  const isAllAbsorbed = absorbedIds.length === PENTAGON_ELEMENTS.length;
+
+  // Lắng nghe lăn chuột để làm bản đồ Việt Nam to đùng biến mất dần dần
   useEffect(() => {
-    const handleScroll = () => {
-      if (!boatSectionRef.current) return;
-      const rect = boatSectionRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      const totalScrollable = rect.height - windowHeight;
-      if (totalScrollable <= 0) return;
-
-      const currentScroll = -rect.top;
-      const progress = Math.max(0, Math.min(1, currentScroll / totalScrollable));
-      setBoatProgress(progress);
+    const handleScrollGiantMap = () => {
+      if (!isAllAbsorbed || !giantMapSectionRef.current) return;
+      const rect = giantMapSectionRef.current.getBoundingClientRect();
+      const topOffset = rect.top;
+      if (topOffset < 150) {
+        // Cuộn xuống qua khỏi màn hình -> opacity giảm dần về 0
+        const opacity = Math.max(0, Math.min(1, (topOffset + 300) / 450));
+        setGiantMapOpacity(opacity);
+      } else {
+        setGiantMapOpacity(1);
+      }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    window.addEventListener('scroll', handleScrollGiantMap, { passive: true });
+    return () => window.removeEventListener('scroll', handleScrollGiantMap);
+  }, [isAllAbsorbed]);
 
-  // Xử lý nút kích hoạt hiệu ứng thu - mở 5 mảnh ghép
-  const handleTriggerPuzzle = () => {
-    setPuzzleState('collapsed');
-    setTimeout(() => {
-      setPuzzleState('revealed');
-    }, 900);
-  };
+  // --- PHẦN CON THUYỀN LÊNIN & KHÓA TRANG (WHEEL LOCKING) ---
+  const [currentMilestone, setCurrentMilestone] = useState(0); // 0: Bình Đẳng, 1: Tự Quyết, 2: Liên Hiệp
+  const [boatUnlocked, setBoatUnlocked] = useState(false); // Chỉ mở khóa cuộn xuống khi đã qua hết mốc 3
+  const boatContainerRef = useRef(null);
+  const isWheelingRef = useRef(false);
 
-  const handleResetPuzzle = () => {
-    setPuzzleState('expanded');
-  };
+  // Xử lý sự kiện lăn chuột điều khiển con thuyền rẽ sóng qua 3 mốc
+  useEffect(() => {
+    const el = boatContainerRef.current;
+    if (!el) return;
 
-  // Xác định mốc hiện tại của con thuyền theo boatProgress
-  // Mốc 1: 0.0 -> 0.35 (BÌNH ĐẲNG)
-  // Mốc 2: 0.35 -> 0.70 (TỰ QUYẾT)
-  // Mốc 3: 0.70 -> 1.0 (LIÊN HIỆP)
-  let activeMilestoneIndex = 0;
-  if (boatProgress >= 0.65) activeMilestoneIndex = 2;
-  else if (boatProgress >= 0.32) activeMilestoneIndex = 1;
+    const handleWheel = (e) => {
+      const rect = el.getBoundingClientRect();
+      // Kiểm tra khi container đang ở tầm mắt người dùng
+      const inView = rect.top <= 80 && rect.bottom >= window.innerHeight * 0.4;
+      if (!inView) return;
 
-  const milestonesData = [
-    {
-      title: "BÌNH ĐẲNG",
-      quote: "Không phân biệt dân tộc lớn hay nhỏ, trình độ phát triển cao hay thấp; các dân tộc có quyền lợi và nghĩa vụ ngang nhau.",
-      badge: "Nguyên tắc thứ nhất · Tự do & Bình quyền",
-      color: "#FFCD00"
-    },
-    {
-      title: "TỰ QUYẾT",
-      quote: "Quyền tự quyết là quyền của các dân tộc tự quyết định vận mệnh, lựa chọn chế độ chính trị và con đường phát triển của mình.",
-      badge: "Nguyên tắc thứ hai · Độc lập & Tự chủ",
-      color: "#DA251D"
-    },
-    {
-      title: "LIÊN HIỆP",
-      quote: "Đoàn kết, liên hiệp công nhân các dân tộc là cơ sở để đoàn kết các tầng lớp nhân dân lao động trong cuộc đấu tranh vì độc lập dân tộc và tiến bộ xã hội.",
-      badge: "Nguyên tắc thứ ba · Sức mạnh Đại đoàn kết",
-      color: "#FFCD00"
+      if (!boatUnlocked) {
+        // Nếu chưa hoàn thành 3 mốc thì khóa cuộn xuống
+        if (e.deltaY > 20) {
+          e.preventDefault();
+          if (isWheelingRef.current) return;
+          isWheelingRef.current = true;
+
+          setCurrentMilestone((prev) => {
+            if (prev < 2) {
+              return prev + 1;
+            } else {
+              setBoatUnlocked(true);
+              return 2;
+            }
+          });
+
+          setTimeout(() => {
+            isWheelingRef.current = false;
+          }, 600);
+        } else if (e.deltaY < -20) {
+          // Lăn ngược lên
+          if (currentMilestone > 0) {
+            e.preventDefault();
+            if (isWheelingRef.current) return;
+            isWheelingRef.current = true;
+            setCurrentMilestone((prev) => Math.max(0, prev - 1));
+            setTimeout(() => {
+              isWheelingRef.current = false;
+            }, 600);
+          }
+        }
+      }
+    };
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [boatUnlocked, currentMilestone]);
+
+  // Khi bấm nút chuyển mốc thủ công
+  const handleNextMilestone = () => {
+    if (currentMilestone < 2) {
+      setCurrentMilestone((prev) => prev + 1);
+      if (currentMilestone === 1) {
+        setBoatUnlocked(true);
+      }
+    } else {
+      setBoatUnlocked(true);
+      document.getElementById('ban-sac-dan-toc')?.scrollIntoView({ behavior: 'smooth' });
     }
-  ];
+  };
+
+  const handlePrevMilestone = () => {
+    if (currentMilestone > 0) {
+      setCurrentMilestone((prev) => prev - 1);
+    }
+  };
+
+  const activeData = LENIN_MILESTONES[currentMilestone];
 
   return (
     <div className="relative min-h-screen w-full bg-[#07080A] text-[#F5EFE6] selection:bg-vn-red selection:text-vn-gold overflow-x-hidden">
       
-      {/* 1. LỚP NỀN ĐIỆN ẢNH BẢO TÀNG */}
+      {/* SVG Defs chung */}
+      <svg className="hidden">
+        <defs>
+          <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#FFF2A3" />
+            <stop offset="50%" stopColor="#FFCD00" />
+            <stop offset="100%" stopColor="#C99700" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      {/* LỚP NỀN ĐIỆN ẢNH BẢO TÀNG */}
       <div 
         className="fixed inset-0 pointer-events-none opacity-20 mix-blend-screen bg-cover bg-center"
         style={{ backgroundImage: 'url(/images/stars.webp)' }}
@@ -107,8 +294,8 @@ export default function DanTocInfo() {
       <div className="film-grain pointer-events-none" />
       <div className="film-vignette pointer-events-none" />
 
-      {/* 2. THANH NAVIGATION TOP */}
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-vn-black/85 border-b border-vn-gold/25 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      {/* THANH NAVIGATION TOP */}
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-vn-black/85 border-b border-vn-gold/25 px-4 sm:px-8 py-3 flex items-center justify-between">
         <Link 
           to="/"
           className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-vn-gold-antique hover:text-vn-gold transition group"
@@ -119,7 +306,7 @@ export default function DanTocInfo() {
 
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-vn-charcoal/90 border border-vn-gold/30 text-[11px] font-semibold uppercase tracking-[0.25em] text-vn-gold">
           <BookOpen className="w-3.5 h-3.5 text-vn-gold" />
-          <span>Chương 6 · Chủ Nghĩa Xã Hội Khoa Học</span>
+          <span>Chương 6 · Vấn Đề Dân Tộc & Tôn Giáo</span>
         </div>
 
         <button
@@ -131,43 +318,40 @@ export default function DanTocInfo() {
         </button>
       </header>
 
-      {/* 3. NỘI DUNG CHÍNH */}
-      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      {/* NỘI DUNG CHÍNH */}
+      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         
-        {/* KHỐI TIÊU ĐỀ CHÍNH: DÂN TỘC LÀ GÌ? */}
-        <div className="relative mb-16 sm:mb-24">
-          <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-vn-gold/80 mb-3">
+        {/* TIÊU ĐỀ: DÂN TỘC LÀ GÌ? (Đã bỏ toàn bộ text nhỏ ở dưới) */}
+        <div className="relative mb-14 sm:mb-20 text-center sm:text-left">
+          <div className="flex items-center justify-center sm:justify-start gap-2 text-xs uppercase tracking-widest text-vn-gold/80 mb-3">
             <span className="w-2.5 h-2.5 rounded-full bg-vn-red animate-pulse" />
-            <span>Lý luận Mác - Lênin về vấn đề dân tộc</span>
+            <span>Khái niệm căn bản môn MLN131</span>
           </div>
 
-          <h1 className="font-display font-black text-5xl sm:text-7xl md:text-8xl tracking-tight text-white drop-shadow-[0_0_40px_rgba(255,205,0,0.45)] leading-none">
+          <h1 className="font-display font-black text-5xl sm:text-7xl md:text-8xl tracking-tight text-white drop-shadow-[0_0_40px_rgba(255,205,0,0.4)] leading-none">
             DÂN TỘC LÀ GÌ?
           </h1>
 
-          <p className="mt-6 max-w-3xl font-heading text-lg sm:text-2xl text-vn-gold font-light italic leading-relaxed">
-            “Dân tộc là hình thức cộng đồng người ổn định, phát triển cao nhất trong lịch sử nhân loại, hình thành trên cơ sở gắn kết chặt chẽ của các yếu tố lãnh thổ, kinh tế, ngôn ngữ, văn hóa và thể chế.”
-          </p>
-
-          <div className="w-full h-px bg-gradient-to-r from-vn-gold/60 via-vn-red/40 to-transparent mt-10" />
+          <div className="w-full h-px bg-gradient-to-r from-vn-gold/60 via-vn-red/40 to-transparent mt-8" />
         </div>
 
         {/* -------------------------------------------------------------
             PHẦN ①: LÀ CỘNG ĐỒNG VỀ LÃNH THỔ
+            (Chỉ để mỗi ảnh map Việt Nam và câu nói của Bác Hồ, bỏ hết text giải thích)
             ------------------------------------------------------------- */}
         <section id="dac-trung-1" className="relative rounded-3xl bg-gradient-to-b from-[#13161D] to-[#0A0C10] border-2 border-vn-gold/60 p-6 sm:p-10 md:p-12 shadow-[0_20px_70px_rgba(0,0,0,0.85)] mb-20 overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-[radial-gradient(ellipse_at_top_right,rgba(255,205,0,0.12)_0%,transparent_70%)] pointer-events-none" />
 
           {/* Heading ① */}
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-b border-vn-gold/30 pb-8 mb-10">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-vn-red-deep via-vn-red to-vn-red-dark border-2 border-vn-gold flex items-center justify-center shadow-[0_0_30px_rgba(218,37,29,0.6)] shrink-0">
-              <span className="font-display font-black text-3xl sm:text-4xl text-vn-gold drop-shadow-md">
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-b border-vn-gold/30 pb-6 mb-8">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-vn-red-deep via-vn-red to-vn-red-dark border-2 border-vn-gold flex items-center justify-center shadow-[0_0_30px_rgba(218,37,29,0.6)] shrink-0">
+              <span className="font-display font-black text-2xl sm:text-3xl text-vn-gold drop-shadow-md">
                 ①
               </span>
             </div>
 
             <div>
-              <div className="inline-block px-3 py-1 rounded-full bg-vn-gold/15 border border-vn-gold/40 text-[10px] font-bold uppercase tracking-[0.25em] text-vn-gold mb-1.5">
+              <div className="inline-block px-3 py-0.5 rounded-full bg-vn-gold/15 border border-vn-gold/40 text-[10px] font-bold uppercase tracking-[0.25em] text-vn-gold mb-1">
                 Đặc trưng bản thể cốt lõi số một
               </div>
               <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-wide leading-tight text-glow-gold">
@@ -176,13 +360,13 @@ export default function DanTocInfo() {
             </div>
           </div>
 
-          {/* Nội dung kết hợp giữa Tư liệu Hình ảnh Bản đồ và Phân tích */}
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* CHỈ ĐỂ MỖI ẢNH MAP VIỆT NAM VÀ ĐỂ LẠI CÂU NÓI CỦA BÁC */}
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
-            {/* Ảnh bản đồ tư liệu quý */}
+            {/* Ảnh Bản Đồ Việt Nam */}
             <div className="lg:col-span-6 flex flex-col items-center">
               <div 
-                className="relative group w-full max-w-[500px] rounded-2xl p-3 bg-gradient-to-b from-[#1E232F] to-[#0E1015] border-2 border-vn-gold/60 shadow-[0_15px_50px_rgba(0,0,0,0.9)] overflow-hidden cursor-pointer"
+                className="relative group w-full max-w-[460px] rounded-2xl p-3 bg-gradient-to-b from-[#1E232F] to-[#0E1015] border-2 border-vn-gold/60 shadow-[0_15px_50px_rgba(0,0,0,0.9)] overflow-hidden cursor-pointer"
                 onClick={() => setIsZoomModalOpen(true)}
               >
                 <div className="relative overflow-hidden rounded-xl bg-vn-black aspect-[3/4] flex items-center justify-center">
@@ -197,224 +381,29 @@ export default function DanTocInfo() {
                     <span>Xem phóng to</span>
                   </div>
                 </div>
-                <div className="mt-3.5 px-2 pb-1 text-center">
-                  <p className="font-heading italic text-sm text-vn-gold-antique">
-                    Tư liệu số: Bản đồ Lãnh thổ & Chủ quyền Quốc gia Việt Nam
+                <div className="mt-3 px-2 pb-1 text-center">
+                  <p className="font-heading italic text-xs text-vn-gold-antique">
+                    Bản đồ Lãnh thổ & Chủ quyền Quốc gia Việt Nam liền một dải
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Luận điểm & Trích dẫn Bác Hồ */}
-            <div className="lg:col-span-6 space-y-6">
-              <div className="p-5 rounded-2xl bg-vn-charcoal/90 border border-vn-gold/25 shadow-lg">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-vn-gold mb-2">
-                  <MapPin className="w-4 h-4 text-vn-red" />
-                  <span>Không gian sinh tồn bất khả xâm phạm</span>
-                </div>
-                <p className="text-sm sm:text-base leading-relaxed text-vn-ivory/85">
-                  Lãnh thổ là nơi sinh tồn, lao động, sản xuất và phát triển ngàn đời của một cộng đồng người. Không có lãnh thổ thì không thể hình thành và duy trì một dân tộc độc lập có chủ quyền.
-                </p>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-vn-charcoal/90 border border-vn-gold/25 shadow-lg">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-vn-gold mb-2">
-                  <ShieldCheck className="w-4 h-4 text-vn-red" />
-                  <span>Chủ quyền trọn vẹn non sông & biển đảo</span>
-                </div>
-                <p className="text-sm sm:text-base leading-relaxed text-vn-ivory/85">
-                  Lãnh thổ của dân tộc Việt Nam bao gồm toàn vẹn <strong>vùng đất, vùng trời, vùng biển, thềm lục địa</strong> và hệ thống hải đảo tiền tiêu, tiêu biểu là hai quần đảo thiêng liêng <strong>Hoàng Sa và Trường Sa</strong>.
-                </p>
-              </div>
-
-              <div className="relative p-6 rounded-2xl bg-gradient-to-r from-vn-red-deep/30 to-vn-black/80 border-l-4 border-vn-gold border-y border-r border-vn-gold/20 shadow-xl">
-                <Sparkles className="w-5 h-5 text-vn-gold mb-2" />
-                <blockquote className="font-heading italic text-base sm:text-lg text-vn-ivory font-light leading-relaxed">
+            {/* Câu nói của Bác Hồ trang trọng */}
+            <div className="lg:col-span-6 flex flex-col justify-center">
+              <div className="relative p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-vn-red-deep/40 via-vn-black/90 to-[#10141C] border-2 border-vn-gold/60 shadow-[0_0_50px_rgba(218,37,29,0.35)] backdrop-blur-xl">
+                <Sparkles className="w-8 h-8 text-vn-gold mb-4 animate-pulse" />
+                <blockquote className="font-heading italic text-xl sm:text-2xl md:text-3xl text-white font-normal leading-relaxed drop-shadow-md">
                   “Nước Việt Nam là một, dân tộc Việt Nam là một. Sông có thể cạn, núi có thể mòn, song chân lý ấy không bao giờ thay đổi.”
                 </blockquote>
-                <div className="mt-2 text-xs uppercase tracking-widest text-vn-gold font-bold text-right">
-                  — Chủ tịch Hồ Chí Minh
+                <div className="mt-6 flex items-center justify-between border-t border-vn-gold/30 pt-4">
+                  <span className="text-[11px] font-mono uppercase tracking-widest text-vn-gold/70">
+                    Chân lý độc lập chủ quyền
+                  </span>
+                  <span className="text-sm font-display font-bold uppercase tracking-wider text-vn-gold">
+                    — Chủ tịch Hồ Chí Minh
+                  </span>
                 </div>
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* -------------------------------------------------------------
-            PHẦN ②: CỘNG ĐỒNG VỀ KINH TẾ
-            3 khung ảnh xuất hiện mượt mà (đề xuất: staggered float-in)
-            ------------------------------------------------------------- */}
-        <section id="dac-trung-2" className="relative rounded-3xl bg-gradient-to-b from-[#13161D] to-[#0A0C10] border-2 border-vn-gold/50 p-6 sm:p-10 md:p-12 shadow-[0_20px_70px_rgba(0,0,0,0.85)] mb-20 overflow-hidden">
-          
-          {/* Heading ② */}
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-b border-vn-gold/30 pb-8 mb-10">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-vn-bronze via-[#B8860B] to-vn-charcoal border-2 border-vn-gold flex items-center justify-center shadow-[0_0_30px_rgba(212,167,44,0.4)] shrink-0">
-              <span className="font-display font-black text-3xl sm:text-4xl text-vn-gold drop-shadow-md">
-                ②
-              </span>
-            </div>
-
-            <div>
-              <div className="inline-block px-3 py-1 rounded-full bg-vn-gold/15 border border-vn-gold/40 text-[10px] font-bold uppercase tracking-[0.25em] text-vn-gold mb-1.5">
-                Đặc trưng bản thể thứ hai
-              </div>
-              <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-wide leading-tight text-glow-gold">
-                Cộng đồng về kinh tế
-              </h2>
-              <p className="text-sm text-vn-ivory/70 mt-1 max-w-2xl">
-                Mối liên hệ kinh tế thường xuyên, một thị trường dân tộc thống nhất là chất keo bền chặt gắn kết các bộ phận cư dân thành một khối thống nhất.
-              </p>
-            </div>
-          </div>
-
-          {/* 3 KHUNG ẢNH XUẤT HIỆN MƯỢT MÀ (Được thiết kế khung di sản sẵn sàng hiển thị) */}
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            
-            {/* Ảnh 1 */}
-            <div className="group relative rounded-2xl p-3 bg-gradient-to-b from-[#1C202B] to-[#0E1015] border border-vn-gold/40 hover:border-vn-gold shadow-xl hover:-translate-y-2 transition-all duration-500">
-              <div className="relative aspect-[4/3] rounded-xl bg-vn-charcoal/90 border border-dashed border-vn-gold/30 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
-                <TrendingUp className="w-10 h-10 text-vn-gold/60 mb-3 group-hover:scale-110 transition-transform duration-300" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-vn-gold">
-                  Tư liệu kinh tế 01
-                </span>
-                <span className="text-[11px] text-vn-ivory/60 mt-1">
-                  Nền kinh tế nông nghiệp lúa nước & làng nghề truyền thống
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="mt-3 text-center">
-                <p className="font-heading italic text-xs text-vn-gold-antique">
-                  Mảnh ghép: Sản xuất & Tự cung tự cấp
-                </p>
-              </div>
-            </div>
-
-            {/* Ảnh 2 */}
-            <div className="group relative rounded-2xl p-3 bg-gradient-to-b from-[#1C202B] to-[#0E1015] border border-vn-gold/40 hover:border-vn-gold shadow-xl hover:-translate-y-2 transition-all duration-500 delay-100">
-              <div className="relative aspect-[4/3] rounded-xl bg-vn-charcoal/90 border border-dashed border-vn-gold/30 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
-                <ImageIcon className="w-10 h-10 text-vn-gold/60 mb-3 group-hover:scale-110 transition-transform duration-300" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-vn-gold">
-                  Tư liệu kinh tế 02
-                </span>
-                <span className="text-[11px] text-vn-ivory/60 mt-1">
-                  Giao thương đường thủy, chợ nổi & kết nối liên vùng
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="mt-3 text-center">
-                <p className="font-heading italic text-xs text-vn-gold-antique">
-                  Mảnh ghép: Mạng lưới lưu thông hàng hóa
-                </p>
-              </div>
-            </div>
-
-            {/* Ảnh 3 */}
-            <div className="group relative rounded-2xl p-3 bg-gradient-to-b from-[#1C202B] to-[#0E1015] border border-vn-gold/40 hover:border-vn-gold shadow-xl hover:-translate-y-2 transition-all duration-500 delay-200">
-              <div className="relative aspect-[4/3] rounded-xl bg-vn-charcoal/90 border border-dashed border-vn-gold/30 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
-                <Globe2 className="w-10 h-10 text-vn-gold/60 mb-3 group-hover:scale-110 transition-transform duration-300" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-vn-gold">
-                  Tư liệu kinh tế 03
-                </span>
-                <span className="text-[11px] text-vn-ivory/60 mt-1">
-                  Thị trường dân tộc thống nhất thời kỳ hội nhập
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="mt-3 text-center">
-                <p className="font-heading italic text-xs text-vn-gold-antique">
-                  Mảnh ghép: Nền kinh tế độc lập tự chủ
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* -------------------------------------------------------------
-            PHẦN ③: CỘNG ĐỒNG VỀ VĂN HÓA VÀ NGÔN NGỮ
-            3 khung ảnh xuất hiện mượt mà
-            ------------------------------------------------------------- */}
-        <section id="dac-trung-3" className="relative rounded-3xl bg-gradient-to-b from-[#13161D] to-[#0A0C10] border-2 border-vn-gold/50 p-6 sm:p-10 md:p-12 shadow-[0_20px_70px_rgba(0,0,0,0.85)] mb-20 overflow-hidden">
-          
-          {/* Heading ③ */}
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-b border-vn-gold/30 pb-8 mb-10">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-vn-jade via-[#1E4D3E] to-vn-charcoal border-2 border-vn-gold flex items-center justify-center shadow-[0_0_30px_rgba(31,78,63,0.5)] shrink-0">
-              <span className="font-display font-black text-3xl sm:text-4xl text-vn-gold drop-shadow-md">
-                ③
-              </span>
-            </div>
-
-            <div>
-              <div className="inline-block px-3 py-1 rounded-full bg-vn-gold/15 border border-vn-gold/40 text-[10px] font-bold uppercase tracking-[0.25em] text-vn-gold mb-1.5">
-                Đặc trưng bản thể thứ ba
-              </div>
-              <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-white tracking-wide leading-tight text-glow-gold">
-                Là Cộng đồng về văn hóa và ngôn ngữ
-              </h2>
-              <p className="text-sm text-vn-ivory/70 mt-1 max-w-2xl">
-                Ngôn ngữ chung là công cụ giao tiếp thống nhất; nền văn hóa chung với tâm lý dân tộc đặc trưng thể hiện cốt cách, bản sắc ngàn đời của non sông gấm vóc.
-              </p>
-            </div>
-          </div>
-
-          {/* 3 KHUNG ẢNH XUẤT HIỆN MƯỢT MÀ */}
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            
-            {/* Ảnh 1 */}
-            <div className="group relative rounded-2xl p-3 bg-gradient-to-b from-[#1C202B] to-[#0E1015] border border-vn-gold/40 hover:border-vn-gold shadow-xl hover:-translate-y-2 transition-all duration-500">
-              <div className="relative aspect-[4/3] rounded-xl bg-vn-charcoal/90 border border-dashed border-vn-gold/30 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
-                <Languages className="w-10 h-10 text-vn-gold/60 mb-3 group-hover:scale-110 transition-transform duration-300" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-vn-gold">
-                  Tư liệu văn hóa 01
-                </span>
-                <span className="text-[11px] text-vn-ivory/60 mt-1">
-                  Tiếng nói và chữ viết — Cầu nối giao tiếp thống nhất quốc gia
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="mt-3 text-center">
-                <p className="font-heading italic text-xs text-vn-gold-antique">
-                  Mảnh ghép: Tiếng Việt & chữ Quốc ngữ
-                </p>
-              </div>
-            </div>
-
-            {/* Ảnh 2 */}
-            <div className="group relative rounded-2xl p-3 bg-gradient-to-b from-[#1C202B] to-[#0E1015] border border-vn-gold/40 hover:border-vn-gold shadow-xl hover:-translate-y-2 transition-all duration-500 delay-100">
-              <div className="relative aspect-[4/3] rounded-xl bg-vn-charcoal/90 border border-dashed border-vn-gold/30 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
-                <Sparkles className="w-10 h-10 text-vn-gold/60 mb-3 group-hover:scale-110 transition-transform duration-300" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-vn-gold">
-                  Tư liệu văn hóa 02
-                </span>
-                <span className="text-[11px] text-vn-ivory/60 mt-1">
-                  Trống đồng Đông Sơn & Hồn cốt văn hóa nghìn năm rực rỡ
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="mt-3 text-center">
-                <p className="font-heading italic text-xs text-vn-gold-antique">
-                  Mảnh ghép: Di sản văn hóa vật thể
-                </p>
-              </div>
-            </div>
-
-            {/* Ảnh 3 */}
-            <div className="group relative rounded-2xl p-3 bg-gradient-to-b from-[#1C202B] to-[#0E1015] border border-vn-gold/40 hover:border-vn-gold shadow-xl hover:-translate-y-2 transition-all duration-500 delay-200">
-              <div className="relative aspect-[4/3] rounded-xl bg-vn-charcoal/90 border border-dashed border-vn-gold/30 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
-                <Landmark className="w-10 h-10 text-vn-gold/60 mb-3 group-hover:scale-110 transition-transform duration-300" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-vn-gold">
-                  Tư liệu văn hóa 03
-                </span>
-                <span className="text-[11px] text-vn-ivory/60 mt-1">
-                  Tín ngưỡng thờ cúng Hùng Vương & Lễ hội non sông
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="mt-3 text-center">
-                <p className="font-heading italic text-xs text-vn-gold-antique">
-                  Mảnh ghép: Tâm lý & Cội nguồn dân tộc
-                </p>
               </div>
             </div>
 
@@ -424,15 +413,14 @@ export default function DanTocInfo() {
         {/* -------------------------------------------------------------
             KHỐI TRÍCH DẪN QUAN ĐIỂM CHỦ NGHĨA MÁC – LÊNIN (CHỮ MÀU NỔI)
             ------------------------------------------------------------- */}
-        <section className="relative my-24 p-8 sm:p-14 rounded-3xl bg-gradient-to-r from-[#171A24] via-[#0E1017] to-[#171A24] border-2 border-vn-gold/60 shadow-[0_20px_70px_rgba(0,0,0,0.9)] overflow-hidden">
+        <section className="relative my-20 p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-[#171A24] via-[#0E1017] to-[#171A24] border-2 border-vn-gold/60 shadow-[0_20px_70px_rgba(0,0,0,0.9)] overflow-hidden">
           <div className="absolute -top-10 -right-10 w-64 h-64 bg-radial from-vn-gold/20 to-transparent blur-3xl pointer-events-none" />
 
           <div className="relative z-10 max-w-4xl mx-auto text-center">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-vn-red-deep/40 border border-vn-gold/40 text-xs uppercase tracking-[0.3em] text-vn-gold font-bold mb-6">
-              Nguyên lý Mác - Lênin về phương thức sản xuất
+            <span className="inline-block px-4 py-1.5 rounded-full bg-vn-red-deep/40 border border-vn-gold/40 text-xs uppercase tracking-[0.3em] text-vn-gold font-bold mb-5">
+              Quy luật hình thành & phát triển dân tộc
             </span>
 
-            {/* Đoạn text theo yêu cầu (chữ màu nổi) */}
             <p className="font-heading text-xl sm:text-2xl md:text-3xl font-normal leading-relaxed text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
               “Trong quan điểm của chủ nghĩa Mác – Lênin, dân tộc là quá trình phát triển lâu dài của xã hội loài người, trải qua các hình thức cộng đồng từ thấp đến cao, bao gồm: <span className="text-vn-gold font-bold underline decoration-vn-red decoration-2">thị tộc, bộ lạc, bộ tộc, dân tộc</span>. <span className="text-[#FFD700] font-semibold">Sự biến đổi của phương thức sản xuất chính là nguyên nhân quyết định sự biến đổi của cộng đồng dân tộc</span>.”
             </p>
@@ -440,317 +428,394 @@ export default function DanTocInfo() {
         </section>
 
         {/* -------------------------------------------------------------
-            CHUYỂN ĐỘNG: 5 MẢNH GHÉP - TẠO NÊN MỘT DÂN TỘC
-            (Nền đỏ chữ vàng chữ nghiêng) + Sơ đồ 5 icon + Thu mở
+            5 MẢNH GHÉP — TẠO NÊN MỘT DÂN TỘC (NỀN ĐỎ CHỮ VÀNG CHỮ NGHIÊNG)
+            HÌNH NGŨ GIÁC ĐỀU VỚI BOX "DÂN TỘC" NẰM Ở CHÍNH GIỮA.
+            ANIMATION KÉO/CLICK TỪNG YẾU TỐ QUY TỤ VÀO DÂN TỘC -> BIẾN MẤT.
+            KHI ĐỦ 5 YẾU TỐ -> BẢN ĐỒ VIỆT NAM HIỆN RA TO ĐÙNG, LĂN CHUỘT THÌ MỜ DẦN.
             ------------------------------------------------------------- */}
-        <section className="relative my-24 p-8 sm:p-14 rounded-3xl bg-[#0B0D12] border-2 border-vn-gold/60 shadow-[0_25px_80px_rgba(0,0,0,0.95)] overflow-hidden">
+        <section className="relative my-20 p-6 sm:p-12 rounded-3xl bg-[#090B10] border-2 border-vn-gold/60 shadow-[0_25px_80px_rgba(0,0,0,0.95)] overflow-hidden">
           
-          {/* BANNER NỀN ĐỎ CHỮ VÀNG CHỮ NGHIÊNG theo yêu cầu */}
-          <div className="flex justify-center mb-12">
-            <div className="px-8 sm:px-12 py-3.5 rounded-full bg-gradient-to-r from-[#8F1713] via-[#DA251D] to-[#8F1713] border-2 border-vn-gold shadow-[0_0_35px_rgba(218,37,29,0.7)] transform hover:scale-105 transition-transform">
+          {/* BANNER NỀN ĐỎ CHỮ VÀNG CHỮ NGHIÊNG */}
+          <div className="flex justify-center mb-6">
+            <div className="px-8 sm:px-12 py-3.5 rounded-full bg-gradient-to-r from-[#8F1713] via-[#DA251D] to-[#8F1713] border-2 border-vn-gold shadow-[0_0_35px_rgba(218,37,29,0.7)]">
               <h2 className="font-heading italic font-bold text-lg sm:text-2xl md:text-3xl text-vn-gold tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]">
                 5 MẢNH GHÉP — TẠO NÊN MỘT DÂN TỘC
               </h2>
             </div>
           </div>
 
-          <p className="text-center text-xs sm:text-sm text-vn-ivory/70 max-w-xl mx-auto mb-8 font-light">
-            Sơ đồ hình thái học: 5 yếu tố cấu thành chỉnh thể dân tộc. Nhấn nút để xem hoạt cảnh thu - mở biến hóa thành hình bản đồ Tổ quốc.
+          <p className="text-center text-xs sm:text-sm text-vn-ivory/80 max-w-xl mx-auto mb-6 font-light">
+            Nhấp hoặc kéo từng mảnh ghép bên ngoài quy tụ vào trung tâm <strong className="text-vn-gold">DÂN TỘC</strong>. Cứ mỗi yếu tố hòa nhập sẽ biến mất và tích hợp vào bản thể quốc gia.
           </p>
 
-          {/* Nút kích hoạt hiệu ứng thu mở */}
-          <div className="flex justify-center gap-3 mb-10">
-            {puzzleState === 'expanded' ? (
+          {/* THANH ĐIỀU KHIỂN & ĐẾM TIẾN ĐỘ */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+            <span className="px-3.5 py-1 rounded-full bg-vn-charcoal border border-vn-gold/40 text-xs font-mono font-bold text-vn-gold">
+              Đã hội tụ: {absorbedIds.length} / 5 yếu tố
+            </span>
+            {!isAllAbsorbed && (
               <button
-                onClick={handleTriggerPuzzle}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-vn-gold text-vn-black font-display font-bold text-xs uppercase tracking-widest hover:bg-white shadow-[0_0_25px_rgba(255,205,0,0.5)] transition-all cursor-pointer"
+                onClick={handleAbsorbAll}
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-vn-gold/20 border border-vn-gold text-vn-gold hover:bg-vn-gold hover:text-vn-black text-xs font-bold uppercase tracking-wider transition-colors"
               >
-                <span>Thu gom 5 mảnh ghép → Mở ra Bản đồ Việt Nam</span>
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Quy tụ tất cả 5 yếu tố</span>
               </button>
-            ) : (
+            )}
+            {absorbedIds.length > 0 && (
               <button
-                onClick={handleResetPuzzle}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-vn-gold/50 bg-vn-charcoal text-vn-gold text-xs uppercase tracking-widest hover:bg-vn-black transition-all cursor-pointer"
+                onClick={handleResetElements}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-black/50 border border-vn-ivory/20 text-vn-ivory/70 hover:text-white text-xs transition-colors"
+                title="Đặt lại"
               >
-                <RotateCcw className="w-4 h-4" />
-                <span>Xem lại sơ đồ 5 icon</span>
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Đặt lại</span>
               </button>
             )}
           </div>
 
-          {/* SƠ ĐỒ 5 ICON (Sắp xếp theo thứ tự yêu cầu:
-              - Hàng 1: Lãnh thổ ở trên cùng
-              - Hàng 2: Kinh tế và Ngôn ngữ
-              - Hàng 3: Dân tộc ở chính giữa (ngay dưới Lãnh thổ)
-              - Hàng 4: Văn hóa và Nhà nước (thẳng hàng lần lượt Kinh tế và Nhà nước)
-          ) */}
-          {puzzleState !== 'revealed' ? (
-            <div className={`relative max-w-lg mx-auto py-8 transition-all duration-700 ease-in-out ${
-              puzzleState === 'collapsed' ? 'scale-50 opacity-40 blur-sm' : 'scale-100 opacity-100'
-            }`}>
+          {/* SÂN KHẤU HÌNH NGŨ GIÁC ĐỀU (REGULAR PENTAGON STAGE) */}
+          <div className="relative w-full max-w-[500px] h-[440px] sm:h-[480px] mx-auto flex items-center justify-center select-none">
+            
+            {/* Vòng tròn ngũ giác kết nối huyền ảo */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="-250 -240 500 480">
+              {/* Vòng hào quang quỹ đạo */}
+              <circle cx="0" cy="0" r={PENTAGON_RADIUS} fill="none" stroke="rgba(255,205,0,0.18)" strokeWidth="1.5" strokeDasharray="3 4" />
               
-              {/* Hàng 1: LÃNH THỔ (Trên cùng) */}
-              <div className="flex justify-center mb-6">
-                <div className="flex flex-col items-center p-4 rounded-2xl bg-gradient-to-b from-[#222938] to-[#12151D] border-2 border-vn-gold shadow-lg w-36 text-center transform hover:scale-105 transition-transform">
-                  <img src={iconPng} alt="Lãnh thổ" className="w-10 h-10 object-contain mb-1.5 filter drop-shadow" />
-                  <span className="text-xs font-bold text-vn-gold uppercase">Lãnh Thổ</span>
-                  <span className="text-[10px] text-vn-ivory/60">Không gian chung</span>
-                </div>
-              </div>
+              {/* Các đường line nối từ 5 đỉnh vào tâm Dân tộc */}
+              {PENTAGON_ELEMENTS.map((elem) => {
+                const isAbsorbed = absorbedIds.includes(elem.id);
+                const rad = (elem.angle * Math.PI) / 180;
+                const x = PENTAGON_RADIUS * Math.cos(rad);
+                const y = PENTAGON_RADIUS * Math.sin(rad);
+                return (
+                  <line 
+                    key={`line-${elem.id}`}
+                    x1="0" 
+                    y1="0" 
+                    x2={x} 
+                    y2={y} 
+                    stroke={isAbsorbed ? "rgba(218,37,29,0.5)" : "rgba(255,205,0,0.3)"} 
+                    strokeWidth={isAbsorbed ? "2" : "1.2"}
+                    strokeDasharray={isAbsorbed ? "none" : "2 3"}
+                  />
+                );
+              })}
+            </svg>
 
-              {/* Hàng 2: KINH TẾ & NGÔN NGỮ */}
-              <div className="flex justify-between items-center px-4 mb-6">
-                {/* Kinh tế (Trái) */}
-                <div className="flex flex-col items-center p-4 rounded-2xl bg-gradient-to-b from-[#222938] to-[#12151D] border-2 border-vn-gold shadow-lg w-36 text-center transform hover:scale-105 transition-transform">
-                  <img src={iconPng} alt="Kinh tế" className="w-10 h-10 object-contain mb-1.5 filter drop-shadow" />
-                  <span className="text-xs font-bold text-vn-gold uppercase">Kinh Tế</span>
-                  <span className="text-[10px] text-vn-ivory/60">Thị trường gắn kết</span>
-                </div>
-
-                {/* Ngôn ngữ (Phải) */}
-                <div className="flex flex-col items-center p-4 rounded-2xl bg-gradient-to-b from-[#222938] to-[#12151D] border-2 border-vn-gold shadow-lg w-36 text-center transform hover:scale-105 transition-transform">
-                  <img src={iconPng} alt="Ngôn ngữ" className="w-10 h-10 object-contain mb-1.5 filter drop-shadow" />
-                  <span className="text-xs font-bold text-vn-gold uppercase">Ngôn Ngữ</span>
-                  <span className="text-[10px] text-vn-ivory/60">Giao tiếp thống nhất</span>
-                </div>
-              </div>
-
-              {/* Hàng 3: DÂN TỘC (Ở chính giữa, đứng ngay dưới Lãnh thổ) */}
-              <div className="flex justify-center mb-6">
-                <div className="flex flex-col items-center p-5 rounded-3xl bg-gradient-to-br from-vn-red-deep via-vn-red to-vn-red-dark border-3 border-vn-gold shadow-[0_0_35px_rgba(218,37,29,0.8)] w-44 text-center transform hover:scale-110 transition-transform">
-                  <img src={iconPng} alt="Dân tộc" className="w-12 h-12 object-contain mb-1.5 filter drop-shadow-[0_0_10px_#FFCD00]" />
-                  <span className="font-display font-black text-sm text-vn-gold uppercase tracking-wider">
-                    DÂN TỘC
-                  </span>
-                  <span className="text-[10px] text-white/90 font-medium">Trung tâm quy tụ</span>
-                </div>
-              </div>
-
-              {/* Hàng 4: VĂN HÓA & NHÀ NƯỚC (Thẳng hàng lần lượt Kinh tế và Ngôn ngữ) */}
-              <div className="flex justify-between items-center px-4">
-                {/* Văn hóa (Trái, thẳng hàng Kinh tế) */}
-                <div className="flex flex-col items-center p-4 rounded-2xl bg-gradient-to-b from-[#222938] to-[#12151D] border-2 border-vn-gold shadow-lg w-36 text-center transform hover:scale-105 transition-transform">
-                  <img src={iconPng} alt="Văn hóa" className="w-10 h-10 object-contain mb-1.5 filter drop-shadow" />
-                  <span className="text-xs font-bold text-vn-gold uppercase">Văn Hóa</span>
-                  <span className="text-[10px] text-vn-ivory/60">Tâm lý & cốt cách</span>
-                </div>
-
-                {/* Nhà nước (Phải, thẳng hàng Ngôn ngữ) */}
-                <div className="flex flex-col items-center p-4 rounded-2xl bg-gradient-to-b from-[#222938] to-[#12151D] border-2 border-vn-gold shadow-lg w-36 text-center transform hover:scale-105 transition-transform">
-                  <img src={iconPng} alt="Nhà nước" className="w-10 h-10 object-contain mb-1.5 filter drop-shadow" />
-                  <span className="text-xs font-bold text-vn-gold uppercase">Nhà Nước</span>
-                  <span className="text-[10px] text-vn-ivory/60">Thể chế pháp quyền</span>
-                </div>
-              </div>
-
+            {/* 1. BOX DÂN TỘC NẰM Ở CHÍNH GIỮA (TÂM NGŨ GIÁC) */}
+            <div 
+              className={`absolute z-20 w-36 h-36 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-[#8F1713] via-[#DA251D] to-[#5C0D0A] border-4 border-vn-gold flex flex-col items-center justify-center text-center p-3 transition-all duration-500 shadow-[0_0_40px_rgba(218,37,29,0.7)] ${
+                animatingId ? 'scale-110 shadow-[0_0_60px_rgba(255,205,0,0.9)]' : 'scale-100'
+              }`}
+            >
+              <img 
+                src={iconPng} 
+                alt="Dân Tộc" 
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain mb-1 filter drop-shadow-[0_0_8px_#FFCD00]" 
+              />
+              <span className="font-display font-black text-sm sm:text-base text-vn-gold uppercase tracking-wider drop-shadow-md">
+                DÂN TỘC
+              </span>
+              <span className="text-[10px] text-white/90 font-medium">
+                Tâm điểm quy tụ
+              </span>
             </div>
-          ) : (
-            /* HIỆU ỨNG MỞ RA HÌNH BẢN ĐỒ VIỆT NAM (BẢN ĐỒ ZOOM TO DẦN) */
-            <div className="flex flex-col items-center justify-center py-12 animate-fadeIn">
-              <div className="relative w-full max-w-[420px] aspect-[703/900] transform transition-transform duration-1000 scale-110 filter drop-shadow-[0_0_50px_rgba(255,205,0,0.5)]">
+
+            {/* 2. 5 YẾU TỐ NGOÀI DÂN TỘC TẠO THÀNH HÌNH NGŨ GIÁC ĐỀU */}
+            {PENTAGON_ELEMENTS.map((elem) => {
+              const isAbsorbed = absorbedIds.includes(elem.id);
+              const isAnimating = animatingId === elem.id;
+              const rad = (elem.angle * Math.PI) / 180;
+              const x = PENTAGON_RADIUS * Math.cos(rad);
+              const y = PENTAGON_RADIUS * Math.sin(rad);
+
+              if (isAbsorbed) return null; // Cứ khi kéo/quy tụ vào Dân tộc thì sẽ biến mất
+
+              return (
+                <div
+                  key={elem.id}
+                  onClick={() => handleAbsorbElement(elem.id)}
+                  style={{
+                    transform: isAnimating 
+                      ? 'translate(0px, 0px) scale(0.2)' 
+                      : `translate(${x}px, ${y}px) scale(1)`,
+                    opacity: isAnimating ? 0 : 1,
+                    transition: isAnimating 
+                      ? 'transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.45s ease-out' 
+                      : 'transform 0.2s ease-out, box-shadow 0.2s',
+                    boxShadow: `0 0 25px ${elem.glow}`
+                  }}
+                  className="absolute z-10 w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-b from-[#1C2230] to-[#0E121A] border-2 border-vn-gold flex flex-col items-center justify-center text-center p-2 cursor-pointer hover:scale-110 active:scale-95 group"
+                  title={`Nhấp để quy tụ ${elem.name} vào Dân tộc`}
+                >
+                  <div className="group-hover:scale-110 transition-transform">
+                    {elem.renderIcon()}
+                  </div>
+                  <span className="text-[11px] sm:text-xs font-display font-bold text-white group-hover:text-vn-gold uppercase tracking-wider mt-1">
+                    {elem.name}
+                  </span>
+                  <span className="text-[9px] text-vn-gold/70 uppercase tracking-widest font-mono">
+                    [Thu vào]
+                  </span>
+                </div>
+              );
+            })}
+
+          </div>
+
+          {/* 3. HIỆU ỨNG BẢN ĐỒ VIỆT NAM HIỆN RA TO ĐÙNG KHI KÉO ĐỦ HẾT 5 YẾU TỐ
+                 VÀ BIẾN MẤT DẦN DẦN KHI LĂN CHUỘT XUỐNG */}
+          {isAllAbsorbed && (
+            <div 
+              ref={giantMapSectionRef}
+              style={{ opacity: giantMapOpacity }}
+              className="mt-12 pt-8 border-t-2 border-vn-gold/40 flex flex-col items-center justify-center animate-fadeIn transition-opacity duration-300"
+            >
+              <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-vn-red via-vn-red-deep to-vn-red border-2 border-vn-gold text-vn-gold text-xs sm:text-sm font-bold uppercase tracking-widest shadow-[0_0_30px_rgba(218,37,29,0.8)] mb-6 animate-pulse">
+                <Sparkles className="w-4 h-4 text-vn-gold" />
+                <span>5 Yếu Tố Đã Hòa Quyện — Kết Tinh Thành Non Sông Liền Một Dải</span>
+              </div>
+
+              {/* BẢN ĐỒ TO ĐÙNG TRÊN MÀN HÌNH */}
+              <div className="relative w-full max-w-[700px] aspect-[703/900] rounded-3xl p-4 bg-gradient-to-b from-[#171B26] to-[#090B0E] border-3 border-vn-gold shadow-[0_0_90px_rgba(255,205,0,0.6)] overflow-hidden">
                 <img 
                   src={mapTerritoryImg} 
-                  alt="Bản đồ Việt Nam Zoom to dần" 
-                  className="w-full h-full object-contain filter contrast-110"
+                  alt="Bản đồ Việt Nam hiện ra to đùng" 
+                  className="w-full h-full object-contain filter contrast-110 drop-shadow-[0_0_30px_rgba(255,205,0,0.5)] transform hover:scale-105 transition-transform duration-700"
                   onError={(e) => { e.target.src = '/images/ban-do-viet-nam.jpg'; }}
                 />
               </div>
-              <p className="font-heading italic text-base sm:text-lg text-vn-gold mt-6 text-center">
-                5 mảnh ghép hòa quyện kết tinh thành dáng hình Tổ quốc hình chữ S muôn đời
+
+              <p className="font-heading italic text-base sm:text-xl text-vn-gold mt-6 text-center">
+                “Lãnh thổ — Kinh tế — Văn hóa — Ngôn ngữ — Thể chế nhà nước quy tụ tạo nên Dân tộc Việt Nam muôn đời”
               </p>
+              <span className="text-xs text-vn-ivory/60 mt-1 font-mono">
+                [ Lăn chuột xuống dưới để tiếp tục hải trình — Bản đồ sẽ mờ dần ]
+              </span>
             </div>
           )}
 
         </section>
 
-        {/* -------------------------------------------------------------
-            CHUYỂN ĐỘNG TIẾP: CƯƠNG LĨNH DÂN TỘC CỦA V.I. LÊNIN
-            BÌNH ĐẲNG — TỰ QUYẾT — LIÊN HIỆP
-            ------------------------------------------------------------- */}
-        <section className="relative my-24 py-16 text-center">
-          <span className="inline-block px-4 py-1 rounded-full bg-vn-gold/15 border border-vn-gold/40 text-xs uppercase tracking-[0.3em] text-vn-gold font-bold mb-4">
-            Văn kiện lý luận bất hủ
-          </span>
-          <h2 className="font-display font-black text-4xl sm:text-6xl text-white tracking-wide leading-none mb-12">
-            “CƯƠNG LĨNH DÂN TỘC CỦA V.I. LÊNIN”
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto">
-            
-            <div className="p-8 rounded-3xl bg-gradient-to-b from-[#1E2330] to-[#0E1015] border-2 border-vn-gold shadow-[0_0_30px_rgba(255,205,0,0.3)] hover:scale-105 transition-transform duration-300">
-              <span className="text-xs uppercase tracking-[0.25em] text-vn-ivory/60 font-semibold block mb-2">
-                Nguyên tắc 01
-              </span>
-              <h3 className="font-display font-black text-3xl sm:text-4xl text-vn-gold text-glow-gold">
-                BÌNH ĐẲNG
-              </h3>
-              <p className="text-xs text-vn-ivory/70 mt-3 font-light leading-relaxed">
-                Các dân tộc hoàn toàn bình đẳng về quyền lợi và nghĩa vụ trong mọi lĩnh vực đời sống.
-              </p>
-            </div>
-
-            <div className="p-8 rounded-3xl bg-gradient-to-b from-vn-red-deep/40 to-[#0E1015] border-2 border-vn-gold shadow-[0_0_35px_rgba(218,37,29,0.5)] hover:scale-105 transition-transform duration-300">
-              <span className="text-xs uppercase tracking-[0.25em] text-vn-ivory/60 font-semibold block mb-2">
-                Nguyên tắc 02
-              </span>
-              <h3 className="font-display font-black text-3xl sm:text-4xl text-white text-glow-gold">
-                TỰ QUYẾT
-              </h3>
-              <p className="text-xs text-vn-ivory/70 mt-3 font-light leading-relaxed">
-                Quyền tự quyết định con đường phát triển chính trị, kinh tế, xã hội độc lập.
-              </p>
-            </div>
-
-            <div className="p-8 rounded-3xl bg-gradient-to-b from-[#1E2330] to-[#0E1015] border-2 border-vn-gold shadow-[0_0_30px_rgba(255,205,0,0.3)] hover:scale-105 transition-transform duration-300">
-              <span className="text-xs uppercase tracking-[0.25em] text-vn-ivory/60 font-semibold block mb-2">
-                Nguyên tắc 03
-              </span>
-              <h3 className="font-display font-black text-3xl sm:text-4xl text-vn-gold text-glow-gold">
-                LIÊN HIỆP
-              </h3>
-              <p className="text-xs text-vn-ivory/70 mt-3 font-light leading-relaxed">
-                Liên hiệp công nhân và quần chúng lao động tất cả các dân tộc vì độc lập và tiến bộ.
-              </p>
-            </div>
-
-          </div>
-        </section>
-
       </main>
 
       {/* -------------------------------------------------------------
-          THIẾT KẾ CHUYỂN ĐỘNG CON THUYỀN THEO CUỘN CHUỘT
-          (Dựa trên web mẫu: theo-dau-chan-bac-ww1i.vercel.app/#chapter-1911)
-          Scroll container h-[320vh] với sticky h-screen
+          PHẦN CƯƠNG LĨNH DÂN TỘC CỦA V.I. LÊNIN (CHỈ DÙNG CON THUYỀN)
+          - Đã bỏ 3 nguyên tắc ban đầu.
+          - Mặc định nguyên tắc đầu tiên xuất hiện là "BÌNH ĐẲNG".
+          - Khóa cuộn trang khi tàu chưa chạy hết 3 mốc (chỉ mở khi xong mốc 3).
+          - 3 Cột mốc nguyên tắc to ra, đẹp & nổi bật.
+          - Con thuyền to lên rẽ sóng đi qua từng mốc.
           ------------------------------------------------------------- */}
       <section 
-        ref={boatSectionRef} 
+        ref={boatContainerRef}
         id="con-thuyen-lenin" 
-        className="relative h-[320vh] bg-gradient-to-b from-[#080808] via-[#10141C] to-[#080808]"
+        className="relative min-h-screen py-16 bg-gradient-to-b from-[#060709] via-[#0E131E] to-[#060709] border-t-2 border-vn-gold/40 overflow-hidden"
       >
-        <div className="sticky top-0 flex h-screen flex-col items-center justify-between overflow-hidden px-4 sm:px-8 py-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 flex flex-col items-center justify-between min-h-[85vh]">
           
-          {/* Nền sóng biển sương mờ mờ ảo */}
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_60%,rgba(27,42,74,0.4)_0%,transparent_80%)]" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-vn-black to-transparent" />
+          {/* Nền sóng biển & hào quang */}
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(27,42,74,0.45)_0%,transparent_80%)]" />
 
-          {/* Tiêu đề chương phía trên */}
-          <div className="relative z-20 text-center">
-            <span className="text-[11px] uppercase tracking-[0.3em] text-vn-gold-antique font-semibold block mb-1">
-              Hành Trình Lịch Sử · Cương Lĩnh Lênin
+          {/* TIÊU ĐỀ: CƯƠNG LĨNH DÂN TỘC CỦA V.I. LÊNIN */}
+          <div className="relative z-20 text-center mb-8">
+            <span className="inline-block px-4 py-1 rounded-full bg-vn-gold/15 border border-vn-gold/40 text-xs uppercase tracking-[0.3em] text-vn-gold font-bold mb-3">
+              Văn kiện lý luận bất hủ của chủ nghĩa Mác - Lênin
             </span>
-            <h2 className="font-display font-black text-2xl sm:text-4xl text-white tracking-wide">
-              CON THUYỀN CÁCH MẠNG QUA 3 MỐC THỜI ĐẠI
+            <h2 className="font-display font-black text-3xl sm:text-5xl md:text-6xl text-white tracking-wide leading-none">
+              “CƯƠNG LĨNH DÂN TỘC CỦA V.I. LÊNIN”
             </h2>
-            <p className="text-xs text-vn-ivory/60 mt-1 font-mono">
-              [ Lăn chuột xuống để điều khiển con thuyền rẽ sóng đi qua từng mốc ]
-            </p>
+            
+            {/* Thanh trạng thái khóa trang */}
+            <div className="mt-3 flex items-center justify-center gap-2">
+              {!boatUnlocked ? (
+                <span className="inline-flex items-center gap-1.5 text-xs text-vn-gold/80 bg-vn-black/80 border border-vn-gold/30 px-3.5 py-1 rounded-full font-mono">
+                  <Lock className="w-3.5 h-3.5 text-vn-red" />
+                  Lăn chuột hoặc bấm chuyển mốc để tàu chạy qua 3 nguyên tắc (Đang ở mốc {currentMilestone + 1}/3)
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-xs text-green-400 bg-green-950/40 border border-green-500/40 px-3.5 py-1 rounded-full font-mono animate-pulse">
+                  <Unlock className="w-3.5 h-3.5" />
+                  Đã hoàn thành 3 nguyên tắc — Đã mở khóa cuộn tiếp xuống dưới
+                </span>
+              )}
+            </div>
           </div>
 
-          {/* NỘI DUNG HIỆN RA THEO TỪNG MỐC Ở CHÍNH GIỮA MÀN HÌNH (LÀM NỔI BẬT NHƯ WEB SAMPLE) */}
-          <div className="relative z-30 max-w-4xl mx-auto text-center px-4 sm:px-8 my-auto transition-all duration-500">
+          {/* NỘI DUNG NGUYÊN TẮC HIỆN RA Ở CHÍNH GIỮA MÀN HÌNH (TO, ĐẸP, NỔI BẬT) */}
+          <div className="relative z-30 max-w-4xl w-full mx-auto text-center px-4 my-auto">
             
             {/* Huy hiệu mốc */}
-            <div className="inline-block px-4 py-1.5 rounded-full bg-vn-black/80 border border-vn-gold/50 text-xs uppercase tracking-widest text-vn-gold font-bold mb-4 shadow-xl backdrop-blur-md">
-              {milestonesData[activeMilestoneIndex].badge}
+            <div className="inline-block px-4 py-1.5 rounded-full bg-vn-black/90 border border-vn-gold/60 text-xs sm:text-sm uppercase tracking-widest text-vn-gold font-bold mb-4 shadow-xl backdrop-blur-md">
+              {activeData.badge}
             </div>
 
-            {/* Chữ Mốc khổng lồ (BÌNH ĐẲNG / TỰ QUYẾT / LIÊN HIỆP) */}
+            {/* Chữ Nguyên tắc khổng lồ: BÌNH ĐẲNG / TỰ QUYẾT / LIÊN HIỆP */}
             <h3 
-              key={milestonesData[activeMilestoneIndex].title}
-              className="font-display font-black text-5xl sm:text-7xl md:text-8xl tracking-tight text-white drop-shadow-[0_0_50px_rgba(255,205,0,0.6)] leading-none mb-6 animate-fadeIn"
+              key={activeData.title}
+              className="font-display font-black text-6xl sm:text-8xl md:text-9xl tracking-tight text-white drop-shadow-[0_0_60px_rgba(255,205,0,0.7)] leading-none mb-6 animate-fadeIn"
             >
-              {milestonesData[activeMilestoneIndex].title}
+              {activeData.title}
             </h3>
 
-            {/* Đoạn text trích dẫn nổi bật ở giữa màn hình theo đúng yêu cầu */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-vn-black/90 border-2 border-vn-gold/60 shadow-[0_20px_60px_rgba(0,0,0,0.95)] backdrop-blur-xl">
+            {/* Hộp trích dẫn nội dung nguyên tắc nổi bật */}
+            <div className="p-6 sm:p-10 rounded-3xl bg-vn-black/90 border-2 border-vn-gold shadow-[0_20px_70px_rgba(0,0,0,0.95)] backdrop-blur-2xl transition-all duration-300">
               <blockquote className="font-heading italic text-lg sm:text-2xl md:text-3xl text-vn-ivory font-light leading-relaxed drop-shadow-md">
-                “{milestonesData[activeMilestoneIndex].quote}”
+                “{activeData.quote}”
               </blockquote>
             </div>
 
+            {/* Các nút điều hướng nhanh giữa các mốc */}
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <button
+                onClick={handlePrevMilestone}
+                disabled={currentMilestone === 0}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-vn-gold/40 bg-black/60 text-xs uppercase font-bold text-vn-ivory disabled:opacity-30 disabled:cursor-not-allowed hover:bg-vn-gold/20 hover:text-vn-gold transition-colors cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>Mốc trước</span>
+              </button>
+
+              <div className="flex items-center gap-2">
+                {[0, 1, 2].map((idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setCurrentMilestone(idx);
+                      if (idx === 2) setBoatUnlocked(true);
+                    }}
+                    className={`w-3 h-3 rounded-full transition-all ${
+                      currentMilestone === idx
+                        ? 'bg-vn-gold scale-150 ring-4 ring-vn-gold/30'
+                        : 'bg-white/30 hover:bg-white/60'
+                    }`}
+                    title={`Chuyển tới mốc ${idx + 1}`}
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={handleNextMilestone}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full border-2 border-vn-gold bg-gradient-to-r from-vn-red-deep to-vn-red text-xs uppercase font-bold text-vn-gold hover:text-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(218,37,29,0.6)] cursor-pointer"
+              >
+                <span>{currentMilestone < 2 ? 'Mốc tiếp theo' : 'Đến Bản sắc Dân tộc'}</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
           </div>
 
-          {/* DÒNG HẢI TRÌNH & CON THUYỀN Ở DƯỚI (DI CHUYỂN DỌC THEO LĂN CHUỘT) */}
-          <div className="relative z-20 w-full max-w-4xl pb-4">
+          {/* DÒNG HẢI TRÌNH & CON THUYỀN TO ĐÙNG DI CHUYỂN QUA 3 CỘT MỐC TO NỔI BẬT */}
+          <div className="relative z-20 w-full max-w-4xl pt-16 pb-4">
             
             {/* Đường timeline ngang */}
-            <div className="relative h-1 w-full bg-white/20 rounded-full">
+            <div className="relative h-2 w-full bg-white/15 rounded-full">
               
-              {/* Vạch tiến trình đã đi qua */}
+              {/* Vạch tiến trình nối */}
               <div 
-                className="absolute inset-y-0 left-0 bg-gradient-to-r from-vn-gold-antique via-vn-gold to-vn-red rounded-full"
-                style={{ width: `${Math.min(100, Math.max(0, boatProgress * 100))}%` }}
+                className="absolute inset-y-0 left-0 bg-gradient-to-r from-vn-gold-antique via-vn-gold to-vn-red rounded-full transition-all duration-700 ease-out"
+                style={{ width: activeData.boatPos }}
               />
 
-              {/* HÌNH VẼ KHỐI CON THUYỀN BẰNG SVG (Di chuyển theo boatProgress) */}
+              {/* 3 CỘT MỐC NGUYÊN TẮC: TO RA, ĐẸP VÀ NỔI BẬT */}
+              {LENIN_MILESTONES.map((m) => {
+                const isActive = currentMilestone === m.index;
+                const isPassed = currentMilestone >= m.index;
+                return (
+                  <button
+                    key={m.index}
+                    onClick={() => {
+                      setCurrentMilestone(m.index);
+                      if (m.index === 2) setBoatUnlocked(true);
+                    }}
+                    style={{ left: m.boatPos }}
+                    className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center font-display font-black text-sm sm:text-xl transition-all duration-500 cursor-pointer ${
+                      isActive 
+                        ? 'bg-gradient-to-br from-vn-red to-vn-red-deep text-vn-gold border-3 sm:border-4 border-vn-gold scale-125 shadow-[0_0_35px_rgba(255,205,0,0.9)]'
+                        : isPassed
+                        ? 'bg-vn-gold text-vn-black border-2 border-white shadow-lg'
+                        : 'bg-[#151922] text-vn-ivory/50 border-2 border-vn-gold/30 hover:border-vn-gold hover:text-white'
+                    }`}
+                    title={`Mốc ${m.index + 1}: ${m.title}`}
+                  >
+                    <span>{m.roman}</span>
+                  </button>
+                );
+              })}
+
+              {/* CON THUYỀN CŨNG CHO TO LÊN (SVG Vector cách mạng lướt trên sóng nước) */}
               <div 
-                className="absolute bottom-1 z-30 -translate-x-1/2 pointer-events-none transition-all duration-150 ease-out"
+                className="absolute bottom-6 sm:bottom-8 z-30 -translate-x-1/2 pointer-events-none transition-all duration-700 ease-out"
                 style={{ 
-                  left: `${Math.min(94, Math.max(6, boatProgress * 100))}%`,
-                  filter: 'drop-shadow(0 0 15px rgba(255,205,0,0.5))'
+                  left: activeData.boatPos,
+                  filter: 'drop-shadow(0 0 25px rgba(255,205,0,0.7))'
                 }}
               >
-                {/* Vector SVG Con thuyền cách mạng */}
-                <svg viewBox="0 0 160 80" className="w-28 sm:w-36 h-auto">
+                {/* Vector SVG Con thuyền kích thước phóng to */}
+                <svg viewBox="0 0 160 85" className="w-40 sm:w-56 md:w-64 h-auto">
                   <defs>
-                    <linearGradient id="boatHull" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#4A3423" />
-                      <stop offset="100%" stopColor="#1C140E" />
+                    <linearGradient id="giantBoatHull" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#5D3A1A" />
+                      <stop offset="100%" stopColor="#1B1209" />
                     </linearGradient>
-                    <linearGradient id="boatSmoke" x1="0" y1="1" x2="0" y2="0">
-                      <stop offset="0%" stopColor="#D4A72C" stopOpacity="0.8" />
+                    <linearGradient id="giantSmoke" x1="0" y1="1" x2="0" y2="0">
+                      <stop offset="0%" stopColor="#D4A72C" stopOpacity="0.9" />
                       <stop offset="100%" stopColor="#FFCD00" stopOpacity="0" />
                     </linearGradient>
                   </defs>
 
-                  {/* Làn khói nhả ra từ ống khói */}
-                  <path d="M72 26 C 68 12, 78 8, 74 2 C 86 6, 82 18, 90 24 Z" fill="url(#boatSmoke)" />
-                  <path d="M88 26 C 85 14, 94 10, 92 3 C 102 8, 98 18, 104 25 Z" fill="url(#boatSmoke)" opacity="0.6" />
+                  {/* Làn khói nhả ra từ ống khói tàu */}
+                  <path d="M72 24 C 66 10, 78 6, 72 0 C 86 4, 82 16, 90 22 Z" fill="url(#giantSmoke)" className="animate-pulse" />
+                  <path d="M88 24 C 84 12, 95 8, 91 1 C 103 6, 98 16, 105 23 Z" fill="url(#giantSmoke)" opacity="0.7" />
 
-                  {/* Cột buồm và cánh buồm đỏ */}
-                  <polygon points="46,14 70,24 46,34" fill="#DA251D" opacity="0.85" />
-                  <line x1="46" y1="10" x2="46" y2="52" stroke="#FFCD00" strokeWidth="1.5" />
+                  {/* Cột buồm và cánh buồm đỏ thắm */}
+                  <polygon points="46,10 74,22 46,34" fill="#DA251D" stroke="#FFCD00" strokeWidth="0.8" />
+                  <line x1="46" y1="6" x2="46" y2="52" stroke="#FFCD00" strokeWidth="2" />
 
                   {/* Ống khói */}
-                  <rect x="72" y="26" width="10" height="18" fill="#8F1713" stroke="#FFCD00" strokeWidth="0.8" />
-                  <rect x="88" y="26" width="10" height="18" fill="#8F1713" stroke="#FFCD00" strokeWidth="0.8" />
+                  <rect x="72" y="24" width="11" height="18" fill="#8F1713" stroke="#FFCD00" strokeWidth="1" />
+                  <rect x="88" y="24" width="11" height="18" fill="#8F1713" stroke="#FFCD00" strokeWidth="1" />
 
                   {/* Thân ca bin tàu */}
-                  <rect x="58" y="42" width="62" height="14" fill="#2D2218" stroke="#D4A72C" strokeWidth="1" rx="2" />
-                  <rect x="66" y="36" width="46" height="10" fill="#1C140E" stroke="#D4A72C" strokeWidth="0.8" rx="1" />
+                  <rect x="56" y="42" width="66" height="15" fill="#3B2616" stroke="#FFCD00" strokeWidth="1.2" rx="2" />
+                  <rect x="64" y="35" width="50" height="11" fill="#20150C" stroke="#D4A72C" strokeWidth="1" rx="1" />
 
                   {/* Thân tàu chính hình khối */}
-                  <path d="M15 54 L 145 54 L 130 76 L 35 76 Z" fill="url(#boatHull)" stroke="#FFCD00" strokeWidth="1.2" />
+                  <path d="M12 55 L 148 55 L 132 78 L 32 78 Z" fill="url(#giantBoatHull)" stroke="#FFCD00" strokeWidth="1.5" />
 
-                  {/* Cửa sổ mạn tàu phát sáng vàng */}
-                  <circle cx="50" cy="64" r="2.5" fill="#FFCD00" />
-                  <circle cx="68" cy="64" r="2.5" fill="#FFCD00" />
-                  <circle cx="86" cy="64" r="2.5" fill="#FFCD00" />
-                  <circle cx="104" cy="64" r="2.5" fill="#FFCD00" />
-                  <circle cx="122" cy="64" r="2.5" fill="#FFCD00" />
+                  {/* Cửa sổ mạn tàu phát sáng vàng kim rực rỡ */}
+                  <circle cx="48" cy="66" r="3" fill="#FFCD00" />
+                  <circle cx="68" cy="66" r="3" fill="#FFCD00" />
+                  <circle cx="88" cy="66" r="3" fill="#FFCD00" />
+                  <circle cx="108" cy="66" r="3" fill="#FFCD00" />
+                  <circle cx="126" cy="66" r="3" fill="#FFCD00" />
+
+                  {/* Vệt sóng nước chân tàu */}
+                  <path d="M6 80 Q 30 76 60 80 T 120 80 T 154 80" stroke="#FFCD00" strokeWidth="1.5" fill="none" opacity="0.75" />
                 </svg>
               </div>
 
-              {/* 3 Mốc trên timeline */}
-              <div className="absolute top-1/2 left-0 -translate-y-1/2 w-4 h-4 rounded-full bg-vn-gold border-2 border-white shadow-lg" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-vn-gold border-2 border-white shadow-lg" />
-              <div className="absolute top-1/2 right-0 -translate-y-1/2 w-4 h-4 rounded-full bg-vn-gold border-2 border-white shadow-lg" />
             </div>
 
-            {/* Nhãn 3 mốc */}
-            <div className="mt-4 flex w-full items-center justify-between text-xs sm:text-sm font-bold uppercase tracking-wider">
-              <span className={`transition-colors ${activeMilestoneIndex === 0 ? 'text-vn-gold scale-110' : 'text-vn-ivory/60'}`}>
-                1. BÌNH ĐẲNG
-              </span>
-              <span className={`transition-colors ${activeMilestoneIndex === 1 ? 'text-vn-gold scale-110' : 'text-vn-ivory/60'}`}>
-                2. TỰ QUYẾT
-              </span>
-              <span className={`transition-colors ${activeMilestoneIndex === 2 ? 'text-vn-gold scale-110' : 'text-vn-ivory/60'}`}>
-                3. LIÊN HIỆP
-              </span>
+            {/* Nhãn 3 mốc to rõ ràng ở dưới */}
+            <div className="mt-8 flex w-full items-center justify-between text-xs sm:text-base font-display font-black uppercase tracking-wider">
+              {LENIN_MILESTONES.map((m) => (
+                <button
+                  key={m.index}
+                  onClick={() => {
+                    setCurrentMilestone(m.index);
+                    if (m.index === 2) setBoatUnlocked(true);
+                  }}
+                  className={`transition-all duration-300 cursor-pointer ${
+                    currentMilestone === m.index 
+                      ? 'text-vn-gold scale-110 drop-shadow-[0_0_12px_#FFCD00]' 
+                      : 'text-vn-ivory/60 hover:text-vn-ivory'
+                  }`}
+                >
+                  {m.index + 1}. {m.title}
+                </button>
+              ))}
             </div>
 
           </div>
@@ -762,9 +827,9 @@ export default function DanTocInfo() {
           CHUYỂN ĐỘNG ĐẾN: ‘’BẢN SẮC DÂN TỘC’’
           Lấy lại phần 54 Dân tộc bản đồ (bấm vào vùng để xem, các dân tộc)
           ------------------------------------------------------------- */}
-      <section id="ban-sac-dan-toc" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <section id="ban-sac-dan-toc" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         
-        <div className="text-center mb-14">
+        <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-vn-red-deep/40 border border-vn-gold/40 text-xs uppercase tracking-[0.3em] text-vn-gold font-bold mb-3">
             <Sparkles className="w-4 h-4 text-vn-gold" />
             Không gian tương tác trực quan
@@ -798,7 +863,7 @@ export default function DanTocInfo() {
 
       </section>
 
-      {/* 5. MODAL LIGHTBOX XEM ẢNH LÃNH THỔ PHÓNG TO */}
+      {/* MODAL LIGHTBOX XEM ẢNH LÃNH THỔ PHÓNG TO */}
       {isZoomModalOpen && (
         <div 
           className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-8 animate-fadeIn cursor-pointer"

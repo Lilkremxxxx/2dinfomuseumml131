@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Music, Volume2, Volume1, VolumeX, Play, Pause, RotateCcw } from 'lucide-react';
 
 const YT_VIDEO_ID = 'NSnkb1IAjbE';
-const DEFAULT_VOLUME = 30; // 30% volume as requested
+const DEFAULT_VOLUME = 50; // 50% volume as requested
 
 export default function BackgroundMusic() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -165,24 +165,34 @@ export default function BackgroundMusic() {
 
   // 3. User interaction listener to bypass browser autoplay policy
   useEffect(() => {
+    // Attempt immediate unmuted play on mount
+    triggerPlay();
+
     const handleFirstInteraction = () => {
-      if (!isPlaying) {
-        triggerPlay();
-      }
+      triggerPlay();
       window.removeEventListener('click', handleFirstInteraction);
       window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('pointermove', handleFirstInteraction);
+      window.removeEventListener('wheel', handleFirstInteraction);
+      window.removeEventListener('scroll', handleFirstInteraction);
       window.removeEventListener('keydown', handleFirstInteraction);
       window.removeEventListener('touchstart', handleFirstInteraction);
     };
 
     window.addEventListener('click', handleFirstInteraction, { passive: true });
     window.addEventListener('pointerdown', handleFirstInteraction, { passive: true });
+    window.addEventListener('pointermove', handleFirstInteraction, { passive: true });
+    window.addEventListener('wheel', handleFirstInteraction, { passive: true });
+    window.addEventListener('scroll', handleFirstInteraction, { passive: true });
     window.addEventListener('keydown', handleFirstInteraction, { passive: true });
     window.addEventListener('touchstart', handleFirstInteraction, { passive: true });
 
     return () => {
       window.removeEventListener('click', handleFirstInteraction);
       window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('pointermove', handleFirstInteraction);
+      window.removeEventListener('wheel', handleFirstInteraction);
+      window.removeEventListener('scroll', handleFirstInteraction);
       window.removeEventListener('keydown', handleFirstInteraction);
       window.removeEventListener('touchstart', handleFirstInteraction);
     };
