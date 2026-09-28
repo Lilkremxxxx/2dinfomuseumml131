@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { MapPin, ShieldAlert, Compass, Check, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { MAP_REGIONS } from '../data/mapRegionsData';
 import vietnamPaths from '../data/vietnamPaths.json';
 
@@ -407,9 +408,20 @@ export default function InteractiveVietnamMap() {
                     </span>
                     <div className="flex flex-wrap gap-2">
                       {activeRegion.ethnicGroups.map((eth, i) => (
-                        <span key={i} className="px-3 py-1 rounded-full text-xs sm:text-sm bg-vn-charcoal text-vn-ivory border border-vn-gold/30 font-semibold shadow-inner">
-                          {eth}
-                        </span>
+                        eth.toLocaleLowerCase('vi').startsWith('kinh') ? (
+                          <Link
+                            key={i}
+                            to="/dan-toc/kinh"
+                            className="px-3 py-1 rounded-full text-xs sm:text-sm bg-vn-charcoal text-vn-ivory border border-vn-gold/40 font-semibold shadow-inner transition hover:border-vn-gold hover:bg-vn-red-deep/30 hover:text-vn-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-vn-gold"
+                            aria-label="Tìm hiểu về dân tộc Kinh"
+                          >
+                            {eth}
+                          </Link>
+                        ) : (
+                          <span key={i} className="px-3 py-1 rounded-full text-xs sm:text-sm bg-vn-charcoal text-vn-ivory border border-vn-gold/30 font-semibold shadow-inner">
+                            {eth}
+                          </span>
+                        )
                       ))}
                     </div>
                   </div>
