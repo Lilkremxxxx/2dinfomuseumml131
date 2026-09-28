@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import territoryMap from '../../Image/1. Ban do viet nam.jpg';
+import territoryMap from '../../Image/bản đồ việt nam11.png';
 import economyOne from '../../Image/Cộng đồng kinh tế/cộgn đồng kinh tế.jpg';
 import economyTwo from '../../Image/Cộng đồng kinh tế/cộng đồng kinh tếế2.jpg';
 import cultureOne from '../../Image/Cộng đồng ngôn ngữ/cộng đồng văn hóa ngôn ngữ.jpg';
@@ -12,7 +12,7 @@ const elements = ['Lãnh thổ', 'Nhà nước', 'Kinh tế', 'Văn hóa', 'Ngô
 const scenes = [
   { type: 'blank' },
   { type: 'title', text: 'Dân tộc là gì' },
-  { type: 'title', text: 'Là cộng đồng về lãnh thổ', eyebrow: 'ĐẶC TRƯNG THỨ NHẤT' },
+  { type: 'title', lines: ['Là cộng đồng về', 'lãnh thổ'], eyebrow: 'ĐẶC TRƯNG THỨ NHẤT', layout: 'two-lines' },
   { type: 'image', text: 'Một lãnh thổ thống nhất', src: territoryMap, alt: 'Bản đồ Việt Nam' },
   { type: 'title', text: 'Cộng đồng về kinh tế', eyebrow: 'ĐẶC TRƯNG THỨ HAI', layout: 'single-line' },
   { type: 'image', text: 'Cùng gắn bó trong đời sống kinh tế', src: economyOne, alt: 'Cộng đồng kinh tế' },
