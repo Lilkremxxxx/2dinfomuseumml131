@@ -4,6 +4,7 @@ import App from './App.jsx';
 import EthnicGroupPage from './components/EthnicGroupPage.jsx';
 import OpeningScreen from './components/OpeningScreen.jsx';
 import DanTocInfo from './components/DanTocInfo.jsx';
+import BackgroundMusic from './components/BackgroundMusic.jsx';
 
 function NotFoundPage() {
   return (
@@ -22,6 +23,8 @@ function NotFoundPage() {
 export default function AppRouter() {
   return (
     <BrowserRouter>
+      {/* Global Background Music throughout the exhibition */}
+      <BackgroundMusic />
       <Routes>
         <Route path="/" element={<OpeningScreen />} />
         <Route path="/home" element={<App />} />
