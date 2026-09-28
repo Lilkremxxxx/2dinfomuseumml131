@@ -15,18 +15,47 @@ import {
   UtensilsCrossed,
   Music,
   Landmark,
-  Video,
-  Play,
-  ExternalLink,
+  Images,
 } from 'lucide-react';
 import { MAP_REGIONS } from '../data/mapRegionsData';
-import { getEthnicDetails } from '../data/ethnicDetailsData';
+import { getEthnicDetails, normalizeName } from '../data/ethnicDetailsData';
 import vietnamPaths from '../data/vietnamPaths.json';
+
+const ethnicGalleryFiles = import.meta.glob('../../Image/Tổng hơp ảnh các dân tộc/**/*.{jpg,jpeg,png,webp,avif,jfif}', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+});
+
+function getEthnicGallery(ethnic) {
+  const names = [ethnic.name, ethnic.alternateName, ethnic.slug?.replace(/-/g, ' ')]
+    .filter(Boolean)
+    .map((name) => normalizeName(name).replace(/^(dan toc )/, '').replace(/\s/g, ''));
+  const matching = Object.entries(ethnicGalleryFiles)
+    .filter(([path]) => {
+      const [, folder = ''] = path.split('Tổng hơp ảnh các dân tộc/');
+      const folderName = normalizeName(folder.split('/')[0]).replace(/^(dan toc )/, '').replace(/\s/g, '');
+      return names.some((name) => (
+        name === folderName
+        || (name.length >= 5 && folderName.startsWith(name))
+        || (folderName.length >= 5 && name.startsWith(folderName))
+        || (name.length >= 5 && folderName.endsWith(name))
+      ));
+    })
+    .sort(([pathA], [pathB]) => pathA.localeCompare(pathB, 'vi'))
+    .slice(0, 2);
+
+  return matching.map(([path, src]) => ({
+    src,
+    title: path.split('/').at(-1).replace(/\.[^.]+$/, ''),
+  }));
+}
 
 export default function InteractiveVietnamMap() {
   const [activeRegion, setActiveRegion] = useState(MAP_REGIONS[0]);
   const [hoveredProvince, setHoveredProvince] = useState(null);
   const [selectedEthnic, setSelectedEthnic] = useState(null);
+  const drawerScrollY = useRef(0);
 
   // Zoom and Pan states
   const [zoom, setZoom] = useState(1);
@@ -34,44 +63,34 @@ export default function InteractiveVietnamMap() {
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const hasDragged = useRef(false);
+  const selectedGallery = selectedEthnic ? getEthnicGallery(selectedEthnic) : [];
 
-  // Close drawer on Escape key and lock body scroll
-useEffect(() => {
-  const handleKeyDown = (e) => {
-    if (e.key === 'Escape') {
-      setSelectedEthnic(null);
-    }
-  };
-  const lockScroll = () => {
-    const scrollY = window.scrollY;
-    document.body.dataset.scrollY = scrollY.toString();
+  // Keep the underlying map exactly where it was while the profile drawer is open.
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setSelectedEthnic(null);
+    };
+
+    if (!selectedEthnic) return undefined;
+
+    drawerScrollY.current = window.scrollY;
+    window.addEventListener('keydown', handleKeyDown);
     document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
+    document.body.style.top = `-${drawerScrollY.current}px`;
     document.body.style.left = '0';
     document.body.style.right = '0';
     document.body.style.overflow = 'hidden';
-  };
-  const unlockScroll = () => {
-    const scrollY = document.body.dataset.scrollY ? parseInt(document.body.dataset.scrollY, 10) : 0;
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
-    document.body.style.overflow = '';
-    window.scrollTo(0, scrollY);
-    delete document.body.dataset.scrollY;
-  };
-  if (selectedEthnic) {
-    window.addEventListener('keydown', handleKeyDown);
-    lockScroll();
-  } else {
-    unlockScroll();
-  }
-  return () => {
-    window.removeEventListener('keydown', handleKeyDown);
-    unlockScroll();
-  };
-}, [selectedEthnic]);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, drawerScrollY.current);
+    };
+  }, [selectedEthnic]);
 
   // Helper to find which region a province belongs to
   const getRegionForProvince = (provId) => {
@@ -484,17 +503,17 @@ useEffect(() => {
 
           {/* Right Column: Clean Ethnic Groups Cards Panel */}
           <div className="lg:col-span-6">
-            <div className="min-h-[600px] p-6 sm:p-8 rounded-3xl bg-vn-charcoal/95 border-2 border-vn-gold/30 shadow-2xl backdrop-blur-md flex flex-col justify-between">
+            <div className="self-start p-4 sm:p-5 rounded-2xl bg-vn-charcoal/95 border border-vn-gold/30 shadow-xl backdrop-blur-md">
               
               {/* Region Header */}
               <div>
-                <div className="flex items-start justify-between gap-4 mb-6 pb-5 border-b border-vn-gold-antique/20">
+                <div className="flex items-start justify-between gap-3 mb-4 pb-4 border-b border-vn-gold-antique/20">
                   <div>
                     <div className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-vn-gold mb-1.5">
                       <MapPin className="w-4 h-4 text-vn-red" />
                       <span>{activeRegion.name}</span>
                     </div>
-                    <h3 className="font-display font-black text-2xl sm:text-4xl text-white tracking-tight">
+                    <h3 className="font-display font-black text-xl sm:text-2xl text-white tracking-tight">
                       {activeRegion.fullName}
                     </h3>
                     <p className="text-sm sm:text-base text-vn-ivory/80 mt-2 leading-relaxed">
@@ -510,7 +529,8 @@ useEffect(() => {
                 </div>
 
                 {/* Section Title & Instruction */}
-                <div className="flex items-center justify-between mb-4 pb-2 border-b border-vn-gold/20">
+                <div className="mb-3 rounded-xl border border-vn-gold/20 bg-vn-black/45 p-3">
+                  <div className="flex items-center justify-between gap-2 mb-3">
                   <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-vn-gold uppercase tracking-wider">
                     <Users className="w-4 h-4 text-vn-gold" />
                     <span>Các Dân Tộc Cư Trú Tại Vùng ({activeRegion.ethnicGroups.length})</span>
@@ -521,7 +541,7 @@ useEffect(() => {
                 </div>
 
                 {/* Clean Grid of Ethnic Boxes - Only Name as Title */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[440px] overflow-y-auto pr-1.5 custom-scrollbar">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[330px] overflow-y-auto pr-1 custom-scrollbar">
                   {activeRegion.ethnicGroups.map((eth, i) => {
                     const details = getEthnicDetails(eth);
                     return (
@@ -529,11 +549,11 @@ useEffect(() => {
                         key={i}
                         type="button"
                         onClick={() => handleOpenEthnic(eth)}
-                        className="group relative flex flex-col justify-between p-3.5 rounded-2xl bg-vn-black/75 hover:bg-vn-red-deep/30 border border-vn-gold/30 hover:border-vn-gold transition-all duration-200 text-left shadow-md hover:shadow-lg hover:shadow-vn-gold/10 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-vn-gold cursor-pointer"
+                        className="group relative flex flex-col justify-between p-2.5 rounded-xl bg-vn-black/75 hover:bg-vn-red-deep/30 border border-vn-gold/25 hover:border-vn-gold transition-all duration-200 text-left hover:shadow-lg hover:shadow-vn-gold/10 focus:outline-none focus:ring-2 focus:ring-vn-gold cursor-pointer"
                         title={`Xem chi tiết dân tộc ${eth}`}
                       >
                         <div className="flex items-center justify-between gap-1 w-full mb-1">
-                          <span className="font-display font-bold text-sm sm:text-base text-white group-hover:text-vn-gold transition-colors line-clamp-1">
+                            <span className="font-display font-bold text-xs sm:text-sm text-white group-hover:text-vn-gold transition-colors line-clamp-1">
                             {eth}
                           </span>
                           <ChevronRight className="w-4 h-4 text-vn-gold/40 group-hover:text-vn-gold group-hover:translate-x-0.5 transition-all shrink-0" />
@@ -551,10 +571,11 @@ useEffect(() => {
                     );
                   })}
                 </div>
+                </div>
               </div>
 
               {/* Bottom Card Summary */}
-              <div className="mt-6 pt-4 border-t border-vn-ivory/10 flex items-center justify-between text-xs sm:text-sm text-vn-ivory/60 font-mono">
+              <div className="mt-3 flex items-center justify-between gap-2 border-t border-vn-ivory/10 pt-3 text-[10px] text-vn-ivory/60 font-mono">
                 <span>Học phần MLN131</span>
                 <span className="text-vn-gold font-bold">Khối Đại Đoàn Kết Toàn Dân</span>
               </div>
@@ -633,7 +654,7 @@ useEffect(() => {
                   { id: 'cuisine', label: '4. Ẩm thực' },
                   { id: 'art', label: '5. Nghệ thuật' },
                   { id: 'history', label: '6. Lịch sử' },
-                  { id: 'video', label: '7. Video' }
+                  { id: 'gallery', label: '7. Hình ảnh' }
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -738,55 +759,23 @@ useEffect(() => {
                 ))}
               </div>
 
-              {/* Section 7: Video */}
-              <div id="drawer-sec-video" className="p-5 rounded-2xl bg-gradient-to-br from-vn-charcoal to-vn-black border-2 border-vn-gold/40 shadow-xl scroll-mt-36">
-                <div className="flex items-center justify-between gap-2 mb-3 border-b border-vn-gold/20 pb-2">
-                  <div className="flex items-center gap-2 text-vn-gold font-bold text-base">
-                    <Video className="w-5 h-5 text-red-500 shrink-0" />
-                    <h4>7. Video Tư Liệu & Phóng Sự</h4>
-                  </div>
-                  {selectedEthnic.sections?.video?.source && (
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-600/80 text-white border border-red-400/30">
-                      {selectedEthnic.sections.video.source}
-                    </span>
-                  )}
+              {/* Section 7: Hình ảnh văn hóa */}
+              <div id="drawer-sec-gallery" className="p-5 rounded-2xl bg-gradient-to-br from-vn-charcoal to-vn-black border border-vn-gold/40 shadow-xl scroll-mt-36">
+                <div className="flex items-center gap-2 mb-4 border-b border-vn-gold/20 pb-2 text-vn-gold font-bold text-base">
+                  <Images className="h-5 w-5 text-vn-gold shrink-0" />
+                  <h4>7. Hình ảnh văn hóa</h4>
                 </div>
-
-                <h5 className="font-display font-bold text-base text-white mb-2">
-                  {selectedEthnic.sections?.video?.videoTitle || `Văn hóa dân tộc ${selectedEthnic.name}`}
-                </h5>
-
-                {selectedEthnic.sections?.video?.description && (
-                  <p className="text-xs sm:text-sm text-vn-ivory/80 leading-relaxed mb-4">
-                    {selectedEthnic.sections.video.description}
-                  </p>
-                )}
-
-                {/* Embedded YouTube video player */}
-                {selectedEthnic.sections?.video?.embedUrl ? (
-                  <div className="relative aspect-video w-full rounded-xl overflow-hidden border border-vn-gold/30 shadow-lg mb-3 bg-black">
-                    <iframe
-                      src={selectedEthnic.sections.video.embedUrl}
-                      title={selectedEthnic.sections.video.videoTitle}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
+                {selectedGallery.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {selectedGallery.map((image) => (
+                      <figure key={image.src} className="overflow-hidden rounded-xl border border-vn-gold/25 bg-vn-black/60">
+                        <img src={image.src} alt={`${selectedEthnic.name} — ${image.title}`} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                        <figcaption className="p-3 text-xs text-vn-ivory/75">{image.title}</figcaption>
+                      </figure>
+                    ))}
                   </div>
-                ) : null}
-
-                {/* Direct Link to YouTube */}
-                {selectedEthnic.sections?.video?.url && (
-                  <a
-                    href={selectedEthnic.sections.video.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-vn-red hover:bg-vn-red-deep text-white text-xs sm:text-sm font-bold border border-vn-gold/40 shadow-md transition-all hover:scale-105"
-                  >
-                    <Play className="w-4 h-4 fill-white" />
-                    <span>Xem tư liệu trên YouTube</span>
-                    <ExternalLink className="w-3.5 h-3.5 opacity-80" />
-                  </a>
+                ) : (
+                  <p className="text-sm leading-relaxed text-vn-ivory/70">Hình ảnh của dân tộc này sẽ được cập nhật trong không gian trưng bày.</p>
                 )}
               </div>
             </div>

@@ -33,7 +33,7 @@ body {
   background-color: var(--vn-black);
   color: var(--vn-ivory);
   font-family: 'Be Vietnam Pro', system-ui, sans-serif;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Lenis smooth-scroll base */
@@ -202,6 +202,198 @@ html.lenis body {
 .ethnic-stagger > *:nth-child(2) { animation-delay: 90ms; }
 .ethnic-stagger > *:nth-child(3) { animation-delay: 180ms; }
 .ethnic-stagger > *:nth-child(4) { animation-delay: 270ms; }
+
+.ethnic-story-sequence {
+  position: relative;
+  background: #000;
+  color: #fff;
+}
+
+.ethnic-story-stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  width: 100%;
+  height: 100vh;
+  min-height: 520px;
+  place-items: center;
+  overflow: hidden;
+  background: #000;
+}
+
+.ethnic-story-content {
+  display: grid;
+  width: min(100% - 2rem, 1100px);
+  height: min(78vh, 760px);
+  place-items: center;
+  animation: story-open 750ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.story-title-scene,
+.story-element-scene {
+  width: 100%;
+  text-align: center;
+}
+
+.story-title-scene h2,
+.story-element-scene h2 {
+  margin: 1rem auto;
+  color: #fff;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3rem, 9vw, 8.5rem);
+  font-weight: 700;
+  line-height: .98;
+  text-wrap: balance;
+  text-shadow: 0 0 44px rgba(255, 205, 0, .2);
+  animation: story-zoom-in 850ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.story-eyebrow {
+  color: #ffcd00;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+}
+
+.story-image-scene {
+  display: flex;
+  width: min(100%, 900px);
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.story-image-scene img {
+  max-width: 100%;
+  max-height: min(65vh, 650px);
+  border: 1px solid rgba(255, 205, 0, .55);
+  border-radius: 1rem;
+  object-fit: contain;
+  box-shadow: 0 24px 100px rgba(0, 0, 0, .75);
+  animation: story-zoom-in 950ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.story-image-scene p {
+  margin: 0;
+  color: #ffcd00;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  text-align: center;
+}
+
+.story-quote {
+  position: relative;
+  display: grid;
+  width: min(100%, 1000px);
+  min-height: min(70vh, 680px);
+  padding: clamp(1.5rem, 5vw, 4.5rem);
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 205, 0, .3);
+  border-radius: 1.5rem;
+  background: #100f0c;
+  text-align: center;
+  isolation: isolate;
+}
+
+.story-quote::before {
+  position: absolute;
+  z-index: -2;
+  inset: -16px;
+  content: '';
+  background: var(--story-background) center / cover;
+  filter: blur(5px) brightness(.32);
+  transform: scale(1.04);
+}
+
+.story-quote::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: '';
+  background: linear-gradient(135deg, rgba(0, 0, 0, .38), rgba(60, 13, 5, .3));
+}
+
+.story-quote p {
+  max-width: 850px;
+  margin: 0;
+  color: #fff;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.15rem, 2.35vw, 2rem);
+  line-height: 1.7;
+  text-shadow: 0 2px 16px #000;
+  animation: story-zoom-in 850ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.story-quote p span { color: #ffcd00; font-weight: 700; }
+
+.story-element-track {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .65rem;
+  margin-top: 2.25rem;
+}
+
+.story-element-track span {
+  padding: .65rem 1rem;
+  border: 1px solid rgba(255, 205, 0, .2);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, .52);
+  font-size: clamp(.7rem, 1.5vw, 1rem);
+  transition: color .35s ease, background .35s ease, transform .35s ease;
+}
+
+.story-element-track span.active {
+  transform: scale(1.08);
+  border-color: #ffcd00;
+  background: rgba(218, 37, 29, .25);
+  color: #ffcd00;
+}
+
+.ethnic-story-footer {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, .48);
+  font: 600 .68rem/1 system-ui, sans-serif;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.story-scroll-hint { display: inline-flex; align-items: center; gap: .7rem; }
+.story-scroll-hint i { width: 1px; height: 24px; background: linear-gradient(#ffcd00, transparent); animation: scroll-pulse 1.8s ease infinite; }
+
+@keyframes story-open {
+  from { opacity: 0; filter: blur(12px); transform: scale(.94); clip-path: inset(15% 15% round 2rem); }
+  to { opacity: 1; filter: blur(0); transform: scale(1); clip-path: inset(0 0 round 0); }
+}
+
+@keyframes story-zoom-in {
+  from { opacity: 0; filter: blur(8px); transform: scale(.72); }
+  to { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+@media (max-width: 640px) {
+  .ethnic-story-stage { min-height: 440px; }
+  .story-quote { min-height: 62vh; }
+  .ethnic-story-footer { right: 1rem; bottom: 1rem; left: 1rem; font-size: .56rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ethnic-story-content,
+  .story-title-scene h2,
+  .story-element-scene h2,
+  .story-image-scene img,
+  .story-quote p { animation-duration: .01ms; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .ethnic-page *,
