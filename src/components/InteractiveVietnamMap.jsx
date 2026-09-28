@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { MapPin, ShieldAlert, Compass, Check, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MAP_REGIONS } from '../data/mapRegionsData';
+import { findEthnicGroupSlug } from '../data/ethnic-groups';
 import vietnamPaths from '../data/vietnamPaths.json';
 
 export default function InteractiveVietnamMap() {
@@ -407,13 +408,14 @@ export default function InteractiveVietnamMap() {
                       👥 Các Dân Tộc Cư Trú Chủ Yếu:
                     </span>
                     <div className="flex flex-wrap gap-2">
-                      {activeRegion.ethnicGroups.map((eth, i) => (
-                        eth.toLocaleLowerCase('vi').startsWith('kinh') ? (
+                      {activeRegion.ethnicGroups.map((eth, i) => {
+                        const ethnicSlug = findEthnicGroupSlug(eth);
+                        return ethnicSlug ? (
                           <Link
                             key={i}
-                            to="/dan-toc/kinh"
+                            to={`/dan-toc/${ethnicSlug}`}
                             className="px-3 py-1 rounded-full text-xs sm:text-sm bg-vn-charcoal text-vn-ivory border border-vn-gold/40 font-semibold shadow-inner transition hover:border-vn-gold hover:bg-vn-red-deep/30 hover:text-vn-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-vn-gold"
-                            aria-label="Tìm hiểu về dân tộc Kinh"
+                            aria-label={`Tìm hiểu về dân tộc ${eth}`}
                           >
                             {eth}
                           </Link>
@@ -421,8 +423,8 @@ export default function InteractiveVietnamMap() {
                           <span key={i} className="px-3 py-1 rounded-full text-xs sm:text-sm bg-vn-charcoal text-vn-ivory border border-vn-gold/30 font-semibold shadow-inner">
                             {eth}
                           </span>
-                        )
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
