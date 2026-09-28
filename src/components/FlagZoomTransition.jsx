@@ -54,7 +54,7 @@ export default function FlagZoomTransition({ onComplete }) {
             <polygon
               className="flag-zoom-star"
               points="800,325 830,416 926,416 848,471 878,564 800,506 722,564 752,471 674,416 770,416"
-              style={{ '--star-scale': 1 + progress * 12 }}
+              style={{ '--star-scale': 1 + progress * 32 }}
             />
           </svg>
           <span className="flag-zoom-caption" style={{ opacity: Math.max(0, 1 - progress * 2.2) }}>VIỆT NAM · 54 DÂN TỘC</span>

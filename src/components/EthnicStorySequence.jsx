@@ -10,7 +10,7 @@ import fiveElementsMap from '../../Image/bản đồ phần 5 mảnh ghép.png';
 
 const elements = ['Lãnh thổ', 'Nhà nước', 'Kinh tế', 'Văn hóa', 'Ngôn ngữ', 'Dân tộc'];
 const scenes = [
-  { type: 'blank' },
+  { type: 'title', text: 'Bắt đầu', layout: 'start' },
   { type: 'title', text: 'Dân tộc là gì' },
   { type: 'title', lines: ['Là cộng đồng về', 'lãnh thổ'], eyebrow: 'ĐẶC TRƯNG THỨ NHẤT', layout: 'two-lines' },
   { type: 'image', text: 'Một lãnh thổ thống nhất', src: territoryMap, alt: 'Bản đồ Việt Nam' },
@@ -114,7 +114,7 @@ export default function EthnicStorySequence() {
       aria-label="Hành trình khám phá khái niệm dân tộc"
     >
       <div className="ethnic-story-stage">
-        <div className="ethnic-story-content" key={activeScene}>
+        <div className={`ethnic-story-content ${scenes[activeScene].type === 'quote' ? 'ethnic-story-content--quote' : ''}`} key={activeScene}>
           <SceneContent scene={scenes[activeScene]} />
         </div>
         <div className="ethnic-story-footer">

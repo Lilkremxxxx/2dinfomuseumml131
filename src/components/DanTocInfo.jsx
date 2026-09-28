@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Pause, Play } from 'lucide-react';
 import InteractiveVietnamMap from './InteractiveVietnamMap';
 import EthnicStorySequence from './EthnicStorySequence';
 import FlagZoomTransition from './FlagZoomTransition';
@@ -29,6 +29,22 @@ const LENIN_MILESTONES = [
 export default function DanTocInfo() {
   const [isFlagZoomOpen, setIsFlagZoomOpen] = useState(false);
   const [isEthnicMapOpen, setIsEthnicMapOpen] = useState(false);
+  const [autoScrollActive, setAutoScrollActive] = useState(false);
+
+  useEffect(() => {
+    if (!autoScrollActive) return undefined;
+    let frameId;
+    const step = () => {
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+        setAutoScrollActive(false);
+        return;
+      }
+      window.scrollBy(0, 0.8);
+      frameId = requestAnimationFrame(step);
+    };
+    frameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frameId);
+  }, [autoScrollActive]);
 
   useEffect(() => {
     if (!isFlagZoomOpen && !isEthnicMapOpen) return undefined;
@@ -163,6 +179,16 @@ export default function DanTocInfo() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#07080A] text-[#F5EFE6] selection:bg-vn-red selection:text-vn-gold">
+      <button
+        type="button"
+        onClick={() => setAutoScrollActive((active) => !active)}
+        className={`fixed right-4 top-4 z-[120] inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold shadow-xl backdrop-blur-md transition-colors ${autoScrollActive ? 'border-vn-gold bg-vn-red-deep text-white' : 'border-vn-gold/50 bg-vn-charcoal/90 text-vn-gold hover:bg-vn-red-deep'}`}
+        title={autoScrollActive ? 'Dừng tự cuộn' : 'Bắt đầu tự cuộn'}
+        aria-label={autoScrollActive ? 'Dừng tự cuộn' : 'Bắt đầu tự cuộn'}
+      >
+        {autoScrollActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+        <span>{autoScrollActive ? 'Dừng cuộn' : 'Tự cuộn'}</span>
+      </button>
       
       {/* SVG Defs chung */}
       <svg className="hidden">

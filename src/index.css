@@ -34,6 +34,8 @@ body {
   color: var(--vn-ivory);
   font-family: 'Be Vietnam Pro', system-ui, sans-serif;
   overflow-x: clip;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Lenis smooth-scroll base */
@@ -257,6 +259,10 @@ html.lenis body {
   font-size: clamp(1.55rem, 6.5vw, 7rem);
 }
 
+.story-title-scene--start h2 {
+  font-size: clamp(3.5rem, 12vw, 10rem);
+}
+
 .story-title-scene--two-lines h2 span { display: block; white-space: nowrap; }
 
 .story-eyebrow {
@@ -337,7 +343,11 @@ html.lenis body {
   font-size: clamp(1.15rem, 2.35vw, 2rem);
   line-height: 1.7;
   text-shadow: 0 2px 16px #000;
-  animation: story-zoom-in 850ms cubic-bezier(.16, 1, .3, 1) both;
+  animation: quote-reveal 420ms ease-out both;
+}
+
+.ethnic-story-content--quote {
+  animation: quote-scene-open 420ms ease-out both;
 }
 
 .story-quote p span { color: #ffcd00; font-weight: 700; }
@@ -368,6 +378,16 @@ html.lenis body {
   from { opacity: 0; filter: blur(12px); transform: scale(.42); text-shadow: 0 0 0 transparent; }
   72% { opacity: 1; filter: blur(0); transform: scale(1.09); text-shadow: 0 0 24px rgba(255, 255, 255, .9), 0 0 74px rgba(255, 205, 0, .9), 0 0 150px rgba(218, 37, 29, .85); }
   to { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+@keyframes quote-reveal {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes quote-scene-open {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .flag-zoom-sequence { height: 200vh; background: #070405; }
