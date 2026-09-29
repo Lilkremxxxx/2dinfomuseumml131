@@ -174,9 +174,9 @@ export default function EthnicStorySequence() {
         const now = performance.now();
         if (now - lastMapWheelAtRef.current >= 24) {
           lastMapWheelAtRef.current = now;
-          const mapScrollMultiplier = mapReadyRef.current ? 3 : 1;
-          const baseStep = mapReadyRef.current ? 18 : 6;
-          const maxStep = mapReadyRef.current ? 54 : 12;
+          const mapScrollMultiplier = mapReadyRef.current ? 5 : 1;
+          const baseStep = mapReadyRef.current ? 30 : 6;
+          const maxStep = mapReadyRef.current ? 90 : 12;
           const step = Math.sign(event.deltaY) * Math.min(
             maxStep,
             Math.max(baseStep, Math.abs(event.deltaY) * 0.18 * mapScrollMultiplier),
