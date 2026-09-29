@@ -77,13 +77,12 @@ export default function DanTocInfo() {
   }, [autoScrollActive]);
 
   useEffect(() => {
-    if (!isFlagZoomOpen && !isEthnicMapOpen) return undefined;
+    if (!isFlagZoomOpen) return undefined;
     const frame = requestAnimationFrame(() => {
-      const targetId = isEthnicMapOpen ? 'ban-do-tuong-tac' : 'flag-map-transition';
-      document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('flag-map-transition')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     return () => cancelAnimationFrame(frame);
-  }, [isFlagZoomOpen, isEthnicMapOpen]);
+  }, [isFlagZoomOpen]);
 
   // --- PHẦN CON THUYỀN LÊNIN (WHEEL-INTERCEPT SCROLL LOCK) ---
   // Khi section thuyền vào viewport:
@@ -433,7 +432,6 @@ export default function DanTocInfo() {
         <FlagZoomTransition
           onComplete={() => {
             setAutoScrollActive(false);
-            setIsFlagZoomOpen(false);
             setIsEthnicMapOpen(true);
           }}
         />

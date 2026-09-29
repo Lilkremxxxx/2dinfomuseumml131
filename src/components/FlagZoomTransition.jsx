@@ -25,7 +25,7 @@ export default function FlagZoomTransition({ onComplete }) {
         trigger: section,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 1,
+        scrub: 1.2,
       },
       onComplete: () => {
         if (didComplete.current) return;
