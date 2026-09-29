@@ -47,7 +47,7 @@ export default function FlagZoomTransition({ onComplete }) {
     <section ref={sectionRef} id="flag-map-transition" className="flag-zoom-sequence" aria-label="Chuyển cảnh lá cờ Việt Nam">
       <div className="flag-zoom-stage">
         <div className="flag-zoom-card" aria-hidden="true">
-          <svg className="flag-zoom-graphic" viewBox="0 0 1600 900" preserveAspectRatio="none">
+          <svg className="flag-zoom-graphic" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
             <rect width="1600" height="900" fill="#da251d" />
             <polygon
               className="flag-zoom-star"
