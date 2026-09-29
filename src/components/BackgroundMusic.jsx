@@ -19,6 +19,10 @@ export default function BackgroundMusic() {
   const initTimeoutRef = useRef(null);
   const dragRef = useRef(null);
   const draggedRef = useRef(false);
+  const isPlayingRef = useRef(isPlaying);
+  const triggerPlayRef = useRef(null);
+  const removeUserGestureListenersRef = useRef(null);
+  isPlayingRef.current = isPlaying;
 
   const startWidgetDrag = (event) => {
     event.preventDefault();
@@ -106,6 +110,7 @@ export default function BackgroundMusic() {
               if (event.data === 1) {
                 setIsPlaying(true);
                 setAutoplayBlocked(false);
+                removeUserGestureListenersRef.current?.();
               } else if (event.data === 2) {
                 setIsPlaying(false);
               } else if (event.data === 0) {
@@ -161,6 +166,7 @@ export default function BackgroundMusic() {
         fallbackAudioRef.current.play().then(() => {
           setIsPlaying(true);
           setAutoplayBlocked(false);
+          removeUserGestureListenersRef.current?.();
         }).catch((err) => {
           console.log('Audio fallback play error:', err);
         });
@@ -174,13 +180,13 @@ export default function BackgroundMusic() {
           playerRef.current.setVolume(volume);
         }
         playerRef.current.playVideo();
-        setIsPlaying(true);
-        setAutoplayBlocked(false);
       } catch (e) {
         console.log('YouTube play error:', e);
       }
     }
   };
+
+  triggerPlayRef.current = triggerPlay;
 
   const triggerPause = () => {
     if (useFallbackAudio) {
@@ -198,40 +204,39 @@ export default function BackgroundMusic() {
     }
   };
 
-  // 3. User interaction listener to bypass browser autoplay policy
+  // Retry only on genuine user gestures. Pointer movement and scrolling do not
+  // grant autoplay permission, and must not consume the first valid interaction.
   useEffect(() => {
-    // Attempt immediate unmuted play on mount
-    triggerPlay();
-
     const handleFirstInteraction = () => {
-      triggerPlay();
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('pointerdown', handleFirstInteraction);
-      window.removeEventListener('pointermove', handleFirstInteraction);
-      window.removeEventListener('wheel', handleFirstInteraction);
-      window.removeEventListener('scroll', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
+      if (isPlayingRef.current) {
+        removeUserGestureListenersRef.current?.();
+        return;
+      }
+      triggerPlayRef.current?.();
     };
 
-    window.addEventListener('click', handleFirstInteraction, { passive: true });
-    window.addEventListener('pointerdown', handleFirstInteraction, { passive: true });
-    window.addEventListener('pointermove', handleFirstInteraction, { passive: true });
-    window.addEventListener('wheel', handleFirstInteraction, { passive: true });
-    window.addEventListener('scroll', handleFirstInteraction, { passive: true });
-    window.addEventListener('keydown', handleFirstInteraction, { passive: true });
+    const removeListeners = () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+      removeUserGestureListenersRef.current = null;
+    };
+    removeUserGestureListenersRef.current = removeListeners;
+
+    window.addEventListener('click', handleFirstInteraction);
+    window.addEventListener('pointerdown', handleFirstInteraction);
+    window.addEventListener('keydown', handleFirstInteraction);
     window.addEventListener('touchstart', handleFirstInteraction, { passive: true });
 
-    return () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('pointerdown', handleFirstInteraction);
-      window.removeEventListener('pointermove', handleFirstInteraction);
-      window.removeEventListener('wheel', handleFirstInteraction);
-      window.removeEventListener('scroll', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-  }, [isPlaying, playerReady, useFallbackAudio, volume, isMuted]);
+    return removeListeners;
+  }, []);
+
+  // Retry startup as soon as the fallback source is mounted. If the browser
+  // still blocks it, the genuine-gesture listeners above remain available.
+  useEffect(() => {
+    if (useFallbackAudio) triggerPlay();
+  }, [useFallbackAudio]);
 
   // Broadcast state changes globally
   useEffect(() => {
