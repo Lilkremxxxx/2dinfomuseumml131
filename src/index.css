@@ -240,7 +240,7 @@ html.lenis body {
   margin: 1rem auto;
   color: #fff;
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(4rem, 13vw, 13rem);
+  font-size: clamp(4.2rem, 13.6vw, 13.5rem);
   font-weight: 700;
   line-height: .98;
   text-wrap: balance;
@@ -250,11 +250,11 @@ html.lenis body {
 
 .story-title-scene--single-line h2 {
   white-space: nowrap;
-  font-size: clamp(1.5rem, 6.5vw, 7.25rem);
+  font-size: clamp(1.6rem, 6.8vw, 7.5rem);
 }
 
 .story-title-scene--two-lines h2 {
-  font-size: clamp(1.55rem, 6.5vw, 7rem);
+  font-size: clamp(1.65rem, 6.8vw, 7.25rem);
 }
 
 .story-title-scene--start h2 {
@@ -295,14 +295,14 @@ html.lenis body {
   margin: 0;
   color: #ffcd00;
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  font-size: clamp(1.3rem, 2.1vw, 1.9rem);
   text-align: center;
   text-shadow: 0 0 12px rgba(255, 205, 0, .9), 0 0 42px rgba(218, 37, 29, .75);
 }
 
 .story-pentagon {
   position: relative;
-  width: min(84vw, 72vh, 820px);
+  width: min(68vw, 64vh, 700px);
   aspect-ratio: 1;
   overflow: visible;
 }
@@ -366,7 +366,7 @@ html.lenis body {
 .story-pentagon-node > span {
   color: #fff8df;
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(1rem, 2.75vw, 2.5rem);
+  font-size: clamp(1.1rem, 2.85vw, 2.6rem);
   font-weight: 700;
   line-height: 1;
   text-shadow: 0 0 9px rgba(255, 255, 255, .7), 0 0 26px rgba(255, 205, 0, .8), 0 0 54px rgba(218, 37, 29, .6);
@@ -472,7 +472,7 @@ html.lenis body {
   margin: 0;
   color: #fff;
   font-family: 'Playfair Display', serif;
-  font-size: clamp(1.15rem, 2.35vw, 2rem);
+  font-size: clamp(1.25rem, 2.45vw, 2.1rem);
   line-height: 1.7;
   text-shadow: 0 2px 16px #000;
   animation: quote-reveal 420ms ease-out both;
@@ -531,7 +531,7 @@ html.lenis body {
   min-height: 480px;
   place-items: center;
   overflow: hidden;
-  background: #da251d;
+  background: #070405;
 }
 .flag-zoom-card {
   position: absolute;
@@ -542,6 +542,7 @@ html.lenis body {
   place-items: stretch;
   overflow: hidden;
   background: #da251d;
+  will-change: opacity;
 }
 .flag-zoom-graphic {
   width: 100%;
@@ -698,23 +699,19 @@ html.lenis body {
   .ethnic-story-stage { min-height: 360px; }
   .ethnic-story-content { width: min(100% - 1rem, 1100px); height: 76svh; }
   .story-title-scene { padding-inline: .5rem; }
-  .story-title-scene h2 { font-size: clamp(2.4rem, 10vw, 4rem); line-height: 1.08; }
+  .story-title-scene h2 { font-size: clamp(2.5rem, 10.4vw, 4.1rem); line-height: 1.08; }
   .story-title-scene--start h2 { font-size: clamp(3.3rem, 13vw, 5rem); }
-  .story-title-scene--single-line h2 { font-size: clamp(1.1rem, 6.5vw, 2rem); white-space: normal; }
-  .story-title-scene--two-lines h2 { font-size: clamp(1.35rem, 7vw, 2.2rem); }
+  .story-title-scene--single-line h2 { font-size: clamp(1.2rem, 6.8vw, 2.1rem); white-space: normal; }
+  .story-title-scene--two-lines h2 { font-size: clamp(1.45rem, 7.2vw, 2.3rem); }
   .story-title-scene--two-lines h2 span { white-space: normal; }
   .story-image-scene { width: min(100%, 520px); gap: .8rem; }
   .story-image-scene img { max-width: 100%; max-height: 72svh; border-radius: .65rem; }
-  .story-pentagon { width: min(92vw, 58svh, 560px); }
+  .story-pentagon { width: min(66vw, 58svh, 560px); }
   .story-pentagon-node { max-width: 34%; gap: .3rem; }
-  .story-pentagon-node--1 { --node-x: 78% !important; }
-  .story-pentagon-node--2 { --node-x: 68% !important; --node-y: 72% !important; }
-  .story-pentagon-node--3 { --node-x: 32% !important; --node-y: 72% !important; }
-  .story-pentagon-node--4 { --node-x: 22% !important; }
-  .story-pentagon-node > span { font-size: clamp(.85rem, 4vw, 1.3rem); }
+  .story-pentagon-node > span { font-size: clamp(.95rem, 4.2vw, 1.4rem); }
   .story-pentagon-node > svg { width: clamp(1.25rem, 6vw, 2rem); height: clamp(1.25rem, 6vw, 2rem); }
   .story-quote { min-height: 62vh; }
-  .story-quote p { font-size: clamp(1rem, 4vw, 1.25rem); line-height: 1.55; }
+  .story-quote p { font-size: clamp(1.1rem, 4.2vw, 1.35rem); line-height: 1.55; }
   .ethnic-story-footer { right: 1rem; bottom: 1rem; left: 1rem; font-size: .56rem; }
 }
 

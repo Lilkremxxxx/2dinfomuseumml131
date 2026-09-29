@@ -623,7 +623,7 @@ export default function InteractiveVietnamMap() {
               title="Đóng chi tiết dân tộc"
             >
               <X className="h-5 w-5" />
-              <span className="text-xs font-bold">Đóng</span>
+              <span className="text-sm font-bold">Đóng</span>
             </button>
 
             {/* Sticky Drawer Header */}
@@ -631,25 +631,25 @@ export default function InteractiveVietnamMap() {
               <div className="flex items-start justify-between gap-4 mb-2">
                 <div>
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-vn-red/80 text-white border border-vn-gold/40 shadow-sm">
+                    <span className="px-2.5 py-0.5 rounded-full text-[13px] font-bold uppercase tracking-wider bg-vn-red/80 text-white border border-vn-gold/40 shadow-sm">
                       54 Dân tộc Việt Nam
                     </span>
                     {selectedEthnic.regionNames && selectedEthnic.regionNames.length > 0 && (
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-vn-charcoal text-vn-gold border border-vn-gold/30">
+                      <span className="px-2.5 py-0.5 rounded-full text-[13px] font-semibold bg-vn-charcoal text-vn-gold border border-vn-gold/30">
                         {selectedEthnic.regionNames.join(' · ')}
                       </span>
                     )}
                   </div>
-                  <h3 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight flex flex-wrap items-baseline gap-2">
+                  <h3 className="font-display font-black text-[26px] sm:text-[32px] text-white tracking-tight flex flex-wrap items-baseline gap-2">
                     <span>Dân tộc {selectedEthnic.name}</span>
                     {selectedEthnic.alternateName && (
-                      <span className="text-sm font-normal text-vn-ivory/60 italic">
+                      <span className="text-base font-normal text-vn-ivory/60 italic">
                         ({selectedEthnic.alternateName})
                       </span>
                     )}
                   </h3>
                   {selectedEthnic.tagline && (
-                    <p className="text-xs sm:text-sm text-vn-ivory/80 mt-1 font-light italic">
+                    <p className="text-sm sm:text-base text-vn-ivory/80 mt-1 font-light italic">
                       {selectedEthnic.tagline}
                     </p>
                   )}
@@ -661,7 +661,7 @@ export default function InteractiveVietnamMap() {
                   title="Đóng (Phím ESC)"
                 >
                   <X className="w-5 h-5 text-vn-gold group-hover:rotate-90 transition-transform duration-200" />
-                  <span className="text-xs font-bold hidden sm:inline">Đóng</span>
+                  <span className="text-sm font-bold hidden sm:inline">Đóng</span>
                 </button>
               </div>
 
@@ -682,7 +682,7 @@ export default function InteractiveVietnamMap() {
                       const el = document.getElementById(`drawer-sec-${tab.id}`);
                       el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    className="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap bg-vn-black/70 text-vn-ivory/80 hover:text-vn-gold hover:border-vn-gold border border-vn-ivory/15 transition-all cursor-pointer"
+                    className="px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap bg-vn-black/70 text-vn-ivory/80 hover:text-vn-gold hover:border-vn-gold border border-vn-ivory/15 transition-all cursor-pointer"
                   >
                     {tab.label}
                   </button>
@@ -694,12 +694,12 @@ export default function InteractiveVietnamMap() {
             <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6 custom-scrollbar">
               {/* Section 1: Khái quát */}
               <div id="drawer-sec-overview" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
-                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-lg mb-3 border-b border-vn-gold/20 pb-2">
                   <BookOpen className="w-5 h-5 text-vn-gold shrink-0" />
                   <h4>1. Khái quát</h4>
                 </div>
                 {selectedEthnic.sections?.overview?.paragraphs?.map((p, idx) => (
-                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
+                  <p key={idx} className="text-base text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
                     {p}
                   </p>
                 ))}
@@ -707,12 +707,12 @@ export default function InteractiveVietnamMap() {
 
               {/* Section 2: Ngôn ngữ */}
               <div id="drawer-sec-language" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
-                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-lg mb-3 border-b border-vn-gold/20 pb-2">
                   <Languages className="w-5 h-5 text-cyan-400 shrink-0" />
                   <h4>2. Ngôn ngữ</h4>
                 </div>
                 {selectedEthnic.sections?.language?.paragraphs?.map((p, idx) => (
-                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
+                  <p key={idx} className="text-base text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
                     {p}
                   </p>
                 ))}
@@ -720,12 +720,12 @@ export default function InteractiveVietnamMap() {
 
               {/* Section 3: Phong tục - tập quán */}
               <div id="drawer-sec-customs" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
-                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-lg mb-3 border-b border-vn-gold/20 pb-2">
                   <Home className="w-5 h-5 text-amber-400 shrink-0" />
                   <h4>3. Phong tục - tập quán</h4>
                 </div>
                 {selectedEthnic.sections?.customs?.paragraphs?.map((p, idx) => (
-                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2.5 last:mb-0">
+                  <p key={idx} className="text-base text-vn-ivory/85 leading-relaxed mb-2.5 last:mb-0">
                     {p}
                   </p>
                 ))}
@@ -733,12 +733,12 @@ export default function InteractiveVietnamMap() {
 
               {/* Section 4: Ẩm thực */}
               <div id="drawer-sec-cuisine" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
-                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-lg mb-3 border-b border-vn-gold/20 pb-2">
                   <UtensilsCrossed className="w-5 h-5 text-emerald-400 shrink-0" />
                   <h4>4. Ẩm thực</h4>
                 </div>
                 {selectedEthnic.sections?.cuisine?.paragraphs?.map((p, idx) => (
-                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
+                  <p key={idx} className="text-base text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
                     {p}
                   </p>
                 ))}
@@ -746,12 +746,12 @@ export default function InteractiveVietnamMap() {
 
               {/* Section 5: Nghệ thuật */}
               <div id="drawer-sec-art" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
-                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-lg mb-3 border-b border-vn-gold/20 pb-2">
                   <Music className="w-5 h-5 text-rose-400 shrink-0" />
                   <h4>5. Nghệ thuật</h4>
                 </div>
                 {selectedEthnic.sections?.art?.paragraphs?.map((p, idx) => (
-                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2.5 last:mb-0">
+                  <p key={idx} className="text-base text-vn-ivory/85 leading-relaxed mb-2.5 last:mb-0">
                     {p}
                   </p>
                 ))}
@@ -759,12 +759,12 @@ export default function InteractiveVietnamMap() {
 
               {/* Section 6: Lịch sử */}
               <div id="drawer-sec-history" className="p-5 rounded-2xl bg-vn-charcoal/80 border border-vn-gold/30 shadow-md scroll-mt-36">
-                <div className="flex items-center gap-2 text-vn-gold font-bold text-base mb-3 border-b border-vn-gold/20 pb-2">
+                <div className="flex items-center gap-2 text-vn-gold font-bold text-lg mb-3 border-b border-vn-gold/20 pb-2">
                   <Landmark className="w-5 h-5 text-indigo-400 shrink-0" />
                   <h4>6. Lịch sử</h4>
                 </div>
                 {selectedEthnic.sections?.history?.paragraphs?.map((p, idx) => (
-                  <p key={idx} className="text-sm text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
+                  <p key={idx} className="text-base text-vn-ivory/85 leading-relaxed mb-2 last:mb-0">
                     {p}
                   </p>
                 ))}
@@ -772,7 +772,7 @@ export default function InteractiveVietnamMap() {
 
               {/* Section 7: Hình ảnh văn hóa */}
               <div id="drawer-sec-gallery" className="p-5 rounded-2xl bg-gradient-to-br from-vn-charcoal to-vn-black border border-vn-gold/40 shadow-xl scroll-mt-36">
-                <div className="flex items-center gap-2 mb-4 border-b border-vn-gold/20 pb-2 text-vn-gold font-bold text-base">
+                <div className="flex items-center gap-2 mb-4 border-b border-vn-gold/20 pb-2 text-vn-gold font-bold text-lg">
                   <Images className="h-5 w-5 text-vn-gold shrink-0" />
                   <h4>7. Hình ảnh văn hóa</h4>
                 </div>
@@ -788,12 +788,12 @@ export default function InteractiveVietnamMap() {
                         >
                           <img src={image.src} alt={`${selectedEthnic.name} — ${image.title}`} loading="lazy" className="aspect-[4/3] w-full object-cover" />
                         </button>
-                        <figcaption className="p-3 text-xs text-vn-ivory/75">{image.title}</figcaption>
+                        <figcaption className="p-3 text-sm text-vn-ivory/75">{image.title}</figcaption>
                       </figure>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm leading-relaxed text-vn-ivory/70">Hình ảnh của dân tộc này sẽ được cập nhật trong không gian trưng bày.</p>
+                  <p className="text-base leading-relaxed text-vn-ivory/70">Hình ảnh của dân tộc này sẽ được cập nhật trong không gian trưng bày.</p>
                 )}
               </div>
             </div>

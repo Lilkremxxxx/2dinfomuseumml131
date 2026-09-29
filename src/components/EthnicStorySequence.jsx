@@ -36,7 +36,7 @@ const scenes = [
 ];
 
 const pentagonPositions = [
-  { x: 50, y: 18 }, { x: 78, y: 38 }, { x: 68, y: 72 }, { x: 32, y: 72 }, { x: 22, y: 38 },
+  { x: 50, y: -5 }, { x: 107, y: 36 }, { x: 79, y: 102 }, { x: 21, y: 102 }, { x: -7, y: 36 },
 ];
 const pentagonPointPositions = [
   { x: 50, y: 6.5 }, { x: 91.3, y: 36.5 }, { x: 75.5, y: 85 }, { x: 24.5, y: 85 }, { x: 8.7, y: 36.5 },
