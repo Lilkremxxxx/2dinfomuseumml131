@@ -17,7 +17,8 @@ export default function FlagZoomTransition({ onComplete }) {
     const caption = select('.flag-zoom-caption');
     const hint = select('.flag-zoom-hint');
 
-    gsap.set(star, { scale: 1, transformOrigin: '50% 50%' });
+    // Pin scaling to the center of the SVG canvas, independent of the star's own bounding box.
+    gsap.set(star, { scale: 1, svgOrigin: '800 450' });
 
     const timeline = gsap.timeline({
       scrollTrigger: {
