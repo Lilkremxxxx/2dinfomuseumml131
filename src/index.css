@@ -330,6 +330,8 @@ html.lenis body {
   opacity: 0;
   transform: translate(-50%, -50%) scale(.7);
   text-align: center;
+  left: var(--node-x);
+  top: var(--node-y);
   transition: left 850ms cubic-bezier(.2, .8, .2, 1), top 850ms cubic-bezier(.2, .8, .2, 1), opacity 700ms ease, transform 850ms cubic-bezier(.2, .8, .2, 1);
 }
 
@@ -469,8 +471,8 @@ html.lenis body {
 .story-scroll-hint i { width: 1px; height: 24px; background: linear-gradient(#ffcd00, transparent); animation: scroll-pulse 1.8s ease infinite; }
 
 @keyframes story-open {
-  from { opacity: 0; filter: blur(12px); transform: scale(.94); clip-path: inset(15% 15% round 2rem); }
-  to { opacity: 1; filter: blur(0); transform: scale(1); clip-path: inset(0 0 round 0); }
+  from { opacity: 0; transform: scale(.97); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes story-zoom-in {
@@ -662,8 +664,26 @@ html.lenis body {
 .ethnic-gallery-image img { transition: transform .35s ease; }
 
 @media (max-width: 640px) {
-  .ethnic-story-stage { min-height: 440px; }
+  .ethnic-story-stage { min-height: 360px; }
+  .ethnic-story-content { width: min(100% - 1rem, 1100px); height: 76svh; }
+  .story-title-scene { padding-inline: .5rem; }
+  .story-title-scene h2 { font-size: clamp(2.4rem, 10vw, 4rem); line-height: 1.08; }
+  .story-title-scene--start h2 { font-size: clamp(3.3rem, 13vw, 5rem); }
+  .story-title-scene--single-line h2 { font-size: clamp(1.1rem, 6.5vw, 2rem); white-space: normal; }
+  .story-title-scene--two-lines h2 { font-size: clamp(1.35rem, 7vw, 2.2rem); }
+  .story-title-scene--two-lines h2 span { white-space: normal; }
+  .story-image-scene { width: min(100%, 520px); gap: .8rem; }
+  .story-image-scene img { max-width: 100%; max-height: 72svh; border-radius: .65rem; }
+  .story-pentagon { width: min(92vw, 58svh, 560px); }
+  .story-pentagon-node { max-width: 34%; gap: .3rem; }
+  .story-pentagon-node--1 { --node-x: 82% !important; }
+  .story-pentagon-node--2 { --node-x: 72% !important; --node-y: 80% !important; }
+  .story-pentagon-node--3 { --node-x: 28% !important; --node-y: 80% !important; }
+  .story-pentagon-node--4 { --node-x: 18% !important; }
+  .story-pentagon-node > span { font-size: clamp(.85rem, 4vw, 1.3rem); }
+  .story-pentagon-node > svg { width: clamp(1.25rem, 6vw, 2rem); height: clamp(1.25rem, 6vw, 2rem); }
   .story-quote { min-height: 62vh; }
+  .story-quote p { font-size: clamp(1rem, 4vw, 1.25rem); line-height: 1.55; }
   .ethnic-story-footer { right: 1rem; bottom: 1rem; left: 1rem; font-size: .56rem; }
 }
 

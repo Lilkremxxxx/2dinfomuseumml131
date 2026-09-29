@@ -7,6 +7,7 @@ import cultureOne from '../../Image/Cộng đồng ngôn ngữ/cộng đồng v�
 import cultureTwo from '../../Image/Cộng đồng ngôn ngữ/cộng đồng văn hóa và ngôn ngữ.jpg';
 import cultureThree from '../../Image/Cộng đồng ngôn ngữ/cộng đồng văn hóa và ngôn ngữ 2.jpg';
 import communityPhoto from '../../Image/ảnh đồng bào.jpg';
+import fiveElementsMap from '../../Image/bản đồ phần 5 mảnh ghép.png';
 
 const elements = [
   { text: 'Lãnh Thổ', icon: Map },
@@ -31,7 +32,7 @@ const scenes = [
   ...elements.map((_, index) => ({ type: 'pentagon', revealed: index + 1 })),
   { type: 'pentagon', revealed: 5, showCenter: true },
   { type: 'pentagon-converge', revealed: 5, showCenter: true },
-  { type: 'image', src: territoryMap, alt: 'Bản đồ Việt Nam' },
+  { type: 'image', src: fiveElementsMap, alt: 'Bản đồ Việt Nam kết hợp năm yếu tố cấu thành dân tộc' },
 ];
 
 const pentagonPositions = [
@@ -55,7 +56,7 @@ function PentagonScene({ scene }) {
         const position = pentagonPositions[index];
         const visible = index < scene.revealed;
         return (
-          <div key={text} className={`story-pentagon-node ${visible ? 'is-visible' : ''}`} style={{ left: `${position.x}%`, top: `${position.y}%` }}>
+          <div key={text} className={`story-pentagon-node story-pentagon-node--${index} ${visible ? 'is-visible' : ''}`} style={{ '--node-x': `${position.x}%`, '--node-y': `${position.y}%` }}>
             <Icon aria-hidden="true" />
             <span>{text}</span>
           </div>

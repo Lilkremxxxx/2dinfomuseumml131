@@ -602,8 +602,19 @@ export default function InteractiveVietnamMap() {
       >
         {selectedEthnic && (
           <>
+            <button
+              type="button"
+              onClick={() => setSelectedEthnic(null)}
+              className="fixed right-3 top-3 z-[130] inline-flex h-12 items-center justify-center gap-2 rounded-full border-2 border-vn-gold bg-vn-red-deep px-3 text-white shadow-xl sm:hidden"
+              aria-label="Đóng chi tiết dân tộc"
+              title="Đóng chi tiết dân tộc"
+            >
+              <X className="h-5 w-5" />
+              <span className="text-xs font-bold">Đóng</span>
+            </button>
+
             {/* Sticky Drawer Header */}
-            <div className="sticky top-0 z-20 bg-[#0d1017]/95 backdrop-blur-md border-b border-vn-gold/30 p-5 sm:p-6 pb-4">
+            <div className="sticky top-0 z-20 bg-[#0d1017]/95 backdrop-blur-md border-b border-vn-gold/30 p-5 pr-16 pb-4 sm:p-6 sm:pr-6">
               <div className="flex items-start justify-between gap-4 mb-2">
                 <div>
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
@@ -633,7 +644,7 @@ export default function InteractiveVietnamMap() {
 
                 <button
                   onClick={() => setSelectedEthnic(null)}
-                  className="p-2 sm:px-3 sm:py-2 rounded-xl bg-vn-charcoal text-vn-ivory hover:text-white hover:bg-vn-red-deep/50 border border-vn-gold/30 hover:border-vn-gold transition-all flex items-center gap-1.5 shrink-0 shadow-md group cursor-pointer"
+                  className="hidden p-2 sm:flex sm:px-3 sm:py-2 rounded-xl bg-vn-charcoal text-vn-ivory hover:text-white hover:bg-vn-red-deep/50 border border-vn-gold/30 hover:border-vn-gold transition-all items-center gap-1.5 shrink-0 shadow-md group cursor-pointer"
                   title="Đóng (Phím ESC)"
                 >
                   <X className="w-5 h-5 text-vn-gold group-hover:rotate-90 transition-transform duration-200" />
