@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 
-const imageFiles = import.meta.glob('../../Image/Tổng hơp ảnh các dân tộc/**/*.{jpg,jpeg,png,webp,avif,jfif}', {
+const imageFiles = import.meta.glob('../../Image/Tổng hơp ảnh các dân tộc/**/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP,avif,AVIF,jfif,JFIF}', {
   eager: true,
   import: 'default',
   query: '?url',

@@ -36,7 +36,10 @@ const scenes = [
 ];
 
 const pentagonPositions = [
-  { x: 50, y: 7 }, { x: 94, y: 35 }, { x: 78, y: 86 }, { x: 22, y: 86 }, { x: 6, y: 35 },
+  { x: 50, y: 18 }, { x: 78, y: 38 }, { x: 68, y: 72 }, { x: 32, y: 72 }, { x: 22, y: 38 },
+];
+const pentagonPointPositions = [
+  { x: 50, y: 6.5 }, { x: 91.3, y: 36.5 }, { x: 75.5, y: 85 }, { x: 24.5, y: 85 }, { x: 8.7, y: 36.5 },
 ];
 
 function PentagonScene({ scene }) {
@@ -54,12 +57,16 @@ function PentagonScene({ scene }) {
       </svg>
       {elements.map(({ text, icon: Icon }, index) => {
         const position = pentagonPositions[index];
+        const point = pentagonPointPositions[index];
         const visible = index < scene.revealed;
         return (
-          <div key={text} className={`story-pentagon-node story-pentagon-node--${index} ${visible ? 'is-visible' : ''}`} style={{ '--node-x': `${position.x}%`, '--node-y': `${position.y}%` }}>
-            <Icon aria-hidden="true" />
-            <span>{text}</span>
-          </div>
+          <React.Fragment key={text}>
+            <span className={`story-pentagon-point story-pentagon-point--${index} ${visible ? 'is-visible' : ''}`} style={{ left: `${point.x}%`, top: `${point.y}%` }} />
+            <div className={`story-pentagon-node story-pentagon-node--${index} ${visible ? 'is-visible' : ''}`} style={{ '--node-x': `${position.x}%`, '--node-y': `${position.y}%` }}>
+              <Icon aria-hidden="true" />
+              <span>{text}</span>
+            </div>
+          </React.Fragment>
         );
       })}
       {scene.showCenter && <div className="story-pentagon-center"><UsersRound aria-hidden="true" /><span>Dân Tộc</span></div>}

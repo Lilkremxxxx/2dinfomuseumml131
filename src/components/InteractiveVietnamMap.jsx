@@ -20,11 +20,19 @@ import { MAP_REGIONS } from '../data/mapRegionsData';
 import { getEthnicDetails, normalizeName } from '../data/ethnicDetailsData';
 import vietnamPaths from '../data/vietnamPaths.json';
 
-const ethnicGalleryFiles = import.meta.glob('../../Image/Tổng hơp ảnh các dân tộc/**/*.{jpg,jpeg,png,webp,avif,jfif}', {
+const ethnicGalleryFiles = import.meta.glob('../../Image/Tổng hơp ảnh các dân tộc/**/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP,avif,AVIF,jfif,JFIF}', {
   eager: true,
   import: 'default',
   query: '?url',
 });
+
+const preferredEthnicPhotos = {
+  lolo: ['Trang Phục.JPG', 'Trang Phục2.JPG'],
+  laha: ['Trang Phục.JPG', 'Trang phục 2.JPG'],
+  lahu: ['Lễ Hội.JPG', 'Trang phục.JPG'],
+  lachi: ['Lễ Hội.JPG', 'Trang phục.PNG'],
+  lao: ['Lễ Hội 1.JPG', 'Phong tục.JPG'],
+};
 
 function getEthnicGallery(ethnic) {
   const names = [ethnic.name, ethnic.alternateName, ethnic.slug?.replace(/-/g, ' ')]
@@ -41,10 +49,15 @@ function getEthnicGallery(ethnic) {
         || (name.length >= 5 && folderName.endsWith(name))
       ));
     })
-    .sort(([pathA], [pathB]) => pathA.localeCompare(pathB, 'vi'))
-    .slice(0, 2);
+    .sort(([pathA], [pathB]) => pathA.localeCompare(pathB, 'vi'));
 
-  return matching.map(([path, src]) => ({
+  const preferredNames = names.flatMap((name) => preferredEthnicPhotos[name] || []);
+  const preferred = preferredNames
+    .map((fileName) => matching.find(([path]) => path.split('/').at(-1).toLocaleLowerCase('vi') === fileName.toLocaleLowerCase('vi')))
+    .filter(Boolean);
+  const selected = [...new Map([...preferred, ...matching].map(([path, src]) => [path, [path, src]])).values()].slice(0, 2);
+
+  return selected.map(([path, src]) => ({
     src,
     title: path.split('/').at(-1).replace(/\.[^.]+$/, ''),
   }));

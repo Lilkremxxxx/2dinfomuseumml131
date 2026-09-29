@@ -317,6 +317,21 @@ html.lenis body {
   filter: drop-shadow(0 0 12px rgba(255, 205, 0, .4));
 }
 
+.story-pentagon-point {
+  position: absolute;
+  z-index: 3;
+  width: clamp(10px, 1.35vw, 17px);
+  aspect-ratio: 1;
+  border: 2px solid #fff4bd;
+  border-radius: 50%;
+  background: #ffcd00;
+  box-shadow: 0 0 8px 3px rgba(255, 205, 0, .75), 0 0 20px 8px rgba(255, 205, 0, .48);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.2);
+  transition: left 850ms cubic-bezier(.2, .8, .2, 1), top 850ms cubic-bezier(.2, .8, .2, 1), opacity 600ms ease, transform 850ms cubic-bezier(.2, .8, .2, 1);
+}
+.story-pentagon-point.is-visible { animation: pentagon-point-pop 500ms cubic-bezier(.16, 1, .3, 1) both, pentagon-point-glow 2s 500ms ease-in-out infinite; }
+
 .story-pentagon-node {
   position: absolute;
   z-index: 2;
@@ -384,6 +399,13 @@ html.lenis body {
   opacity: 0;
   transform: translate(-50%, -50%) scale(.12);
 }
+.story-pentagon--converging .story-pentagon-point {
+  top: 50% !important;
+  left: 50% !important;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.1);
+}
+.story-pentagon--converging .story-pentagon-point.is-visible { animation: none; }
 .story-pentagon--converging .story-pentagon-node.is-visible { animation: none; }
 .story-pentagon--converging .story-pentagon-outline { opacity: 0; transform: scale(.08); }
 .story-pentagon--converging .story-pentagon-center { animation: pentagon-center-pulse 850ms ease-in-out both; }
@@ -392,6 +414,15 @@ html.lenis body {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(.45); filter: blur(5px); }
   75% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); filter: blur(0); }
   100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0); }
+}
+@keyframes pentagon-point-pop {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(.1); }
+  70% { opacity: 1; transform: translate(-50%, -50%) scale(1.65); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes pentagon-point-glow {
+  0%, 100% { box-shadow: 0 0 8px 3px rgba(255, 205, 0, .75), 0 0 20px 8px rgba(255, 205, 0, .48); }
+  50% { box-shadow: 0 0 12px 5px rgba(255, 245, 190, .95), 0 0 32px 14px rgba(255, 205, 0, .72); }
 }
 @keyframes pentagon-center-arrive {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(.35); filter: blur(8px); }
@@ -676,10 +707,10 @@ html.lenis body {
   .story-image-scene img { max-width: 100%; max-height: 72svh; border-radius: .65rem; }
   .story-pentagon { width: min(92vw, 58svh, 560px); }
   .story-pentagon-node { max-width: 34%; gap: .3rem; }
-  .story-pentagon-node--1 { --node-x: 82% !important; }
-  .story-pentagon-node--2 { --node-x: 72% !important; --node-y: 80% !important; }
-  .story-pentagon-node--3 { --node-x: 28% !important; --node-y: 80% !important; }
-  .story-pentagon-node--4 { --node-x: 18% !important; }
+  .story-pentagon-node--1 { --node-x: 78% !important; }
+  .story-pentagon-node--2 { --node-x: 68% !important; --node-y: 72% !important; }
+  .story-pentagon-node--3 { --node-x: 32% !important; --node-y: 72% !important; }
+  .story-pentagon-node--4 { --node-x: 22% !important; }
   .story-pentagon-node > span { font-size: clamp(.85rem, 4vw, 1.3rem); }
   .story-pentagon-node > svg { width: clamp(1.25rem, 6vw, 2rem); height: clamp(1.25rem, 6vw, 2rem); }
   .story-quote { min-height: 62vh; }
@@ -691,6 +722,7 @@ html.lenis body {
   .ethnic-story-content,
   .story-title-scene h2,
   .story-pentagon-node,
+  .story-pentagon-point,
   .story-pentagon-center,
   .story-image-scene img,
   .story-quote p { animation-duration: .01ms; }
