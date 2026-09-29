@@ -63,7 +63,7 @@ function getEthnicGallery(ethnic) {
   }));
 }
 
-export default function InteractiveVietnamMap() {
+export default function InteractiveVietnamMap({ onDrawerOpenChange }) {
   const [activeRegion, setActiveRegion] = useState(MAP_REGIONS[0]);
   const [hoveredProvince, setHoveredProvince] = useState(null);
   const [selectedEthnic, setSelectedEthnic] = useState(null);
@@ -77,6 +77,10 @@ export default function InteractiveVietnamMap() {
   const dragStart = useRef({ x: 0, y: 0 });
   const hasDragged = useRef(false);
   const selectedGallery = selectedEthnic ? getEthnicGallery(selectedEthnic) : [];
+
+  useEffect(() => {
+    onDrawerOpenChange?.(Boolean(selectedEthnic));
+  }, [selectedEthnic, onDrawerOpenChange]);
 
   // Keep the underlying map exactly where it was while the profile drawer is open.
   useEffect(() => {

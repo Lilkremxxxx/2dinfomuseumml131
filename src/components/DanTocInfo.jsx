@@ -32,6 +32,7 @@ export default function DanTocInfo() {
   const navigate = useNavigate();
   const [isFlagZoomOpen, setIsFlagZoomOpen] = useState(false);
   const [isEthnicMapOpen, setIsEthnicMapOpen] = useState(false);
+  const [isEthnicDrawerOpen, setIsEthnicDrawerOpen] = useState(false);
   const [autoScrollActive, setAutoScrollActive] = useState(false);
 
   useEffect(() => {
@@ -190,7 +191,7 @@ export default function DanTocInfo() {
       <button
         type="button"
         onClick={() => setAutoScrollActive((active) => !active)}
-        className={`fixed right-4 top-4 z-[120] inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold shadow-xl backdrop-blur-md transition-colors ${autoScrollActive ? 'border-vn-gold bg-vn-red-deep text-white' : 'border-vn-gold/50 bg-vn-charcoal/90 text-vn-gold hover:bg-vn-red-deep'}`}
+        className={`${isEthnicDrawerOpen ? 'hidden sm:inline-flex' : 'inline-flex'} fixed right-4 top-4 z-[120] items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold shadow-xl backdrop-blur-md transition-colors ${autoScrollActive ? 'border-vn-gold bg-vn-red-deep text-white' : 'border-vn-gold/50 bg-vn-charcoal/90 text-vn-gold hover:bg-vn-red-deep'}`}
         title={autoScrollActive ? 'Dừng tự cuộn' : 'Bắt đầu tự cuộn'}
         aria-label={autoScrollActive ? 'Dừng tự cuộn' : 'Bắt đầu tự cuộn'}
       >
@@ -425,7 +426,7 @@ export default function DanTocInfo() {
           }}
         />
       )}
-      {isEthnicMapOpen && <InteractiveVietnamMap />}
+      {isEthnicMapOpen && <InteractiveVietnamMap onDrawerOpenChange={setIsEthnicDrawerOpen} />}
 
       {isEthnicMapOpen && (
         <div className="flex justify-center px-4 py-10">
