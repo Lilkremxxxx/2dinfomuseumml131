@@ -45,10 +45,10 @@ export default function DanTocInfo() {
 
     const startY = window.scrollY;
     const startedAt = performance.now();
-    const duration = 650;
+    const duration = 1800;
     const scrollFrame = (now) => {
       const progress = Math.min(1, (now - startedAt) / duration);
-      const eased = 1 - ((1 - progress) ** 4);
+      const eased = progress * progress * (3 - 2 * progress);
       window.scrollTo(0, startY * (1 - eased));
       if (progress < 1) requestAnimationFrame(scrollFrame);
       else navigate('/');
@@ -233,10 +233,10 @@ export default function DanTocInfo() {
 
       {/* LỚP NỀN ĐIỆN ẢNH BẢO TÀNG */}
       <div 
-        className="fixed inset-0 pointer-events-none opacity-20 mix-blend-screen bg-cover bg-center"
+        className="media-page-stars fixed inset-0 pointer-events-none opacity-20 mix-blend-screen bg-cover bg-center"
         style={{ backgroundImage: 'url(/images/stars.webp)' }}
       />
-      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_50%_15%,rgba(143,23,19,0.22)_0%,rgba(7,8,10,0.98)_80%)]" />
+      <div className="media-page-ambient fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_50%_15%,rgba(143,23,19,0.22)_0%,rgba(7,8,10,0.98)_80%)]" />
       <div className="film-grain pointer-events-none" />
       <div className="film-vignette pointer-events-none" />
 
