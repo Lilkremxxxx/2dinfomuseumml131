@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Coins, Languages, Landmark, Map, Palette, UsersRound } from 'lucide-react';
 import territoryMap from '../../Image/bản đồ việt nam11.png';
 import economyOne from '../../Image/Cộng đồng kinh tế/cộgn đồng kinh tế.jpg';
 import economyTwo from '../../Image/Cộng đồng kinh tế/cộng đồng kinh tếế2.jpg';
@@ -6,9 +7,14 @@ import cultureOne from '../../Image/Cộng đồng ngôn ngữ/cộng đồng v�
 import cultureTwo from '../../Image/Cộng đồng ngôn ngữ/cộng đồng văn hóa và ngôn ngữ.jpg';
 import cultureThree from '../../Image/Cộng đồng ngôn ngữ/cộng đồng văn hóa và ngôn ngữ 2.jpg';
 import communityPhoto from '../../Image/ảnh đồng bào.jpg';
-import fiveElementsMap from '../../Image/bản đồ phần 5 mảnh ghép.png';
 
-const elements = ['Lãnh thổ', 'Nhà nước', 'Kinh tế', 'Văn hóa', 'Ngôn ngữ', 'Dân tộc'];
+const elements = [
+  { text: 'Lãnh Thổ', icon: Map },
+  { text: 'Kinh Tế', icon: Coins },
+  { text: 'Ngôn Ngữ', icon: Languages },
+  { text: 'Văn Hóa', icon: Palette },
+  { text: 'Nhà Nước', icon: Landmark },
+];
 const scenes = [
   { type: 'title', text: 'Bắt đầu', layout: 'start' },
   { type: 'title', text: 'Dân tộc là gì' },
@@ -22,9 +28,43 @@ const scenes = [
   { type: 'image', text: 'Ngôn ngữ kết nối cộng đồng', src: cultureTwo, alt: 'Cộng đồng văn hóa và ngôn ngữ' },
   { type: 'image', text: 'Đa dạng trong thống nhất', src: cultureThree, alt: 'Văn hóa và ngôn ngữ các dân tộc' },
   { type: 'quote', text: 'Trong quan điểm của chủ nghĩa Mác – Lênin, dân tộc là quá trình phát triển lâu dài của xã hội loài người, trải qua các hình thức cộng đồng từ thấp đến cao, bao gồm: thị tộc, bộ lạc, bộ tộc, dân tộc. Sự biến đổi của phương thức sản xuất chính là nguyên nhân quyết định sự biến đổi của cộng đồng dân tộc.' },
-  ...elements.map((text, index) => ({ type: 'element', text, index })),
-  { type: 'image', text: 'Năm yếu tố cấu thành dân tộc', src: fiveElementsMap, alt: 'Bản đồ năm mảnh ghép cấu thành dân tộc' },
+  ...elements.map((_, index) => ({ type: 'pentagon', revealed: index + 1 })),
+  { type: 'pentagon', revealed: 5, showCenter: true },
+  { type: 'pentagon-converge', revealed: 5, showCenter: true },
+  { type: 'image', src: territoryMap, alt: 'Bản đồ Việt Nam' },
 ];
+
+const pentagonPositions = [
+  { x: 50, y: 7 }, { x: 94, y: 35 }, { x: 78, y: 86 }, { x: 22, y: 86 }, { x: 6, y: 35 },
+];
+
+function PentagonScene({ scene }) {
+  const [isConverging, setIsConverging] = useState(false);
+  useEffect(() => {
+    if (scene.type !== 'pentagon-converge') return undefined;
+    const frame = requestAnimationFrame(() => setIsConverging(true));
+    return () => cancelAnimationFrame(frame);
+  }, [scene.type]);
+
+  return (
+    <div className={`story-pentagon ${isConverging ? 'story-pentagon--converging' : ''}`}>
+      <svg className="story-pentagon-outline" viewBox="0 0 1000 1000" aria-hidden="true">
+        <path d="M500 65 L913 365 L755 850 L245 850 L87 365 Z" style={{ strokeDashoffset: 3000 * (1 - scene.revealed / 5) }} />
+      </svg>
+      {elements.map(({ text, icon: Icon }, index) => {
+        const position = pentagonPositions[index];
+        const visible = index < scene.revealed;
+        return (
+          <div key={text} className={`story-pentagon-node ${visible ? 'is-visible' : ''}`} style={{ left: `${position.x}%`, top: `${position.y}%` }}>
+            <Icon aria-hidden="true" />
+            <span>{text}</span>
+          </div>
+        );
+      })}
+      {scene.showCenter && <div className="story-pentagon-center"><UsersRound aria-hidden="true" /><span>Dân Tộc</span></div>}
+    </div>
+  );
+}
 
 function SceneContent({ scene }) {
   if (scene.type === 'blank') return null;
@@ -43,19 +83,12 @@ function SceneContent({ scene }) {
     return (
       <div className="story-image-scene">
         <img src={scene.src} alt={scene.alt} />
-        <p>{scene.text}</p>
+        {scene.text && <p>{scene.text}</p>}
       </div>
     );
   }
 
-  if (scene.type === 'element') {
-    return (
-      <div className="story-element-scene">
-        <span className="story-eyebrow">MẢNH GHÉP {scene.index + 1} / 6</span>
-        <h2 key={scene.text}>{scene.text}</h2>
-      </div>
-    );
-  }
+  if (scene.type === 'pentagon' || scene.type === 'pentagon-converge') return <PentagonScene scene={scene} />;
 
   return (
     <div className={`story-title-scene ${scene.layout ? `story-title-scene--${scene.layout}` : ''}`}>
@@ -115,7 +148,10 @@ export default function EthnicStorySequence() {
       aria-label="Hành trình khám phá khái niệm dân tộc"
     >
       <div className="ethnic-story-stage">
-        <div className={`ethnic-story-content ${scenes[activeScene].type === 'quote' ? 'ethnic-story-content--quote' : ''}`} key={activeScene}>
+        <div
+          className={`ethnic-story-content ${scenes[activeScene].type === 'quote' ? 'ethnic-story-content--quote' : ''}`}
+          key={scenes[activeScene].type === 'pentagon' ? 'pentagon-sequence' : activeScene}
+        >
           <SceneContent scene={scenes[activeScene]} />
         </div>
         <div className="ethnic-story-footer">
