@@ -291,6 +291,82 @@ html.lenis body {
   animation: story-zoom-in 950ms cubic-bezier(.16, 1, .3, 1) both;
 }
 
+.story-feature-scene {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 3vh, 2rem);
+  padding: 1rem 0 2rem;
+}
+
+.story-feature-scene h2 {
+  max-width: 100%;
+  margin: 0;
+  color: #fff8df;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 6vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  text-align: center;
+  text-wrap: balance;
+  text-shadow: 0 0 12px rgba(255,255,255,.55), 0 0 40px rgba(255,205,0,.72), 0 0 80px rgba(218,37,29,.58);
+  animation: story-feature-heading 650ms cubic-bezier(.16, 1, .3, 1) both;
+}
+.story-feature-scene--two-lines h2 span { display: block; white-space: nowrap; }
+
+.story-feature-scene--territory { justify-content: flex-end; }
+.story-feature-scene--territory h2 { margin-top: auto; margin-bottom: .75rem; }
+.story-feature-images {
+  display: grid;
+  width: min(100%, 940px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(.75rem, 2vw, 1.5rem);
+  margin-top: .2rem;
+}
+.story-feature-scene--territory .story-feature-images { width: min(100%, 780px); grid-template-columns: 1fr; }
+.story-feature-images button {
+  min-width: 0;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid rgba(255,205,0,.55);
+  border-radius: 1rem;
+  background: #171717;
+  box-shadow: 0 18px 70px rgba(0,0,0,.55);
+  cursor: zoom-in;
+  max-height: 42vh;
+  animation: story-photo-arrive 1.2s cubic-bezier(.16, 1, .3, 1) both;
+}
+.story-feature-images button:nth-child(2) { animation-delay: 100ms; }
+.story-feature-images img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+.story-feature-images button:hover img { transform: scale(1.045); }
+.story-feature-scene--territory .story-feature-images img { object-fit: contain; background: #f7f5e9; }
+
+.story-image-lightbox {
+  position: fixed;
+  z-index: 300;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(0,0,0,.95);
+  backdrop-filter: blur(12px);
+}
+.story-image-lightbox > img { max-width: 100%; max-height: 88vh; object-fit: contain; }
+.story-image-lightbox > button { position: absolute; top: 1rem; right: 1rem; display: grid; width: 2.8rem; height: 2.8rem; place-items: center; border: 1px solid rgba(255,205,0,.6); border-radius: 50%; background: #171412; color: #ffcd00; }
+
+@keyframes story-feature-heading {
+  from { opacity: 0; transform: translateY(24px) scale(.94); filter: blur(8px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@keyframes story-photo-arrive {
+  from { opacity: 0; transform: scale(.84); filter: blur(14px); }
+  to { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
 .story-image-scene p {
   margin: 0;
   color: #ffcd00;
@@ -298,6 +374,22 @@ html.lenis body {
   font-size: clamp(1.3rem, 2.1vw, 1.9rem);
   text-align: center;
   text-shadow: 0 0 12px rgba(255, 205, 0, .9), 0 0 42px rgba(218, 37, 29, .75);
+}
+
+.story-image-scene--five-elements-map { width: min(100%, 1100px); }
+.ethnic-story-content--map { width: min(100% - 2rem, 1180px); height: 100vh; }
+.story-image-scene--five-elements-map img {
+  max-width: min(100%, 920px);
+  max-height: 90vh;
+  background: #f7f5e9;
+  border: 0;
+  border-radius: .25rem;
+  box-shadow: 0 0 100px rgba(247,245,233,.12);
+  animation: five-elements-map-reveal 2800ms cubic-bezier(.16, 1, .3, 1) both;
+}
+@keyframes five-elements-map-reveal {
+  from { opacity: .15; transform: scale(.7); filter: blur(8px); }
+  to { opacity: 1; transform: scale(1); filter: blur(0); }
 }
 
 .story-pentagon {
@@ -437,13 +529,14 @@ html.lenis body {
 .story-quote {
   position: relative;
   display: grid;
-  width: min(100%, 1000px);
-  min-height: min(70vh, 680px);
-  padding: clamp(1.5rem, 5vw, 4.5rem);
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  padding: clamp(2rem, 8vw, 7rem);
   place-items: center;
   overflow: hidden;
-  border: 1px solid rgba(255, 205, 0, .3);
-  border-radius: 1.5rem;
+  border: 0;
+  border-radius: 0;
   background: #100f0c;
   text-align: center;
   isolation: isolate;
@@ -452,11 +545,11 @@ html.lenis body {
 .story-quote::before {
   position: absolute;
   z-index: -2;
-  inset: -16px;
+  inset: -30px;
   content: '';
   background: var(--story-background) center / cover;
-  filter: blur(5px) brightness(.32);
-  transform: scale(1.04);
+  filter: blur(2px) brightness(.36);
+  transform: scale(1.08);
 }
 
 .story-quote::after {
@@ -468,17 +561,19 @@ html.lenis body {
 }
 
 .story-quote p {
-  max-width: 850px;
+  max-width: 1050px;
   margin: 0;
   color: #fff;
   font-family: 'Playfair Display', serif;
   font-size: clamp(1.25rem, 2.45vw, 2.1rem);
   line-height: 1.7;
   text-shadow: 0 2px 16px #000;
-  animation: quote-reveal 420ms ease-out both;
+  animation: quote-impact 700ms cubic-bezier(.16, 1, .3, 1) both;
 }
 
 .ethnic-story-content--quote {
+  width: 100%;
+  height: 100vh;
   animation: quote-scene-open 420ms ease-out both;
 }
 
@@ -520,6 +615,11 @@ html.lenis body {
 @keyframes quote-scene-open {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+@keyframes quote-impact {
+  0% { opacity: 0; transform: scale(.72); filter: blur(10px); }
+  70% { opacity: 1; transform: scale(1.035); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
 }
 
 .flag-zoom-sequence { height: 360vh; background: #070405; }
@@ -712,6 +812,14 @@ html.lenis body {
   .story-title-scene--two-lines h2 span { white-space: normal; }
   .story-image-scene { width: min(100%, 520px); gap: .8rem; }
   .story-image-scene img { max-width: 100%; max-height: 72svh; border-radius: .65rem; }
+  .story-feature-scene { gap: .9rem; padding: .5rem 0 1.5rem; }
+  .story-feature-scene h2 { font-size: clamp(1.45rem, 6.1vw, 2.45rem); line-height: 1.12; }
+  .story-feature-scene--two-lines h2 span { white-space: normal; }
+  .story-feature-scene--territory .story-feature-images { width: min(100%, 560px); grid-template-columns: 1fr; }
+  .story-feature-images { gap: .45rem; }
+  .story-feature-images button { aspect-ratio: 4 / 3; max-height: 30svh; border-radius: .65rem; }
+  .ethnic-story-content--map { width: min(100% - 1rem, 1180px); height: 100svh; }
+  .story-image-scene--five-elements-map img { max-width: 100%; max-height: 88svh; }
   .story-pentagon { width: min(66vw, 58svh, 560px); }
   .story-pentagon-node { max-width: 34%; gap: .3rem; }
   .story-pentagon-node > span { font-size: clamp(.95rem, 4.2vw, 1.4rem); text-shadow: 0 0 5px rgba(255, 255, 255, .6), 0 0 13px rgba(255, 205, 0, .62), 0 0 24px rgba(218, 37, 29, .42); }
@@ -719,10 +827,19 @@ html.lenis body {
   .story-pentagon--converging .story-pentagon-center { animation-name: pentagon-center-pulse-mobile; }
   .ethnic-name-glow { text-shadow: 0 0 4px rgba(255, 255, 255, .55), 0 0 12px rgba(255, 205, 0, .62), 0 0 22px rgba(218, 37, 29, .45); }
   .story-pentagon-node > svg { width: clamp(1.25rem, 6vw, 2rem); height: clamp(1.25rem, 6vw, 2rem); }
-  .story-quote { min-height: 62vh; }
+  .ethnic-story-content--quote { width: 100%; height: 100svh; }
+  .story-quote { width: 100%; height: 100%; min-height: 100svh; padding: 1.5rem; }
   .story-quote p { font-size: clamp(1.1rem, 4.2vw, 1.35rem); line-height: 1.55; }
   .ethnic-story-footer { right: 1rem; bottom: 1rem; left: 1rem; font-size: .56rem; }
 }
+
+.media-showcase { padding: clamp(4rem, 10vw, 8rem) 1rem; border-top: 1px solid rgba(255,205,0,.2); background: radial-gradient(ellipse at 50% 0%, rgba(218,37,29,.14), transparent 60%), #070809; }
+.media-showcase__inner { width: min(100%, 1120px); margin-inline: auto; text-align: center; }
+.media-showcase__inner h2 { margin: .65rem 0 2.5rem; color: #fff8df; font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 800; text-shadow: 0 0 24px rgba(255,205,0,.42); }
+.media-showcase__grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: clamp(1rem,2vw,1.5rem); }
+.media-showcase__video { aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid rgba(255,205,0,.4); border-radius: 1rem; background: #000; box-shadow: 0 18px 55px rgba(0,0,0,.4); }
+.media-showcase__video iframe { display: block; width: 100%; height: 100%; border: 0; }
+@media (max-width: 640px) { .media-showcase__grid { grid-template-columns: 1fr; } }
 
 @media (prefers-reduced-motion: reduce) {
   .ethnic-story-content,

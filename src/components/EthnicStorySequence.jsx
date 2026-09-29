@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Coins, Languages, Landmark, Map, Palette, UsersRound } from 'lucide-react';
+import { Coins, Languages, Landmark, Map, Palette, UsersRound, X } from 'lucide-react';
 import territoryMap from '../../Image/bản đồ việt nam11.png';
 import economyOne from '../../Image/Cộng đồng kinh tế/cộgn đồng kinh tế.jpg';
 import economyTwo from '../../Image/Cộng đồng kinh tế/cộng đồng kinh tếế2.jpg';
 import cultureOne from '../../Image/Cộng đồng ngôn ngữ/cộng đồng văn hóa ngôn ngữ.jpg';
 import cultureTwo from '../../Image/Cộng đồng ngôn ngữ/cộng đồng văn hóa và ngôn ngữ.jpg';
-import cultureThree from '../../Image/Cộng đồng ngôn ngữ/cộng đồng văn hóa và ngôn ngữ 2.jpg';
 import communityPhoto from '../../Image/ảnh đồng bào.jpg';
 import fiveElementsMap from '../../Image/bản đồ phần 5 mảnh ghép.png';
 
@@ -17,22 +16,22 @@ const elements = [
   { text: 'Nhà Nước', icon: Landmark },
 ];
 const scenes = [
-  { type: 'title', text: 'Bắt đầu', layout: 'start' },
-  { type: 'title', text: 'Dân tộc là gì' },
-  { type: 'title', lines: ['Là cộng đồng về', 'lãnh thổ'], eyebrow: 'ĐẶC TRƯNG THỨ NHẤT', layout: 'two-lines' },
-  { type: 'image', text: 'Một lãnh thổ thống nhất', src: territoryMap, alt: 'Bản đồ Việt Nam' },
-  { type: 'title', text: 'Cộng đồng về kinh tế', eyebrow: 'ĐẶC TRƯNG THỨ HAI', layout: 'single-line' },
-  { type: 'image', text: 'Cùng gắn bó trong đời sống kinh tế', src: economyOne, alt: 'Cộng đồng kinh tế' },
-  { type: 'image', text: 'Cùng lao động và phát triển', src: economyTwo, alt: 'Đời sống kinh tế cộng đồng' },
-  { type: 'title', lines: ['Là cộng đồng về văn hóa', 'và ngôn ngữ'], eyebrow: 'ĐẶC TRƯNG THỨ BA', layout: 'two-lines' },
-  { type: 'image', text: 'Bản sắc văn hóa được gìn giữ', src: cultureOne, alt: 'Cộng đồng văn hóa' },
-  { type: 'image', text: 'Ngôn ngữ kết nối cộng đồng', src: cultureTwo, alt: 'Cộng đồng văn hóa và ngôn ngữ' },
-  { type: 'image', text: 'Đa dạng trong thống nhất', src: cultureThree, alt: 'Văn hóa và ngôn ngữ các dân tộc' },
+  { type: 'title', text: 'BẮT ĐẦU', layout: 'start' },
+  { type: 'title', text: 'DÂN TỘC LÀ GÌ ?' },
+  { type: 'feature', text: 'LÀ CỘNG ĐỒNG VỀ LÃNH THỔ', layout: 'territory', images: [{ src: territoryMap, alt: 'Bản đồ Việt Nam' }] },
+  { type: 'feature', text: 'LÀ CỘNG ĐỒNG VỀ KINH TẾ', layout: 'single-line', images: [
+    { src: economyOne, alt: 'Sinh hoạt và lao động kinh tế của cộng đồng' },
+    { src: economyTwo, alt: 'Hoạt động kinh tế của cộng đồng' },
+  ] },
+  { type: 'feature', lines: ['LÀ CỘNG ĐỒNG VỀ VĂN HÓA', 'VÀ NGÔN NGỮ'], layout: 'two-lines', images: [
+    { src: cultureOne, alt: 'Cộng đồng văn hóa và ngôn ngữ' },
+    { src: cultureTwo, alt: 'Đời sống văn hóa của cộng đồng' },
+  ] },
   { type: 'quote', text: 'Trong quan điểm của chủ nghĩa Mác – Lênin, dân tộc là quá trình phát triển lâu dài của xã hội loài người, trải qua các hình thức cộng đồng từ thấp đến cao, bao gồm: thị tộc, bộ lạc, bộ tộc, dân tộc. Sự biến đổi của phương thức sản xuất chính là nguyên nhân quyết định sự biến đổi của cộng đồng dân tộc.' },
   ...elements.map((_, index) => ({ type: 'pentagon', revealed: index + 1 })),
   { type: 'pentagon', revealed: 5, showCenter: true },
   { type: 'pentagon-converge', revealed: 5, showCenter: true },
-  { type: 'image', src: fiveElementsMap, alt: 'Bản đồ Việt Nam kết hợp năm yếu tố cấu thành dân tộc' },
+  { type: 'image', src: fiveElementsMap, alt: 'Bản đồ Việt Nam kết hợp năm yếu tố cấu thành dân tộc', layout: 'five-elements-map' },
 ];
 
 const pentagonPositions = [
@@ -74,7 +73,7 @@ function PentagonScene({ scene }) {
   );
 }
 
-function SceneContent({ scene }) {
+function SceneContent({ scene, onPreview }) {
   if (scene.type === 'blank') return null;
 
   if (scene.type === 'quote') {
@@ -87,11 +86,25 @@ function SceneContent({ scene }) {
     );
   }
 
+  if (scene.type === 'feature') {
+    return (
+      <div className={`story-feature-scene story-feature-scene--${scene.layout || 'pair'}`}>
+        <h2>{scene.lines ? scene.lines.map((line) => <span key={line}>{line}</span>) : scene.text}</h2>
+        <div className="story-feature-images">
+          {scene.images.map((image) => (
+            <button key={image.src} type="button" onClick={() => onPreview(image)} aria-label={`Phóng to ảnh: ${image.alt}`}>
+              <img src={image.src} alt={image.alt} />
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (scene.type === 'image') {
     return (
-      <div className="story-image-scene">
+      <div className={`story-image-scene ${scene.layout === 'five-elements-map' ? 'story-image-scene--five-elements-map' : ''}`}>
         <img src={scene.src} alt={scene.alt} />
-        {scene.text && <p>{scene.text}</p>}
       </div>
     );
   }
@@ -113,6 +126,14 @@ function SceneContent({ scene }) {
 export default function EthnicStorySequence() {
   const sequenceRef = useRef(null);
   const [activeScene, setActiveScene] = useState(0);
+  const [previewImage, setPreviewImage] = useState(null);
+
+  useEffect(() => {
+    if (!previewImage) return undefined;
+    const closeOnEscape = (event) => { if (event.key === 'Escape') setPreviewImage(null); };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [previewImage]);
 
   useEffect(() => {
     let frame = 0;
@@ -157,16 +178,22 @@ export default function EthnicStorySequence() {
     >
       <div className="ethnic-story-stage">
         <div
-          className={`ethnic-story-content ${scenes[activeScene].type === 'quote' ? 'ethnic-story-content--quote' : ''}`}
+          className={`ethnic-story-content ${scenes[activeScene].type === 'quote' ? 'ethnic-story-content--quote' : ''} ${scenes[activeScene].layout === 'five-elements-map' ? 'ethnic-story-content--map' : ''}`}
           key={scenes[activeScene].type === 'pentagon' ? 'pentagon-sequence' : activeScene}
         >
-          <SceneContent scene={scenes[activeScene]} />
+          <SceneContent scene={scenes[activeScene]} onPreview={setPreviewImage} />
         </div>
         <div className="ethnic-story-footer">
           <span>{String(activeScene + 1).padStart(2, '0')} / {String(scenes.length).padStart(2, '0')}</span>
           <span className="story-scroll-hint">Lăn chuột để tiếp tục <i aria-hidden="true" /></span>
         </div>
       </div>
+      {previewImage && (
+        <div className="story-image-lightbox" role="presentation" onClick={() => setPreviewImage(null)}>
+          <button type="button" onClick={() => setPreviewImage(null)} aria-label="Đóng ảnh phóng to"><X /></button>
+          <img src={previewImage.src} alt={previewImage.alt} onClick={(event) => event.stopPropagation()} />
+        </div>
+      )}
     </section>
   );
 }

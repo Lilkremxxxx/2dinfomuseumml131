@@ -5,6 +5,7 @@ import InteractiveVietnamMap from './InteractiveVietnamMap';
 import EthnicStorySequence from './EthnicStorySequence';
 import EthnicPhotoArchive from './EthnicPhotoArchive';
 import FlagZoomTransition from './FlagZoomTransition';
+import MediaShowcase from './MediaShowcase';
 
 // 3 NGUYÊN TẮC CƯƠNG LĨNH LÊNIN (Viết hoa chữ đầu: "Bình đẳng", "Tự quyết", "Liên hiệp")
 const LENIN_MILESTONES = [
@@ -267,18 +268,9 @@ export default function DanTocInfo() {
           </div>
 
           {/* NỘI DUNG NGUYÊN TẮC Ở CHÍNH GIỮA MÀN HÌNH (VIẾT HOA CHỮ ĐẦU, TO VÀ NỔI BẬT) */}
-          <div className="relative z-30 max-w-4xl w-full mx-auto text-center px-4 my-auto">
-            
-            {/* Chữ đại diện to trên màn hình (viết hoa chữ đầu: "Bình đẳng", "Tự quyết", "Liên hiệp") */}
-            <h3 
-              key={activeData.title}
-              className="font-display font-bold text-6xl sm:text-8xl md:text-9xl tracking-tight text-white drop-shadow-[0_0_60px_rgba(255,205,0,0.7)] leading-none mb-6 animate-fadeIn"
-            >
-              {activeData.title}
-            </h3>
-
+          <div key={activeData.title} className="relative z-30 flex w-full max-w-4xl flex-1 items-center justify-center px-4 text-center animate-fadeIn">
             {/* Hộp trích dẫn nội dung nguyên tắc nổi bật */}
-            <div className="p-6 sm:p-10 rounded-3xl bg-vn-black/90 border-2 border-vn-gold shadow-[0_20px_70px_rgba(0,0,0,0.95)] backdrop-blur-2xl transition-all duration-300">
+            <div className="w-full rounded-3xl border-2 border-vn-gold bg-vn-black/90 p-6 shadow-[0_20px_70px_rgba(0,0,0,0.95)] backdrop-blur-2xl transition-all duration-300 sm:p-10">
               <blockquote className="font-heading italic text-lg sm:text-2xl md:text-3xl text-vn-ivory font-light leading-relaxed drop-shadow-md">
                 “{activeData.quote}”
               </blockquote>
@@ -441,6 +433,8 @@ export default function DanTocInfo() {
       )}
 
       {isEthnicMapOpen && <EthnicPhotoArchive />}
+
+      {isEthnicMapOpen && <MediaShowcase />}
 
       <div className="flex justify-center px-4 py-12">
         <button

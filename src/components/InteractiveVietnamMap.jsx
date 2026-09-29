@@ -792,7 +792,6 @@ export default function InteractiveVietnamMap({ onDrawerOpenChange }) {
                         >
                           <img src={image.src} alt={`${selectedEthnic.name} — ${image.title}`} loading="lazy" className="aspect-[4/3] w-full object-cover" />
                         </button>
-                        <figcaption className="p-3 text-sm text-vn-ivory/75">{image.title}</figcaption>
                       </figure>
                     ))}
                   </div>
@@ -825,7 +824,6 @@ export default function InteractiveVietnamMap({ onDrawerOpenChange }) {
             className="max-h-[82vh] max-w-full rounded-xl border border-vn-gold/50 object-contain shadow-[0_0_70px_rgba(255,205,0,0.2)]"
             onClick={(event) => event.stopPropagation()}
           />
-          <p className="mt-4 text-center font-display text-lg text-vn-gold">{previewImage.title}</p>
         </div>
       )}
 

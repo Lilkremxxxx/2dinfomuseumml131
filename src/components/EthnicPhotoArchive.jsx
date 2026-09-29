@@ -67,7 +67,6 @@ export default function EthnicPhotoArchive() {
               aria-label={`Xem ảnh ${image.title} — dân tộc ${image.ethnic}`}
             >
               <img src={image.src} alt={`${image.title} — dân tộc ${image.ethnic}`} loading="lazy" />
-              <span className="ethnic-photo-caption"><strong>{image.title}</strong><small>{image.ethnic}</small></span>
             </button>
           ))}
         </div>
@@ -77,7 +76,6 @@ export default function EthnicPhotoArchive() {
         <div className="ethnic-photo-lightbox" role="presentation" onClick={() => setPreviewImage(null)}>
           <button type="button" className="ethnic-photo-lightbox-close" onClick={() => setPreviewImage(null)} aria-label="Đóng ảnh phóng to"><X /></button>
           <img src={previewImage.src} alt={`${previewImage.title} — dân tộc ${previewImage.ethnic}`} onClick={(event) => event.stopPropagation()} />
-          <p>{previewImage.title} · {previewImage.ethnic}</p>
         </div>
       )}
     </section>
