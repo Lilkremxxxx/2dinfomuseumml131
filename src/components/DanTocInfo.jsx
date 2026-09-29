@@ -69,7 +69,8 @@ export default function DanTocInfo() {
         return;
       }
       // About one story scene (1.12 viewport heights) every 2–3 seconds.
-      window.scrollBy(0, elapsed * 0.36);
+      const isHoldingFinalMap = document.querySelector('.ethnic-story-stage--map');
+      window.scrollBy(0, elapsed * (isHoldingFinalMap ? 0.24 : 0.36));
       frameId = requestAnimationFrame(step);
     };
     frameId = requestAnimationFrame(step);

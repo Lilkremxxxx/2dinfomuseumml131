@@ -33,6 +33,8 @@ const scenes = [
   { type: 'pentagon-converge', revealed: 5, showCenter: true },
   { type: 'image', src: fiveElementsMap, alt: 'Bản đồ Việt Nam kết hợp năm yếu tố cấu thành dân tộc', layout: 'five-elements-map' },
 ];
+const SCENE_SCROLL_VIEWPORTS = 1.12;
+const FINAL_MAP_EXTRA_SCROLL_VIEWPORTS = 3;
 
 const pentagonPositions = [
   { x: 50, y: -5 }, { x: 107, y: 36 }, { x: 79, y: 102 }, { x: 21, y: 102 }, { x: -7, y: 36 },
@@ -126,7 +128,10 @@ function SceneContent({ scene, onPreview }) {
 export default function EthnicStorySequence() {
   const sequenceRef = useRef(null);
   const [activeScene, setActiveScene] = useState(0);
+  const activeSceneRef = useRef(0);
+  const lastMapWheelAtRef = useRef(0);
   const [previewImage, setPreviewImage] = useState(null);
+  activeSceneRef.current = activeScene;
 
   useEffect(() => {
     if (!previewImage) return undefined;
@@ -142,7 +147,7 @@ export default function EthnicStorySequence() {
       frame = requestAnimationFrame(() => {
         if (!sequenceRef.current) return;
         const distance = Math.max(0, window.scrollY - sequenceRef.current.offsetTop);
-        const nextScene = Math.min(scenes.length - 1, Math.floor(distance / (window.innerHeight * 1.12)));
+        const nextScene = Math.min(scenes.length - 1, Math.floor(distance / (window.innerHeight * SCENE_SCROLL_VIEWPORTS)));
         setActiveScene((current) => current === nextScene ? current : nextScene);
       });
     };
@@ -152,8 +157,19 @@ export default function EthnicStorySequence() {
 
     const slowFastWheel = (event) => {
       const section = sequenceRef.current;
-      if (!section || Math.abs(event.deltaY) <= 240) return;
+      if (!section) return;
       const rect = section.getBoundingClientRect();
+      if (rect.top <= 1 && rect.bottom > window.innerHeight && activeSceneRef.current === scenes.length - 1) {
+        event.preventDefault();
+        const now = performance.now();
+        if (now - lastMapWheelAtRef.current >= 24) {
+          lastMapWheelAtRef.current = now;
+          const step = Math.sign(event.deltaY) * Math.min(12, Math.max(6, Math.abs(event.deltaY) * 0.18));
+          window.scrollBy(0, step);
+        }
+        return;
+      }
+      if (Math.abs(event.deltaY) <= 240) return;
       if (rect.top <= 1 && rect.bottom > window.innerHeight) {
         event.preventDefault();
         window.scrollBy(0, Math.sign(event.deltaY) * 240);
@@ -172,7 +188,7 @@ export default function EthnicStorySequence() {
     <section
       className="ethnic-story-sequence"
       ref={sequenceRef}
-      style={{ height: `${scenes.length * 112}vh` }}
+      style={{ height: `${(scenes.length * SCENE_SCROLL_VIEWPORTS + FINAL_MAP_EXTRA_SCROLL_VIEWPORTS) * 100}vh` }}
       id="dan-toc-kham-pha"
       aria-label="Hành trình khám phá khái niệm dân tộc"
     >
