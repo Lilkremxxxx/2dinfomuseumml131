@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Pause, Play } from 'lucide-react';
+import Lenis from 'lenis';
 import { useNavigate } from 'react-router-dom';
 import InteractiveVietnamMap from './InteractiveVietnamMap';
 import EthnicStorySequence from './EthnicStorySequence';
@@ -31,10 +32,28 @@ const LENIN_MILESTONES = [
 
 export default function DanTocInfo() {
   const navigate = useNavigate();
+  const lenisRef = useRef(null);
   const [isFlagZoomOpen, setIsFlagZoomOpen] = useState(false);
   const [isEthnicMapOpen, setIsEthnicMapOpen] = useState(false);
   const [isEthnicDrawerOpen, setIsEthnicDrawerOpen] = useState(false);
   const [autoScrollActive, setAutoScrollActive] = useState(false);
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.25,
+      easing: (t) => 1 - Math.pow(1 - t, 4),
+      smoothWheel: true,
+      wheelMultiplier: 0.95,
+      touchMultiplier: 1.15,
+      autoRaf: true,
+      prevent: (node) => Boolean(node.closest?.('#con-thuyen-lenin, [data-map-wheel-lock="true"]')),
+    });
+    lenisRef.current = lenis;
+    return () => {
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, []);
 
   const returnToStart = () => {
     setAutoScrollActive(false);
@@ -43,17 +62,11 @@ export default function DanTocInfo() {
       return;
     }
 
-    const startY = window.scrollY;
-    const startedAt = performance.now();
-    const duration = 1800;
-    const scrollFrame = (now) => {
-      const progress = Math.min(1, (now - startedAt) / duration);
-      const eased = progress * progress * (3 - 2 * progress);
-      window.scrollTo(0, startY * (1 - eased));
-      if (progress < 1) requestAnimationFrame(scrollFrame);
-      else navigate('/');
-    };
-    requestAnimationFrame(scrollFrame);
+    lenisRef.current?.scrollTo(0, {
+      duration: 1.8,
+      easing: (progress) => progress * progress * (3 - 2 * progress),
+      onComplete: () => navigate('/'),
+    });
   };
 
   useEffect(() => {
@@ -70,7 +83,9 @@ export default function DanTocInfo() {
       }
       // About one story scene (1.12 viewport heights) every 2–3 seconds.
       const isHoldingFinalMap = document.querySelector('.ethnic-story-stage--map');
-      window.scrollBy(0, elapsed * (isHoldingFinalMap ? 0.24 : 0.36));
+      const mapIsReady = isHoldingFinalMap?.dataset.mapReady === 'true';
+      const scrollRate = isHoldingFinalMap ? (mapIsReady ? 0.4 : 0.24) : 0.36;
+      lenisRef.current?.scrollTo(window.scrollY + elapsed * scrollRate, { immediate: true });
       frameId = requestAnimationFrame(step);
     };
     frameId = requestAnimationFrame(step);
@@ -94,10 +109,12 @@ export default function DanTocInfo() {
   const [boatProgress, setBoatProgress] = useState(0); // 0.0 -> 1.0
   const boatProgressRef = useRef(0); // ref để đọc trong closure không stale
   const boatLockedRef = useRef(false); // ref để biết đang khóa hay không
+  const boatReachedEndAtRef = useRef(0);
   const touchStartYRef = useRef(0);
 
   useEffect(() => {
-    const SCROLL_SENSITIVITY = 0.0015; // mỗi px deltaY tăng bao nhiêu progress
+    const SCROLL_SENSITIVITY = 0.0009;
+    const MAX_WHEEL_DELTA = 140;
 
     const isBoatSectionInViewport = () => {
       if (!boatSectionRef.current) return false;
@@ -112,8 +129,14 @@ export default function DanTocInfo() {
 
       // Khi section chưa đến vị trí dính (chưa sticky hoàn toàn), cho cuộn bình thường
       if (rect.top > 10) return;
-      // Khi đã xong hết 3 mốc và người dùng cuộn xuống -> mở khóa
-      if (boatProgressRef.current >= 1 && e.deltaY > 0) return;
+      // Chặn quán tính còn lại sau mốc cuối; cử chỉ cuộn mới sẽ đi tiếp xuống trang.
+      if (boatProgressRef.current >= 1 && e.deltaY > 0) {
+        if (performance.now() - boatReachedEndAtRef.current < 260) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        return;
+      }
       // Khi người dùng cuộn lên trong khi progress = 0 -> mở khóa (cho cuộn lên)
       if (boatProgressRef.current <= 0 && e.deltaY < 0) return;
 
@@ -122,8 +145,9 @@ export default function DanTocInfo() {
       e.stopPropagation();
 
       // Cập nhật progress
-      const delta = e.deltaY * SCROLL_SENSITIVITY;
+      const delta = Math.max(-MAX_WHEEL_DELTA, Math.min(MAX_WHEEL_DELTA, e.deltaY)) * SCROLL_SENSITIVITY;
       const next = Math.max(0, Math.min(1, boatProgressRef.current + delta));
+      if (next === 1 && boatProgressRef.current < 1) boatReachedEndAtRef.current = performance.now();
       boatProgressRef.current = next;
       setBoatProgress(next);
     };

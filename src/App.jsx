@@ -31,9 +31,10 @@ export default function App() {
   // 1. Lenis Smooth Scroll synchronised with GSAP ScrollTrigger ticker
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.15,
+      duration: 1.3,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      wheelMultiplier: 0.95,
       touchMultiplier: 1.4,
     });
 

@@ -128,10 +128,20 @@ function SceneContent({ scene, onPreview }) {
 export default function EthnicStorySequence() {
   const sequenceRef = useRef(null);
   const [activeScene, setActiveScene] = useState(0);
+  const [mapReady, setMapReady] = useState(false);
   const activeSceneRef = useRef(0);
   const lastMapWheelAtRef = useRef(0);
+  const mapReadyRef = useRef(false);
   const [previewImage, setPreviewImage] = useState(null);
   activeSceneRef.current = activeScene;
+  mapReadyRef.current = mapReady;
+
+  useEffect(() => {
+    setMapReady(false);
+    if (activeScene !== scenes.length - 1) return undefined;
+    const timer = window.setTimeout(() => setMapReady(true), 5200);
+    return () => window.clearTimeout(timer);
+  }, [activeScene]);
 
   useEffect(() => {
     if (!previewImage) return undefined;
@@ -164,15 +174,10 @@ export default function EthnicStorySequence() {
         const now = performance.now();
         if (now - lastMapWheelAtRef.current >= 24) {
           lastMapWheelAtRef.current = now;
-          const step = Math.sign(event.deltaY) * Math.min(12, Math.max(6, Math.abs(event.deltaY) * 0.18));
+          const step = Math.sign(event.deltaY) * Math.min(mapReadyRef.current ? 18 : 12, Math.max(6, Math.abs(event.deltaY) * 0.18));
           window.scrollBy(0, step);
         }
         return;
-      }
-      if (Math.abs(event.deltaY) <= 240) return;
-      if (rect.top <= 1 && rect.bottom > window.innerHeight) {
-        event.preventDefault();
-        window.scrollBy(0, Math.sign(event.deltaY) * 240);
       }
     };
     window.addEventListener('wheel', slowFastWheel, { passive: false });
@@ -190,9 +195,10 @@ export default function EthnicStorySequence() {
       ref={sequenceRef}
       style={{ height: `${(scenes.length * SCENE_SCROLL_VIEWPORTS + FINAL_MAP_EXTRA_SCROLL_VIEWPORTS) * 100}vh` }}
       id="dan-toc-kham-pha"
+      data-map-wheel-lock={activeScene === scenes.length - 1 ? 'true' : undefined}
       aria-label="Hành trình khám phá khái niệm dân tộc"
     >
-      <div className={`ethnic-story-stage ${scenes[activeScene].layout === 'five-elements-map' ? 'ethnic-story-stage--map' : ''}`}>
+      <div className={`ethnic-story-stage ${scenes[activeScene].layout === 'five-elements-map' ? 'ethnic-story-stage--map' : ''}`} data-map-ready={mapReady ? 'true' : 'false'}>
         <div
           className={`ethnic-story-content ${scenes[activeScene].type === 'quote' ? 'ethnic-story-content--quote' : ''} ${scenes[activeScene].layout === 'five-elements-map' ? 'ethnic-story-content--map' : ''}`}
           key={scenes[activeScene].type === 'pentagon' ? 'pentagon-sequence' : activeScene}
