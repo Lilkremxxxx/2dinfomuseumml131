@@ -222,6 +222,8 @@ html.lenis body {
   overflow: hidden;
   background: #000;
 }
+.ethnic-story-stage--map,
+.ethnic-story-content--map { background: #f7f5e9; }
 
 .ethnic-story-content {
   display: grid;
@@ -307,7 +309,7 @@ html.lenis body {
   margin: 0;
   color: #fff8df;
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2rem, 6vw, 5.5rem);
+  font-size: clamp(1.55rem, 3.8vw, 3.25rem);
   font-weight: 800;
   line-height: 1.05;
   text-align: center;
@@ -326,7 +328,7 @@ html.lenis body {
   gap: clamp(.75rem, 2vw, 1.5rem);
   margin-top: .2rem;
 }
-.story-feature-scene--territory .story-feature-images { width: min(100%, 780px); grid-template-columns: 1fr; }
+.story-feature-scene--territory .story-feature-images { width: 100%; grid-template-columns: 1fr; justify-items: center; }
 .story-feature-images button {
   min-width: 0;
   aspect-ratio: 16 / 10;
@@ -342,7 +344,22 @@ html.lenis body {
 .story-feature-images button:nth-child(2) { animation-delay: 100ms; }
 .story-feature-images img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
 .story-feature-images button:hover img { transform: scale(1.045); }
-.story-feature-scene--territory .story-feature-images img { object-fit: contain; background: #f7f5e9; }
+.story-feature-scene--territory .story-feature-images button {
+  width: fit-content;
+  max-width: 100%;
+  max-height: none;
+  aspect-ratio: auto;
+  border-radius: .55rem;
+  background: #f7f5e9;
+}
+.story-feature-scene--territory .story-feature-images img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 42vh;
+  object-fit: contain;
+  background: #f7f5e9;
+}
 
 .story-image-lightbox {
   position: fixed;
@@ -813,11 +830,13 @@ html.lenis body {
   .story-image-scene { width: min(100%, 520px); gap: .8rem; }
   .story-image-scene img { max-width: 100%; max-height: 72svh; border-radius: .65rem; }
   .story-feature-scene { gap: .9rem; padding: .5rem 0 1.5rem; }
-  .story-feature-scene h2 { font-size: clamp(1.45rem, 6.1vw, 2.45rem); line-height: 1.12; }
+  .story-feature-scene h2 { font-size: clamp(1.05rem, 4.8vw, 1.75rem); line-height: 1.12; }
   .story-feature-scene--two-lines h2 span { white-space: normal; }
-  .story-feature-scene--territory .story-feature-images { width: min(100%, 560px); grid-template-columns: 1fr; }
+  .story-feature-scene--territory .story-feature-images { width: 100%; grid-template-columns: 1fr; }
   .story-feature-images { gap: .45rem; }
   .story-feature-images button { aspect-ratio: 4 / 3; max-height: 30svh; border-radius: .65rem; }
+  .story-feature-scene--territory .story-feature-images button { width: fit-content; max-width: 100%; max-height: none; aspect-ratio: auto; }
+  .story-feature-scene--territory .story-feature-images img { max-height: 30svh; }
   .ethnic-story-content--map { width: min(100% - 1rem, 1180px); height: 100svh; }
   .story-image-scene--five-elements-map img { max-width: 100%; max-height: 88svh; }
   .story-pentagon { width: min(66vw, 58svh, 560px); }
@@ -833,7 +852,7 @@ html.lenis body {
   .ethnic-story-footer { right: 1rem; bottom: 1rem; left: 1rem; font-size: .56rem; }
 }
 
-.media-showcase { padding: clamp(4rem, 10vw, 8rem) 1rem; border-top: 1px solid rgba(255,205,0,.2); background: radial-gradient(ellipse at 50% 0%, rgba(218,37,29,.14), transparent 60%), #070809; }
+.media-showcase { padding: clamp(4rem, 10vw, 8rem) 1rem; border-top: 1px solid rgba(255,205,0,.2); background: #090909; }
 .media-showcase__inner { width: min(100%, 1120px); margin-inline: auto; text-align: center; }
 .media-showcase__inner h2 { margin: .65rem 0 2.5rem; color: #fff8df; font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 800; text-shadow: 0 0 24px rgba(255,205,0,.42); }
 .media-showcase__grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: clamp(1rem,2vw,1.5rem); }

@@ -36,6 +36,26 @@ export default function DanTocInfo() {
   const [isEthnicDrawerOpen, setIsEthnicDrawerOpen] = useState(false);
   const [autoScrollActive, setAutoScrollActive] = useState(false);
 
+  const returnToStart = () => {
+    setAutoScrollActive(false);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.scrollY < 8) {
+      navigate('/');
+      return;
+    }
+
+    const startY = window.scrollY;
+    const startedAt = performance.now();
+    const duration = 650;
+    const scrollFrame = (now) => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const eased = 1 - ((1 - progress) ** 4);
+      window.scrollTo(0, startY * (1 - eased));
+      if (progress < 1) requestAnimationFrame(scrollFrame);
+      else navigate('/');
+    };
+    requestAnimationFrame(scrollFrame);
+  };
+
   useEffect(() => {
     if (!autoScrollActive) return undefined;
     let frameId;
@@ -439,7 +459,7 @@ export default function DanTocInfo() {
       <div className="flex justify-center px-4 py-12">
         <button
           type="button"
-          onClick={() => navigate('/')}
+          onClick={returnToStart}
           className="rounded-full border-2 border-vn-gold bg-gradient-to-r from-vn-red-deep via-vn-red to-vn-red-deep px-7 py-4 font-display text-lg font-bold text-vn-gold shadow-[0_0_32px_rgba(218,37,29,0.42)] transition hover:scale-105"
         >
           Trở về ban đầu

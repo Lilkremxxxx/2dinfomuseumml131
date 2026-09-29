@@ -89,7 +89,6 @@ function SceneContent({ scene, onPreview }) {
   if (scene.type === 'feature') {
     return (
       <div className={`story-feature-scene story-feature-scene--${scene.layout || 'pair'}`}>
-        <h2>{scene.lines ? scene.lines.map((line) => <span key={line}>{line}</span>) : scene.text}</h2>
         <div className="story-feature-images">
           {scene.images.map((image) => (
             <button key={image.src} type="button" onClick={() => onPreview(image)} aria-label={`Phóng to ảnh: ${image.alt}`}>
@@ -97,6 +96,7 @@ function SceneContent({ scene, onPreview }) {
             </button>
           ))}
         </div>
+        <h2>{scene.lines ? scene.lines.map((line) => <span key={line}>{line}</span>) : scene.text}</h2>
       </div>
     );
   }
@@ -176,7 +176,7 @@ export default function EthnicStorySequence() {
       id="dan-toc-kham-pha"
       aria-label="Hành trình khám phá khái niệm dân tộc"
     >
-      <div className="ethnic-story-stage">
+      <div className={`ethnic-story-stage ${scenes[activeScene].layout === 'five-elements-map' ? 'ethnic-story-stage--map' : ''}`}>
         <div
           className={`ethnic-story-content ${scenes[activeScene].type === 'quote' ? 'ethnic-story-content--quote' : ''} ${scenes[activeScene].layout === 'five-elements-map' ? 'ethnic-story-content--map' : ''}`}
           key={scenes[activeScene].type === 'pentagon' ? 'pentagon-sequence' : activeScene}
