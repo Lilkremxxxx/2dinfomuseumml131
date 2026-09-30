@@ -37,6 +37,7 @@ export default function DanTocInfo() {
   const [isEthnicMapOpen, setIsEthnicMapOpen] = useState(false);
   const [isEthnicDrawerOpen, setIsEthnicDrawerOpen] = useState(false);
   const [autoScrollActive, setAutoScrollActive] = useState(false);
+  const [mapAutoExit, setMapAutoExit] = useState(false);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -75,6 +76,15 @@ export default function DanTocInfo() {
     let previousTime;
     let heldPentagonScene = null;
     let convergeResumeAt = 0;
+    let releasedConvergeScene = null;
+    let heldMapScene = null;
+    let mapResumeAt = 0;
+    let mapExitStartedAt = null;
+    let mapExitStartY = 0;
+    let mapExitTargetY = 0;
+    let mapExitSceneKey = null;
+    let mapGlideComplete = false;
+    let boatPlayback = null;
     const step = () => {
       const now = performance.now();
       const elapsed = previousTime === undefined ? 0 : Math.min(50, now - previousTime);
@@ -89,29 +99,106 @@ export default function DanTocInfo() {
       const sceneIndex = story?.dataset.activeSceneIndex;
       const sceneKey = `${sceneType}:${sceneIndex}`;
       if (sceneType === 'pentagon' || sceneType === 'pentagon-converge') {
-        if (heldPentagonScene !== sceneKey) {
+        if (heldPentagonScene !== sceneKey && releasedConvergeScene !== sceneKey) {
           heldPentagonScene = sceneKey;
-          convergeResumeAt = now + (sceneType === 'pentagon-converge' ? 1400 : 1300);
+          convergeResumeAt = now + (sceneType === 'pentagon-converge' ? 2000 : 900);
         }
-        if (now < convergeResumeAt) {
+        if (heldPentagonScene === sceneKey && now < convergeResumeAt) {
+          frameId = requestAnimationFrame(step);
+          return;
+        }
+        if (sceneType === 'pentagon-converge' && heldPentagonScene === sceneKey) {
+          releasedConvergeScene = sceneKey;
+          heldPentagonScene = null;
+          const nextSceneY = story.offsetTop + (Number(sceneIndex) + 1) * window.innerHeight * 1.12 + 1;
+          lenisRef.current?.scrollTo(nextSceneY, { immediate: true });
           frameId = requestAnimationFrame(step);
           return;
         }
       } else {
         heldPentagonScene = null;
-      }
-
-      const boatRect = boatSectionRef.current?.getBoundingClientRect();
-      if (boatRect && boatRect.top <= 10 && boatProgressRef.current < 1) {
-        const nextProgress = Math.min(1, boatProgressRef.current + elapsed / 3600);
-        boatProgressRef.current = nextProgress;
-        setBoatProgress(nextProgress);
-        frameId = requestAnimationFrame(step);
-        return;
+        if (sceneKey !== releasedConvergeScene) releasedConvergeScene = null;
       }
 
       const isHoldingFinalMap = document.querySelector('.ethnic-story-stage--map');
       const mapIsReady = isHoldingFinalMap?.dataset.mapReady === 'true';
+      if (sceneType === 'image' && mapIsReady && !mapGlideComplete) {
+        const mapSceneKey = `${sceneKey}:ready`;
+        if (heldMapScene !== mapSceneKey) {
+          heldMapScene = mapSceneKey;
+          mapResumeAt = now + 5000;
+        }
+        if (now < mapResumeAt) {
+          frameId = requestAnimationFrame(step);
+          return;
+        }
+        if (mapExitSceneKey !== mapSceneKey) {
+          mapExitSceneKey = mapSceneKey;
+          mapExitStartedAt = now;
+          mapExitStartY = window.scrollY;
+          const boatTop = boatSectionRef.current?.getBoundingClientRect().top;
+          mapExitTargetY = window.scrollY + Math.max(0, boatTop ?? window.innerHeight);
+          setMapAutoExit(true);
+        }
+        const glideProgress = Math.min(1, (now - mapExitStartedAt) / 1500);
+        const easedGlide = glideProgress < 0.5
+          ? 4 * glideProgress ** 3
+          : 1 - ((-2 * glideProgress + 2) ** 3) / 2;
+        lenisRef.current?.scrollTo(
+          mapExitStartY + (mapExitTargetY - mapExitStartY) * easedGlide,
+          { immediate: true },
+        );
+        if (glideProgress < 1) {
+          frameId = requestAnimationFrame(step);
+          return;
+        }
+        setMapAutoExit(false);
+        heldMapScene = null;
+        mapExitSceneKey = null;
+        mapGlideComplete = true;
+      } else {
+        heldMapScene = null;
+        mapExitSceneKey = null;
+        mapExitStartedAt = null;
+      }
+
+      const boatRect = boatSectionRef.current?.getBoundingClientRect();
+      if (boatRect && boatRect.top <= 10 && boatProgressRef.current < 1) {
+        if (!boatPlayback) {
+          const stage = boatProgressRef.current >= 0.66 ? 2 : boatProgressRef.current >= 0.33 ? 1 : 0;
+          boatPlayback = {
+            stage,
+            from: boatProgressRef.current,
+            to: (stage + 1) / 3,
+            startedAt: now,
+          };
+        }
+        const progressAfterHold = Math.max(0, now - boatPlayback.startedAt - 7000) / 1000;
+        const transition = Math.min(1, progressAfterHold);
+        const easedTransition = 0.5 - Math.cos(Math.PI * transition) / 2;
+        const nextProgress = boatPlayback.from + (boatPlayback.to - boatPlayback.from) * easedTransition;
+        boatProgressRef.current = nextProgress;
+        setBoatProgress(nextProgress);
+        if (transition === 1) {
+          if (boatPlayback.stage < 2) {
+            boatPlayback = {
+              stage: boatPlayback.stage + 1,
+              from: boatPlayback.to,
+              to: (boatPlayback.stage + 2) / 3,
+              startedAt: now,
+            };
+          } else {
+            boatPlayback = null;
+          }
+        }
+        if (nextProgress >= 1) {
+          frameId = requestAnimationFrame(step);
+          return;
+        }
+        frameId = requestAnimationFrame(step);
+        return;
+      }
+
       const scrollRate = sceneType === 'quote'
         ? 0.15
         : isHoldingFinalMap
@@ -297,7 +384,7 @@ export default function DanTocInfo() {
       <div className="film-vignette pointer-events-none" />
 
       {/* NỘI DUNG CHÍNH */}
-      <EthnicStorySequence />
+      <EthnicStorySequence autoScrollExit={mapAutoExit && autoScrollActive} />
 
 
 
@@ -389,7 +476,7 @@ export default function DanTocInfo() {
 
               {/* CON THUYỀN BÉ LẠI (CHO BÉ THUYỀN LẠI) */}
               <div 
-                className="absolute bottom-4 sm:bottom-5 z-30 -translate-x-1/2 pointer-events-none transition-all duration-75 ease-out"
+                className="absolute bottom-4 sm:bottom-5 z-30 -translate-x-1/2 pointer-events-none"
                 style={{ 
                   left: `${boatLeft}%`,
                   filter: 'drop-shadow(0 0 15px rgba(255,205,0,0.6))'

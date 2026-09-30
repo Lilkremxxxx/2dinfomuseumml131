@@ -45,6 +45,15 @@ const pentagonPointPositions = [
 
 function PentagonScene({ scene }) {
   const [isConverging, setIsConverging] = useState(false);
+  const [drawnEdges, setDrawnEdges] = useState(scene.type === 'pentagon-converge' ? scene.revealed : 0);
+  useEffect(() => {
+    if (scene.type === 'pentagon-converge') {
+      setDrawnEdges(scene.revealed);
+      return undefined;
+    }
+    const frame = requestAnimationFrame(() => setDrawnEdges(scene.revealed));
+    return () => cancelAnimationFrame(frame);
+  }, [scene.revealed, scene.type]);
   useEffect(() => {
     if (scene.type !== 'pentagon-converge') return undefined;
     const frame = requestAnimationFrame(() => setIsConverging(true));
@@ -54,7 +63,7 @@ function PentagonScene({ scene }) {
   return (
     <div className={`story-pentagon ${isConverging ? 'story-pentagon--converging' : ''}`}>
       <svg className="story-pentagon-outline" viewBox="0 0 1000 1000" aria-hidden="true">
-        <path d="M500 65 L913 365 L755 850 L245 850 L87 365 Z" pathLength="5" style={{ strokeDashoffset: 5 - scene.revealed }} />
+        <path d="M500 65 L913 365 L755 850 L245 850 L87 365 Z" pathLength="5" style={{ strokeDashoffset: 5 - drawnEdges }} />
       </svg>
       {elements.map(({ text, icon: Icon }, index) => {
         const position = pentagonPositions[index];
@@ -63,8 +72,8 @@ function PentagonScene({ scene }) {
         const isArriving = index === scene.revealed && scene.revealed > 0 && scene.revealed < elements.length;
         return (
           <React.Fragment key={text}>
-            <span className={`story-pentagon-point story-pentagon-point--${index} ${visible ? 'is-visible' : ''} ${isArriving ? 'is-arriving' : ''}`} style={{ left: `${point.x}%`, top: `${point.y}%`, '--arrival-delay': isArriving ? '.65s' : '0s' }} />
-            <div className={`story-pentagon-node story-pentagon-node--${index} ${visible ? 'is-visible' : ''} ${isArriving ? 'is-arriving' : ''}`} style={{ '--node-x': `${position.x}%`, '--node-y': `${position.y}%`, '--arrival-delay': isArriving ? '.65s' : '0s' }}>
+            <span className={`story-pentagon-point story-pentagon-point--${index} ${visible ? 'is-visible' : ''} ${isArriving ? 'is-arriving' : ''}`} style={{ left: `${point.x}%`, top: `${point.y}%`, '--arrival-delay': isArriving ? '.45s' : '0s' }} />
+            <div className={`story-pentagon-node story-pentagon-node--${index} ${visible ? 'is-visible' : ''} ${isArriving ? 'is-arriving' : ''}`} style={{ '--node-x': `${position.x}%`, '--node-y': `${position.y}%`, '--arrival-delay': isArriving ? '.45s' : '0s' }}>
               <Icon aria-hidden="true" />
               <span>{text}</span>
             </div>
@@ -126,7 +135,7 @@ function SceneContent({ scene, onPreview }) {
   );
 }
 
-export default function EthnicStorySequence() {
+export default function EthnicStorySequence({ autoScrollExit = false }) {
   const sequenceRef = useRef(null);
   const [activeScene, setActiveScene] = useState(0);
   const [mapReady, setMapReady] = useState(false);
@@ -207,7 +216,7 @@ export default function EthnicStorySequence() {
       data-active-scene-index={activeScene}
       aria-label="Hành trình khám phá khái niệm dân tộc"
     >
-      <div className={`ethnic-story-stage ${scenes[activeScene].layout === 'five-elements-map' ? 'ethnic-story-stage--map' : ''}`} data-map-ready={mapReady ? 'true' : 'false'}>
+      <div className={`ethnic-story-stage ${scenes[activeScene].layout === 'five-elements-map' ? 'ethnic-story-stage--map' : ''} ${autoScrollExit && scenes[activeScene].layout === 'five-elements-map' ? 'ethnic-story-stage--map-exiting' : ''}`} data-map-ready={mapReady ? 'true' : 'false'}>
         <div
           className={`ethnic-story-content ${scenes[activeScene].type === 'quote' ? 'ethnic-story-content--quote' : ''} ${scenes[activeScene].layout === 'five-elements-map' ? 'ethnic-story-content--map' : ''}`}
           key={scenes[activeScene].type === 'pentagon' ? 'pentagon-sequence' : activeScene}

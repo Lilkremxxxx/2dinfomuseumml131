@@ -225,6 +225,18 @@ html.lenis body {
 .ethnic-story-stage--map,
 .ethnic-story-content--map { background: #f7f5e9; }
 
+.ethnic-story-stage--map {
+  transform-origin: center center;
+  transition: transform 1.5s cubic-bezier(.65, 0, .35, 1), opacity 1.5s ease, filter 1.5s ease;
+  will-change: transform, opacity, filter;
+}
+
+.ethnic-story-stage--map-exiting {
+  transform: scale(.76);
+  opacity: 0;
+  filter: blur(7px);
+}
+
 .ethnic-story-content {
   display: grid;
   width: min(100% - 2rem, 1100px);
@@ -422,7 +434,7 @@ html.lenis body {
   stroke: rgba(255, 205, 0, .72);
   stroke-width: 5;
   stroke-dasharray: 5;
-  transition: stroke-dashoffset .65s ease;
+  transition: stroke-dashoffset .433s ease;
   filter: drop-shadow(0 0 12px rgba(255, 205, 0, .4));
 }
 
@@ -437,10 +449,10 @@ html.lenis body {
   box-shadow: 0 0 8px 3px rgba(255, 205, 0, .75), 0 0 20px 8px rgba(255, 205, 0, .48);
   opacity: 0;
   transform: translate(-50%, -50%) scale(.2);
-  transition: left 850ms cubic-bezier(.2, .8, .2, 1), top 850ms cubic-bezier(.2, .8, .2, 1), opacity 600ms ease, transform 850ms cubic-bezier(.2, .8, .2, 1);
+  transition: left 567ms cubic-bezier(.2, .8, .2, 1), top 567ms cubic-bezier(.2, .8, .2, 1), opacity 400ms ease, transform 567ms cubic-bezier(.2, .8, .2, 1);
 }
-.story-pentagon-point.is-visible { animation: pentagon-point-pop 500ms cubic-bezier(.16, 1, .3, 1) both, pentagon-point-glow 2s 500ms ease-in-out infinite; }
-.story-pentagon-point.is-arriving { animation-delay: var(--arrival-delay), calc(.5s + var(--arrival-delay)); transition-delay: var(--arrival-delay); }
+.story-pentagon-point.is-visible { animation: pentagon-point-pop 333ms cubic-bezier(.16, 1, .3, 1) both, pentagon-point-glow 2s 333ms ease-in-out infinite; }
+.story-pentagon-point.is-arriving { animation-delay: var(--arrival-delay), calc(.333s + var(--arrival-delay)); transition-delay: var(--arrival-delay); }
 
 .story-pentagon-node {
   position: absolute;
@@ -457,13 +469,13 @@ html.lenis body {
   text-align: center;
   left: var(--node-x);
   top: var(--node-y);
-  transition: left 850ms cubic-bezier(.2, .8, .2, 1), top 850ms cubic-bezier(.2, .8, .2, 1), opacity 700ms ease, transform 850ms cubic-bezier(.2, .8, .2, 1);
+  transition: left 567ms cubic-bezier(.2, .8, .2, 1), top 567ms cubic-bezier(.2, .8, .2, 1), opacity 467ms ease, transform 567ms cubic-bezier(.2, .8, .2, 1);
 }
 
 .story-pentagon-node.is-visible {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
-  animation: pentagon-node-arrive 600ms cubic-bezier(.16, 1, .3, 1) var(--arrival-delay, 0s) both;
+  animation: pentagon-node-arrive 400ms cubic-bezier(.16, 1, .3, 1) var(--arrival-delay, 0s) both;
 }
 .story-pentagon-node.is-arriving { transition-delay: var(--arrival-delay); }
 
