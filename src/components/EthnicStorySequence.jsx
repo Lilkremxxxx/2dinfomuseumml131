@@ -72,8 +72,8 @@ function PentagonScene({ scene }) {
         const isArriving = index === scene.revealed && scene.revealed > 0 && scene.revealed < elements.length;
         return (
           <React.Fragment key={text}>
-            <span className={`story-pentagon-point story-pentagon-point--${index} ${visible ? 'is-visible' : ''} ${isArriving ? 'is-arriving' : ''}`} style={{ left: `${point.x}%`, top: `${point.y}%`, '--arrival-delay': isArriving ? '.45s' : '0s' }} />
-            <div className={`story-pentagon-node story-pentagon-node--${index} ${visible ? 'is-visible' : ''} ${isArriving ? 'is-arriving' : ''}`} style={{ '--node-x': `${position.x}%`, '--node-y': `${position.y}%`, '--arrival-delay': isArriving ? '.45s' : '0s' }}>
+            <span className={`story-pentagon-point story-pentagon-point--${index} ${visible ? 'is-visible' : ''} ${isArriving ? 'is-arriving' : ''}`} style={{ left: `${point.x}%`, top: `${point.y}%`, '--arrival-delay': isArriving ? '.15s' : '0s' }} />
+            <div className={`story-pentagon-node story-pentagon-node--${index} ${visible ? 'is-visible' : ''} ${isArriving ? 'is-arriving' : ''}`} style={{ '--node-x': `${position.x}%`, '--node-y': `${position.y}%`, '--arrival-delay': isArriving ? '.15s' : '0s' }}>
               <Icon aria-hidden="true" />
               <span>{text}</span>
             </div>

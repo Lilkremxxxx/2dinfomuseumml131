@@ -106,7 +106,7 @@ export default function DanTocInfo() {
       if (sceneType === 'pentagon' || sceneType === 'pentagon-converge') {
         if (heldPentagonScene !== sceneKey && releasedConvergeScene !== sceneKey) {
           heldPentagonScene = sceneKey;
-          convergeResumeAt = now + (sceneType === 'pentagon-converge' ? 2000 : 900);
+          convergeResumeAt = now + (sceneType === 'pentagon-converge' ? 2000 : 300);
         }
         if (heldPentagonScene === sceneKey && now < convergeResumeAt) {
           frameId = requestAnimationFrame(step);
