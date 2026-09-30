@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ArrowRight, Pause, Play } from 'lucide-react';
 import Lenis from 'lenis';
 import { useNavigate } from 'react-router-dom';
@@ -39,6 +39,48 @@ export default function DanTocInfo() {
   const [autoScrollActive, setAutoScrollActive] = useState(false);
   const [mapAutoExit, setMapAutoExit] = useState(false);
   const [boatAutoExit, setBoatAutoExit] = useState(false);
+  const finalMapReadyRef = useRef(false);
+  const mapGlideInProgressRef = useRef(false);
+  const mapGlideCompleteRef = useRef(false);
+  const mapGlideTimerRef = useRef(null);
+  const boatGlideCompleteRef = useRef(false);
+  const boatPlaybackRef = useRef(null);
+  const autoScrollRuntimeRef = useRef({ heldPentagonScene: null, convergeResumeAt: 0, releasedConvergeScene: null, pausedAt: null, pausedBoatProgress: 0 });
+
+  const handleFinalMapReady = useCallback((ready) => {
+    finalMapReadyRef.current = ready;
+    if (!ready) {
+      window.clearTimeout(mapGlideTimerRef.current);
+      if (!mapGlideInProgressRef.current) setMapAutoExit(false);
+      return;
+    }
+
+    mapGlideCompleteRef.current = false;
+    window.clearTimeout(mapGlideTimerRef.current);
+    mapGlideTimerRef.current = window.setTimeout(() => {
+      const boatTop = document.getElementById('con-thuyen-lenin')?.getBoundingClientRect().top;
+      if (boatTop === undefined || boatTop <= 10) {
+        mapGlideCompleteRef.current = true;
+        return;
+      }
+
+      mapGlideInProgressRef.current = true;
+      setMapAutoExit(true);
+      lenisRef.current?.scrollTo(window.scrollY + boatTop, {
+        duration: 1.5,
+        easing: (progress) => progress < 0.5
+          ? 4 * progress ** 3
+          : 1 - ((-2 * progress + 2) ** 3) / 2,
+        onComplete: () => {
+          mapGlideInProgressRef.current = false;
+          mapGlideCompleteRef.current = true;
+          setMapAutoExit(false);
+        },
+      });
+    }, 1000);
+  }, []);
+
+  useEffect(() => () => window.clearTimeout(mapGlideTimerRef.current), []);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -75,21 +117,25 @@ export default function DanTocInfo() {
     if (!autoScrollActive) return undefined;
     let frameId;
     let previousTime;
-    let heldPentagonScene = null;
-    let convergeResumeAt = 0;
-    let releasedConvergeScene = null;
-    let heldMapScene = null;
-    let mapResumeAt = 0;
-    let mapExitStartedAt = null;
-    let mapExitStartY = 0;
-    let mapExitTargetY = 0;
-    let mapExitSceneKey = null;
-    let mapGlideComplete = false;
+    const runtime = autoScrollRuntimeRef.current;
+    let heldPentagonScene = runtime.heldPentagonScene;
+    let convergeResumeAt = runtime.convergeResumeAt;
+    let releasedConvergeScene = runtime.releasedConvergeScene;
     let boatExitStartedAt = null;
     let boatExitStartY = 0;
     let boatExitTargetY = 0;
-    let boatGlideComplete = false;
-    let boatPlayback = null;
+    let boatPlayback = boatPlaybackRef.current;
+    if (runtime.pausedAt !== null) {
+      const pauseDuration = performance.now() - runtime.pausedAt;
+      if (Math.abs(runtime.pausedBoatProgress - boatProgressRef.current) > 0.001) {
+        boatPlayback = null;
+        boatPlaybackRef.current = null;
+      } else if (boatPlayback) {
+        boatPlayback.startedAt += pauseDuration;
+      }
+      convergeResumeAt += pauseDuration;
+      runtime.pausedAt = null;
+    }
     const step = () => {
       const now = performance.now();
       const elapsed = previousTime === undefined ? 0 : Math.min(50, now - previousTime);
@@ -107,6 +153,8 @@ export default function DanTocInfo() {
         if (heldPentagonScene !== sceneKey && releasedConvergeScene !== sceneKey) {
           heldPentagonScene = sceneKey;
           convergeResumeAt = now + (sceneType === 'pentagon-converge' ? 2000 : 300);
+          runtime.heldPentagonScene = heldPentagonScene;
+          runtime.convergeResumeAt = convergeResumeAt;
         }
         if (heldPentagonScene === sceneKey && now < convergeResumeAt) {
           frameId = requestAnimationFrame(step);
@@ -115,6 +163,8 @@ export default function DanTocInfo() {
         if (sceneType === 'pentagon-converge' && heldPentagonScene === sceneKey) {
           releasedConvergeScene = sceneKey;
           heldPentagonScene = null;
+          runtime.releasedConvergeScene = releasedConvergeScene;
+          runtime.heldPentagonScene = null;
           const nextSceneY = story.offsetTop + (Number(sceneIndex) + 1) * window.innerHeight * 1.12 + 1;
           lenisRef.current?.scrollTo(nextSceneY, { immediate: true });
           frameId = requestAnimationFrame(step);
@@ -122,49 +172,15 @@ export default function DanTocInfo() {
         }
       } else {
         heldPentagonScene = null;
+        runtime.heldPentagonScene = null;
         if (sceneKey !== releasedConvergeScene) releasedConvergeScene = null;
+        runtime.releasedConvergeScene = releasedConvergeScene;
       }
 
       const isHoldingFinalMap = document.querySelector('.ethnic-story-stage--map');
-      const mapIsReady = isHoldingFinalMap?.dataset.mapReady === 'true';
-      if (sceneType === 'image' && mapIsReady && !mapGlideComplete) {
-        const mapSceneKey = `${sceneKey}:ready`;
-        if (heldMapScene !== mapSceneKey) {
-          heldMapScene = mapSceneKey;
-          mapResumeAt = now + 5000;
-        }
-        if (now < mapResumeAt) {
-          frameId = requestAnimationFrame(step);
-          return;
-        }
-        if (mapExitSceneKey !== mapSceneKey) {
-          mapExitSceneKey = mapSceneKey;
-          mapExitStartedAt = now;
-          mapExitStartY = window.scrollY;
-          const boatTop = boatSectionRef.current?.getBoundingClientRect().top;
-          mapExitTargetY = window.scrollY + Math.max(0, boatTop ?? window.innerHeight);
-          setMapAutoExit(true);
-        }
-        const glideProgress = Math.min(1, (now - mapExitStartedAt) / 1500);
-        const easedGlide = glideProgress < 0.5
-          ? 4 * glideProgress ** 3
-          : 1 - ((-2 * glideProgress + 2) ** 3) / 2;
-        lenisRef.current?.scrollTo(
-          mapExitStartY + (mapExitTargetY - mapExitStartY) * easedGlide,
-          { immediate: true },
-        );
-        if (glideProgress < 1) {
-          frameId = requestAnimationFrame(step);
-          return;
-        }
-        setMapAutoExit(false);
-        heldMapScene = null;
-        mapExitSceneKey = null;
-        mapGlideComplete = true;
-      } else {
-        heldMapScene = null;
-        mapExitSceneKey = null;
-        mapExitStartedAt = null;
+      if (sceneType === 'image' && finalMapReadyRef.current && !mapGlideCompleteRef.current) {
+        frameId = requestAnimationFrame(step);
+        return;
       }
 
       const boatRect = boatSectionRef.current?.getBoundingClientRect();
@@ -177,8 +193,9 @@ export default function DanTocInfo() {
             to: stage === 0 ? 0.5 : 1,
             startedAt: now,
           };
+          boatPlaybackRef.current = boatPlayback;
         }
-        const progressAfterHold = Math.max(0, now - boatPlayback.startedAt - 7000) / 1000;
+        const progressAfterHold = Math.max(0, now - boatPlayback.startedAt - 3000) / 1000;
         const transition = Math.min(1, progressAfterHold);
         const easedTransition = 0.5 - Math.cos(Math.PI * transition) / 2;
         const nextProgress = boatPlayback.from + (boatPlayback.to - boatPlayback.from) * easedTransition;
@@ -192,8 +209,10 @@ export default function DanTocInfo() {
               to: 1,
               startedAt: now,
             };
+            boatPlaybackRef.current = boatPlayback;
           } else {
             boatPlayback = null;
+            boatPlaybackRef.current = null;
           }
         }
         if (nextProgress >= 1) {
@@ -204,7 +223,7 @@ export default function DanTocInfo() {
         return;
       }
 
-      if (boatRect && boatRect.top <= 10 && boatProgressRef.current >= 1 && !boatGlideComplete) {
+      if (boatRect && boatRect.top <= 10 && boatProgressRef.current >= 1 && !boatGlideCompleteRef.current) {
         if (boatExitStartedAt === null) {
           boatExitStartedAt = now;
           boatExitStartY = window.scrollY;
@@ -225,20 +244,28 @@ export default function DanTocInfo() {
           return;
         }
         setBoatAutoExit(false);
-        boatGlideComplete = true;
+        boatGlideCompleteRef.current = true;
         boatExitStartedAt = null;
       }
 
       const scrollRate = sceneType === 'quote'
         ? 0.15
         : isHoldingFinalMap
-          ? (mapIsReady ? 0.72 : 0.24)
+          ? (finalMapReadyRef.current ? 0.72 : 0.24)
           : 0.36;
       lenisRef.current?.scrollTo(window.scrollY + elapsed * scrollRate, { immediate: true });
       frameId = requestAnimationFrame(step);
     };
     frameId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(frameId);
+    return () => {
+      runtime.heldPentagonScene = heldPentagonScene;
+      runtime.convergeResumeAt = convergeResumeAt;
+      runtime.releasedConvergeScene = releasedConvergeScene;
+      runtime.pausedAt = performance.now();
+      runtime.pausedBoatProgress = boatProgressRef.current;
+      boatPlaybackRef.current = boatPlayback;
+      cancelAnimationFrame(frameId);
+    };
   }, [autoScrollActive]);
 
   useEffect(() => {
@@ -297,6 +324,10 @@ export default function DanTocInfo() {
       const delta = Math.max(-MAX_WHEEL_DELTA, Math.min(MAX_WHEEL_DELTA, e.deltaY)) * SCROLL_SENSITIVITY;
       const next = Math.max(0, Math.min(1, boatProgressRef.current + delta));
       if (next === 1 && boatProgressRef.current < 1) boatReachedEndAtRef.current = performance.now();
+      if (next < 1) {
+        boatGlideCompleteRef.current = false;
+        boatPlaybackRef.current = null;
+      }
       boatProgressRef.current = next;
       setBoatProgress(next);
     };
@@ -317,6 +348,10 @@ export default function DanTocInfo() {
       const dy = touchStartYRef.current - e.touches[0].clientY;
       touchStartYRef.current = e.touches[0].clientY;
       const next = Math.max(0, Math.min(1, boatProgressRef.current + dy * 0.003));
+      if (next < 1) {
+        boatGlideCompleteRef.current = false;
+        boatPlaybackRef.current = null;
+      }
       boatProgressRef.current = next;
       setBoatProgress(next);
     };
@@ -414,7 +449,7 @@ export default function DanTocInfo() {
       <div className="film-vignette pointer-events-none" />
 
       {/* NỘI DUNG CHÍNH */}
-      <EthnicStorySequence autoScrollExit={mapAutoExit && autoScrollActive} />
+      <EthnicStorySequence autoScrollExit={mapAutoExit} onFinalMapReady={handleFinalMapReady} />
 
 
 

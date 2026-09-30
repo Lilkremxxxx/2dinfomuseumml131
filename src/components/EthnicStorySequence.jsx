@@ -135,7 +135,7 @@ function SceneContent({ scene, onPreview }) {
   );
 }
 
-export default function EthnicStorySequence({ autoScrollExit = false }) {
+export default function EthnicStorySequence({ autoScrollExit = false, onFinalMapReady }) {
   const sequenceRef = useRef(null);
   const [activeScene, setActiveScene] = useState(0);
   const [mapReady, setMapReady] = useState(false);
@@ -148,10 +148,14 @@ export default function EthnicStorySequence({ autoScrollExit = false }) {
 
   useEffect(() => {
     setMapReady(false);
+    onFinalMapReady?.(false);
     if (activeScene !== scenes.length - 1) return undefined;
-    const timer = window.setTimeout(() => setMapReady(true), 5200);
+    const timer = window.setTimeout(() => {
+      setMapReady(true);
+      onFinalMapReady?.(true);
+    }, 5200);
     return () => window.clearTimeout(timer);
-  }, [activeScene]);
+  }, [activeScene, onFinalMapReady]);
 
   useEffect(() => {
     if (!previewImage) return undefined;
