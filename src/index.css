@@ -421,7 +421,7 @@ html.lenis body {
   fill: rgba(255, 205, 0, .035);
   stroke: rgba(255, 205, 0, .72);
   stroke-width: 5;
-  stroke-dasharray: 3000;
+  stroke-dasharray: 5;
   transition: stroke-dashoffset .65s ease;
   filter: drop-shadow(0 0 12px rgba(255, 205, 0, .4));
 }
@@ -440,6 +440,7 @@ html.lenis body {
   transition: left 850ms cubic-bezier(.2, .8, .2, 1), top 850ms cubic-bezier(.2, .8, .2, 1), opacity 600ms ease, transform 850ms cubic-bezier(.2, .8, .2, 1);
 }
 .story-pentagon-point.is-visible { animation: pentagon-point-pop 500ms cubic-bezier(.16, 1, .3, 1) both, pentagon-point-glow 2s 500ms ease-in-out infinite; }
+.story-pentagon-point.is-arriving { animation-delay: var(--arrival-delay), calc(.5s + var(--arrival-delay)); transition-delay: var(--arrival-delay); }
 
 .story-pentagon-node {
   position: absolute;
@@ -462,8 +463,9 @@ html.lenis body {
 .story-pentagon-node.is-visible {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
-  animation: pentagon-node-arrive 600ms cubic-bezier(.16, 1, .3, 1) both;
+  animation: pentagon-node-arrive 600ms cubic-bezier(.16, 1, .3, 1) var(--arrival-delay, 0s) both;
 }
+.story-pentagon-node.is-arriving { transition-delay: var(--arrival-delay); }
 
 .story-pentagon-node > svg {
   width: clamp(1.5rem, 4.2vw, 3.2rem);

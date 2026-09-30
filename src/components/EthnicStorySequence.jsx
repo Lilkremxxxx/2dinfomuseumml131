@@ -54,16 +54,17 @@ function PentagonScene({ scene }) {
   return (
     <div className={`story-pentagon ${isConverging ? 'story-pentagon--converging' : ''}`}>
       <svg className="story-pentagon-outline" viewBox="0 0 1000 1000" aria-hidden="true">
-        <path d="M500 65 L913 365 L755 850 L245 850 L87 365 Z" style={{ strokeDashoffset: 3000 * (1 - scene.revealed / 5) }} />
+        <path d="M500 65 L913 365 L755 850 L245 850 L87 365 Z" pathLength="5" style={{ strokeDashoffset: 5 - scene.revealed }} />
       </svg>
       {elements.map(({ text, icon: Icon }, index) => {
         const position = pentagonPositions[index];
         const point = pentagonPointPositions[index];
-        const visible = index < scene.revealed;
+        const visible = index <= scene.revealed;
+        const isArriving = index === scene.revealed && scene.revealed > 0 && scene.revealed < elements.length;
         return (
           <React.Fragment key={text}>
-            <span className={`story-pentagon-point story-pentagon-point--${index} ${visible ? 'is-visible' : ''}`} style={{ left: `${point.x}%`, top: `${point.y}%` }} />
-            <div className={`story-pentagon-node story-pentagon-node--${index} ${visible ? 'is-visible' : ''}`} style={{ '--node-x': `${position.x}%`, '--node-y': `${position.y}%` }}>
+            <span className={`story-pentagon-point story-pentagon-point--${index} ${visible ? 'is-visible' : ''} ${isArriving ? 'is-arriving' : ''}`} style={{ left: `${point.x}%`, top: `${point.y}%`, '--arrival-delay': isArriving ? '.65s' : '0s' }} />
+            <div className={`story-pentagon-node story-pentagon-node--${index} ${visible ? 'is-visible' : ''} ${isArriving ? 'is-arriving' : ''}`} style={{ '--node-x': `${position.x}%`, '--node-y': `${position.y}%`, '--arrival-delay': isArriving ? '.65s' : '0s' }}>
               <Icon aria-hidden="true" />
               <span>{text}</span>
             </div>

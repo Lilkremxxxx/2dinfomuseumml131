@@ -73,7 +73,7 @@ export default function DanTocInfo() {
     if (!autoScrollActive) return undefined;
     let frameId;
     let previousTime;
-    let heldConvergeScene = null;
+    let heldPentagonScene = null;
     let convergeResumeAt = 0;
     const step = () => {
       const now = performance.now();
@@ -88,17 +88,17 @@ export default function DanTocInfo() {
       const sceneType = story?.dataset.activeSceneType;
       const sceneIndex = story?.dataset.activeSceneIndex;
       const sceneKey = `${sceneType}:${sceneIndex}`;
-      if (sceneType === 'pentagon-converge') {
-        if (heldConvergeScene !== sceneKey) {
-          heldConvergeScene = sceneKey;
-          convergeResumeAt = now + 1400;
+      if (sceneType === 'pentagon' || sceneType === 'pentagon-converge') {
+        if (heldPentagonScene !== sceneKey) {
+          heldPentagonScene = sceneKey;
+          convergeResumeAt = now + (sceneType === 'pentagon-converge' ? 1400 : 1300);
         }
         if (now < convergeResumeAt) {
           frameId = requestAnimationFrame(step);
           return;
         }
       } else {
-        heldConvergeScene = null;
+        heldPentagonScene = null;
       }
 
       const boatRect = boatSectionRef.current?.getBoundingClientRect();
@@ -112,7 +112,11 @@ export default function DanTocInfo() {
 
       const isHoldingFinalMap = document.querySelector('.ethnic-story-stage--map');
       const mapIsReady = isHoldingFinalMap?.dataset.mapReady === 'true';
-      const scrollRate = isHoldingFinalMap ? (mapIsReady ? 0.72 : 0.24) : 0.36;
+      const scrollRate = sceneType === 'quote'
+        ? 0.15
+        : isHoldingFinalMap
+          ? (mapIsReady ? 0.72 : 0.24)
+          : 0.36;
       lenisRef.current?.scrollTo(window.scrollY + elapsed * scrollRate, { immediate: true });
       frameId = requestAnimationFrame(step);
     };
