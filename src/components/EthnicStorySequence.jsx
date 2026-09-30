@@ -202,6 +202,8 @@ export default function EthnicStorySequence() {
       style={{ height: `${(scenes.length * SCENE_SCROLL_VIEWPORTS + FINAL_MAP_EXTRA_SCROLL_VIEWPORTS) * 100}vh` }}
       id="dan-toc-kham-pha"
       data-map-wheel-lock={activeScene === scenes.length - 1 ? 'true' : undefined}
+      data-active-scene-type={scenes[activeScene].type}
+      data-active-scene-index={activeScene}
       aria-label="Hành trình khám phá khái niệm dân tộc"
     >
       <div className={`ethnic-story-stage ${scenes[activeScene].layout === 'five-elements-map' ? 'ethnic-story-stage--map' : ''}`} data-map-ready={mapReady ? 'true' : 'false'}>
