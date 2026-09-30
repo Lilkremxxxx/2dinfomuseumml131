@@ -237,6 +237,18 @@ html.lenis body {
   filter: blur(7px);
 }
 
+.boat-camera-stage {
+  transform-origin: center center;
+  transition: transform 1.5s cubic-bezier(.65, 0, .35, 1), opacity 1.5s ease, filter 1.5s ease;
+  will-change: transform, opacity, filter;
+}
+
+.boat-camera-stage--exiting {
+  transform: scale(.82) translateY(-2vh);
+  opacity: 0;
+  filter: blur(7px);
+}
+
 .ethnic-story-content {
   display: grid;
   width: min(100% - 2rem, 1100px);

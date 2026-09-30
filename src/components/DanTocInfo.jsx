@@ -38,6 +38,7 @@ export default function DanTocInfo() {
   const [isEthnicDrawerOpen, setIsEthnicDrawerOpen] = useState(false);
   const [autoScrollActive, setAutoScrollActive] = useState(false);
   const [mapAutoExit, setMapAutoExit] = useState(false);
+  const [boatAutoExit, setBoatAutoExit] = useState(false);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -84,6 +85,10 @@ export default function DanTocInfo() {
     let mapExitTargetY = 0;
     let mapExitSceneKey = null;
     let mapGlideComplete = false;
+    let boatExitStartedAt = null;
+    let boatExitStartY = 0;
+    let boatExitTargetY = 0;
+    let boatGlideComplete = false;
     let boatPlayback = null;
     const step = () => {
       const now = performance.now();
@@ -163,13 +168,13 @@ export default function DanTocInfo() {
       }
 
       const boatRect = boatSectionRef.current?.getBoundingClientRect();
-      if (boatRect && boatRect.top <= 10 && boatProgressRef.current < 1) {
+      if (boatRect && boatRect.top <= 10 && (boatProgressRef.current < 1 || boatPlayback?.stage === 2)) {
         if (!boatPlayback) {
-          const stage = boatProgressRef.current >= 0.66 ? 2 : boatProgressRef.current >= 0.33 ? 1 : 0;
+          const stage = boatProgressRef.current >= 1 ? 2 : boatProgressRef.current >= 0.5 ? 1 : 0;
           boatPlayback = {
             stage,
             from: boatProgressRef.current,
-            to: (stage + 1) / 3,
+            to: stage === 0 ? 0.5 : 1,
             startedAt: now,
           };
         }
@@ -184,7 +189,7 @@ export default function DanTocInfo() {
             boatPlayback = {
               stage: boatPlayback.stage + 1,
               from: boatPlayback.to,
-              to: (boatPlayback.stage + 2) / 3,
+              to: 1,
               startedAt: now,
             };
           } else {
@@ -197,6 +202,31 @@ export default function DanTocInfo() {
         }
         frameId = requestAnimationFrame(step);
         return;
+      }
+
+      if (boatRect && boatRect.top <= 10 && boatProgressRef.current >= 1 && !boatGlideComplete) {
+        if (boatExitStartedAt === null) {
+          boatExitStartedAt = now;
+          boatExitStartY = window.scrollY;
+          const mapSectionTop = document.getElementById('ban-sac-dan-toc')?.getBoundingClientRect().top;
+          boatExitTargetY = window.scrollY + Math.max(0, mapSectionTop ?? window.innerHeight);
+          setBoatAutoExit(true);
+        }
+        const glideProgress = Math.min(1, (now - boatExitStartedAt) / 1500);
+        const easedGlide = glideProgress < 0.5
+          ? 4 * glideProgress ** 3
+          : 1 - ((-2 * glideProgress + 2) ** 3) / 2;
+        lenisRef.current?.scrollTo(
+          boatExitStartY + (boatExitTargetY - boatExitStartY) * easedGlide,
+          { immediate: true },
+        );
+        if (glideProgress < 1) {
+          frameId = requestAnimationFrame(step);
+          return;
+        }
+        setBoatAutoExit(false);
+        boatGlideComplete = true;
+        boatExitStartedAt = null;
       }
 
       const scrollRate = sceneType === 'quote'
@@ -342,9 +372,9 @@ export default function DanTocInfo() {
 
   // Xác định mốc hiện tại theo tiến trình cuộn (0 -> 1)
   let activeMilestoneIndex = 0;
-  if (boatProgress >= 0.66) {
+  if (boatProgress >= 1) {
     activeMilestoneIndex = 2; // Liên hiệp
-  } else if (boatProgress >= 0.33) {
+  } else if (boatProgress >= 0.5) {
     activeMilestoneIndex = 1; // Tự quyết
   }
   const activeData = LENIN_MILESTONES[activeMilestoneIndex];
@@ -411,7 +441,7 @@ export default function DanTocInfo() {
         id="con-thuyen-lenin" 
         className="relative h-screen bg-gradient-to-b from-[#060709] via-[#0E131E] to-[#060709] border-t-2 border-vn-gold/40"
       >
-        <div className="sticky top-0 flex h-screen flex-col items-center justify-between overflow-hidden px-4 sm:px-8 py-10">
+        <div className={`sticky top-0 flex h-screen flex-col items-center justify-between overflow-hidden px-4 sm:px-8 py-10 boat-camera-stage ${boatAutoExit && autoScrollActive ? 'boat-camera-stage--exiting' : ''}`}>
           {/* Thanh progress hanh trinh */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-white/10 z-50 pointer-events-none">
             <div className="h-full bg-gradient-to-r from-vn-gold via-vn-red to-vn-gold transition-all duration-75" style={{width: boatProgress * 100 + '%'}} />
